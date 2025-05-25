@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Platform, StyleSheet } from "react-native";
-import { Text } from "tamagui";
+import { Text, View } from "tamagui";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -24,7 +24,10 @@ export default function HomeScreen() {
 			</ThemedView>
 			<ThemedView style={styles.stepContainer}>
 				<ThemedText type="subtitle">Step 1: Try it</ThemedText>
-				<Text theme="primary">This a tamagui</Text>
+				<View p="$padding16">
+					<Text theme="primary">This a tamagui</Text>
+				</View>
+
 				<ThemedText>
 					Edit{" "}
 					<ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
