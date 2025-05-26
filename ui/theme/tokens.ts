@@ -1,5 +1,6 @@
 import { createTokens } from "tamagui";
 import { colors } from "./colors";
+import { fonts } from "./fonts";
 
 const spacing = {
 	none: 0,
@@ -54,6 +55,50 @@ const borderRadii = {
 	roundedFull: 999999,
 };
 
+const size = {
+	none: 0,
+	size1: 1,
+	size2: 2,
+	size4: 4,
+	size6: 6,
+	size8: 8,
+	size12: 12,
+	size16: 16,
+	size18: 18,
+	size20: 20,
+	size24: 24,
+	size28: 28,
+	size32: 32,
+	size36: 36,
+	size40: 40,
+	size48: 48,
+	size60: 60,
+	size64: 64,
+	size72: 72,
+	size80: 80,
+	size96: 96,
+	size100: 100,
+	true: 16,
+};
+
+const fontSize = {
+	heading1: fonts.heading1.fontSize,
+	heading2: fonts.heading2.fontSize,
+	heading3: fonts.heading3.fontSize,
+	subheading1: fonts.subheading1.fontSize,
+	subheading2: fonts.subheading2.fontSize,
+	body1: fonts.body1.fontSize,
+	body2: fonts.body2.fontSize,
+	body3: fonts.body3.fontSize,
+	body4: fonts.body4.fontSize,
+	buttonLabel1: fonts.buttonLabel1.fontSize,
+	buttonLabel2: fonts.buttonLabel2.fontSize,
+	buttonLabel3: fonts.buttonLabel3.fontSize,
+	buttonLabel4: fonts.buttonLabel4.fontSize,
+	monospace: fonts.monospace.fontSize,
+	true: fonts.body2.fontSize,
+};
+
 const space = { ...spacing, ...padding, ...gap, true: spacing.spacing8 };
 const radius = { ...borderRadii, true: borderRadii.rounded8 };
 
@@ -61,4 +106,6 @@ export const tokens = createTokens({
 	color: { ...colors },
 	space: { ...space },
 	radius: { ...radius },
+	font: { ...fontSize },
+	size: { ...size },
 });

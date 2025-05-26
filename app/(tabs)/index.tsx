@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Platform, StyleSheet } from "react-native";
-import { Text, View } from "tamagui";
+import { Button, Text, View, XStack } from "tamagui";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -25,7 +25,27 @@ export default function HomeScreen() {
 			<ThemedView style={styles.stepContainer}>
 				<ThemedText type="subtitle">Step 1: Try it</ThemedText>
 				<View p="$padding16">
-					<Text theme="primary">This a tamagui</Text>
+					<XStack gap="$gap24">
+						<Text theme="primary" mb="$spacing8">
+							This a tamagui
+						</Text>
+						<Text theme="primary" mb="$spacing8">
+							This a tamagui
+						</Text>
+					</XStack>
+					<Button
+						size="$size48"
+						rounded="$roundedFull"
+						onPress={() => {
+							alert("Button Pressed!");
+						}}
+						bg="teal"
+						color="$accent2Solid"
+						p={12}
+						fontSize={12}
+					>
+						Press Me
+					</Button>
 				</View>
 
 				<ThemedText>
