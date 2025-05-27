@@ -1,11 +1,14 @@
-import { defaultConfig } from "@tamagui/config/v4";
+import { animations, media, settings, shorthands } from "@tamagui/config/v4";
 import { createTamagui } from "@tamagui/core";
 import { allFonts } from "./theme/fonts";
 import { themes } from "./theme/themes";
 import { tokens } from "./theme/tokens";
 
 export const config = createTamagui({
-	...defaultConfig,
+	animations,
+	settings,
+	media,
+	shorthands,
 	themes,
 	tokens,
 	fonts: allFonts,

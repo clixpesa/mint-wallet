@@ -1,11 +1,11 @@
 import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
-import { Button, Text, View, XStack } from "tamagui";
+import { ActivityIndicator, Platform, StyleSheet } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Button, Text, View } from "tamagui";
 
 export default function HomeScreen() {
 	return (
@@ -24,30 +24,32 @@ export default function HomeScreen() {
 			</ThemedView>
 			<ThemedView style={styles.stepContainer}>
 				<ThemedText type="subtitle">Step 1: Try it</ThemedText>
-				<View p="$padding16">
-					<XStack gap="$gap24">
-						<Text theme="primary" mb="$spacing8">
-							This a tamagui
-						</Text>
-						<Text theme="primary" mb="$spacing8">
-							This a tamagui
-						</Text>
-					</XStack>
+				<View p="$md" bg="$backgroundStrong" borderEndEndRadius="$md">
+					<Text fontSize="$md" color="$teal" lineHeight="$md">
+						This is a starter app for
+						<ThemedText type="defaultSemiBold">Tamagui</ThemedText>. It includes
+						a few example screens and components to help you get started.
+					</Text>
 					<Button
-						size="$size48"
-						rounded="$roundedFull"
+						size="$xl"
+						mt="$md"
+						height="$3xl"
+						bg="$teal"
+						color="$white"
+						rounded="$full"
 						onPress={() => {
-							alert("Button Pressed!");
+							// This is just a placeholder for an action, e.g., navigation
+							console.log("Button pressed!");
 						}}
-						bg="teal"
-						color="$accent2Solid"
-						p={12}
-						fontSize={12}
 					>
-						Press Me
+						<ActivityIndicator
+							size="small"
+							color="#fff"
+							style={{ marginRight: 8 }}
+						/>
+						Press ME
 					</Button>
 				</View>
-
 				<ThemedText>
 					Edit{" "}
 					<ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
