@@ -81,13 +81,14 @@ export const tokens = createTokens({
 		true: 16,
 	},
 	radius: {
-		xs: 2,
-		sm: 4,
+		xs: 4,
+		sm: 6,
 		md: 8,
 		lg: 12,
 		xl: 16,
-		"2xl": 24,
-		"3xl": 32,
+		"2xl": 20,
+		"3xl": 24,
+		"4xl": 32,
 		full: 9999,
 	},
 	zIndex: {
