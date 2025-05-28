@@ -1,11 +1,10 @@
-import { Image } from "expo-image";
-import { ActivityIndicator, Platform, StyleSheet } from "react-native";
-
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Button, Text, View } from "tamagui";
+import { Image } from "expo-image";
+import { ActivityIndicator, Platform, StyleSheet } from "react-native";
+import { Button as BaseButton, Text, View, XStack } from "tamagui";
 
 export default function HomeScreen() {
 	return (
@@ -24,18 +23,45 @@ export default function HomeScreen() {
 			</ThemedView>
 			<ThemedView style={styles.stepContainer}>
 				<ThemedText type="subtitle">Step 1: Try it</ThemedText>
-				<View p="$md" bg="$backgroundStrong" borderEndEndRadius="$md">
+				<View p="$md" borderEndEndRadius="$md">
 					<Text fontSize="$md" color="$teal" lineHeight="$md">
 						This is a starter app for
 						<ThemedText type="defaultSemiBold">Tamagui</ThemedText>. It includes
 						a few example screens and components to help you get started.
 					</Text>
-					<Button
+
+					<BaseButton
+						size="$xl"
+						mt="$md"
+						height="$3xl"
+						bg="$tealLight"
+						color="$tealLight"
+						rounded="$full"
+						hoverStyle={{ bg: "$tealLightHover" }}
+						pressStyle={{
+							bg: "$tealLightPress",
+							borderColor: "$tealLightPress",
+						}}
+						onPress={() => {
+							// This is just a placeholder for an action, e.g., navigation
+							console.log("Button pressed!");
+						}}
+					>
+						<XStack gap="$3xl" items="center">
+							<ActivityIndicator
+								size="small"
+								color="#fff"
+								style={{ marginRight: 8 }}
+							/>
+							<Text fontSize="$xl">Press ME</Text>
+						</XStack>
+					</BaseButton>
+					<BaseButton
 						size="$xl"
 						mt="$md"
 						height="$3xl"
 						bg="$teal"
-						color="$white"
+						color="$teal2"
 						rounded="$full"
 						onPress={() => {
 							// This is just a placeholder for an action, e.g., navigation
@@ -48,7 +74,7 @@ export default function HomeScreen() {
 							style={{ marginRight: 8 }}
 						/>
 						Press ME
-					</Button>
+					</BaseButton>
 				</View>
 				<ThemedText>
 					Edit{" "}

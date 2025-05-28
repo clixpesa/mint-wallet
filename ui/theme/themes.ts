@@ -27,10 +27,29 @@ const lightTheme = {
 	tealFocus: tokens.color.teal10,
 	tealTransparent: tokens.color.teal1,
 
+	tealLight: tokens.color.teal4,
+	tealLightHover: tokens.color.teal4,
+	tealLightPress: tokens.color.teal3,
+	tealLightFocus: tokens.color.teal3,
+
 	secondary: tokens.color.gray5,
 	secondaryHover: tokens.color.gray6,
 	secondaryPress: tokens.color.gray7,
 	secondaryFocus: tokens.color.gray7,
+
+	// Success (green)
+	success: tokens.color.success6,
+	successHover: tokens.color.success7,
+	successPress: tokens.color.success8,
+	successFocus: tokens.color.success8,
+	successTransparent: tokens.color.success1,
+
+	// Warning (amber)
+	warning: tokens.color.warning6,
+	warningHover: tokens.color.warning7,
+	warningPress: tokens.color.warning8,
+	warningFocus: tokens.color.warning8,
+	warningTransparent: tokens.color.warning1,
 };
 
 type BaseTheme = typeof lightTheme;
@@ -62,10 +81,29 @@ const darkTheme: BaseTheme = {
 	tealFocus: tokens.color.teal5,
 	tealTransparent: tokens.color.teal11,
 
+	tealLight: tokens.color.teal3,
+	tealLightHover: tokens.color.teal3,
+	tealLightPress: tokens.color.teal2,
+	tealLightFocus: tokens.color.teal1,
+
 	secondary: tokens.color.gray7,
 	secondaryHover: tokens.color.gray6,
 	secondaryPress: tokens.color.gray5,
 	secondaryFocus: tokens.color.gray5,
+
+	// Success (green - darker shades)
+	success: tokens.color.success7,
+	successHover: tokens.color.success6,
+	successPress: tokens.color.success5,
+	successFocus: tokens.color.success5,
+	successTransparent: tokens.color.success11,
+
+	// Warning (amber - darker shades)
+	warning: tokens.color.warning7,
+	warningHover: tokens.color.warning6,
+	warningPress: tokens.color.warning5,
+	warningFocus: tokens.color.warning5,
+	warningTransparent: tokens.color.warning11,
 };
 
 const allThemes = {
