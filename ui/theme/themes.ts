@@ -50,6 +50,9 @@ const lightTheme = {
 	warningPress: tokens.color.warning8,
 	warningFocus: tokens.color.warning8,
 	warningTransparent: tokens.color.warning1,
+
+	shadowColor: "rgba(0,0,0,0.4)",
+	shadowColorHover: "rgba(0,0,0,0.5)",
 };
 
 type BaseTheme = typeof lightTheme;
@@ -104,6 +107,9 @@ const darkTheme: BaseTheme = {
 	warningPress: tokens.color.warning5,
 	warningFocus: tokens.color.warning5,
 	warningTransparent: tokens.color.warning11,
+
+	shadowColor: "rgba(0,0,0,0.4)",
+	shadowColorHover: "rgba(0,0,0,0.5)",
 };
 
 const allThemes = {
