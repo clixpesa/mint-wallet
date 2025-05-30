@@ -1,10 +1,19 @@
+import { Text } from "@/ui/components/text/Text";
 import { StyleSheet } from "react-native";
-import { Text, View } from "tamagui";
+import { Text as BaseText, View } from "tamagui";
 
 export default function HomeScreen() {
 	return (
 		<View flex={1} content="center" items="center">
-			<Text>Testing UI</Text>
+			<BaseText>Testing UI</BaseText>
+			<Text variant="heading2">This Guy</Text>
+
+			<Text variant="heading3">This Guy</Text>
+
+			<Text variant="subHeading1">This Guy</Text>
+			<Text variant="body1">This Guy</Text>
+			<Text variant="body2">This Guy</Text>
+			<Text variant="body3">This Guy</Text>
 		</View>
 	);
 }
