@@ -1,46 +1,60 @@
-import { Stack, XStack } from "tamagui";
+import type { JSX } from "react";
+import { Stack, XStack, YStack, isWeb } from "tamagui";
 import { Text } from "../text";
+import { Skeleton } from "./Skeleton";
 
-interface TransactionLoaderProps {
+interface TxLoaderProps {
 	opacity: number;
+	withAmounts?: boolean;
 }
 
-export const TXN_HISTORY_LOADER_ICON_SIZE = "$4xl";
-
-export function TransactionLoader({
+export function TokenLoader({
 	opacity,
-}: TransactionLoaderProps): JSX.Element {
+	withAmounts = false,
+}: TxLoaderProps): JSX.Element {
 	return (
-		<Stack opacity={opacity} overflow="hidden" className="TransactionLoader">
-			<XStack items="flex-start" gap="$lg" content="space-between" py="$md">
-				<XStack items="center" gap="$md" height="100%" content="flex-start">
-					<Stack
-						items="center"
-						content="center"
-						bg="$secondary"
-						rounded="$full"
-						height={TXN_HISTORY_LOADER_ICON_SIZE}
-						width={TXN_HISTORY_LOADER_ICON_SIZE}
+		<XStack items="center" content="space-between" opacity={opacity} py="$sm">
+			<XStack items="center" gap="$md" overflow="hidden">
+				<Skeleton>
+					<Stack bg="$gray5" rounded="$full" height="$3xl" width="$3xl" />
+				</Skeleton>
+
+				<YStack items="flex-start">
+					<Text
+						loading="no-shimmer"
+						loadingPlaceholderText="Transaction Name"
+						numberOfLines={1}
+						variant={isWeb ? "body3" : "body1"}
 					/>
-					<Stack>
-						<XStack items="center" gap="$xs">
+					<XStack items="center" gap="$sm" minH={20}>
+						<Text
+							loading="no-shimmer"
+							loadingPlaceholderText="Wed, 1:30 PM"
+							numberOfLines={1}
+							variant={isWeb ? "body3" : "body2"}
+						/>
+					</XStack>
+				</YStack>
+
+				{withAmounts && (
+					<YStack items="flex-end">
+						<Text
+							loading="no-shimmer"
+							loadingPlaceholderText="$XX.XX"
+							numberOfLines={1}
+							variant="body1"
+						/>
+						<XStack items="center" gap="$sm" minH={20}>
 							<Text
-								loading
-								loadingPlaceholderText="Contract Interaction"
+								loading="no-shimmer"
+								loadingPlaceholderText="~XX.XX"
 								numberOfLines={1}
-								variant="body1"
+								variant="subHeading2"
 							/>
 						</XStack>
-						<Text
-							loading
-							color="$secondary"
-							loadingPlaceholderText="Caption Text"
-							numberOfLines={1}
-							variant="subHeading2"
-						/>
-					</Stack>
-				</XStack>
+					</YStack>
+				)}
 			</XStack>
-		</Stack>
+		</XStack>
 	);
 }
