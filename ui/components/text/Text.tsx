@@ -195,6 +195,6 @@ export const Text = TextFrame.styleable<TextProps>(
 			</TextComponent>
 		);
 	},
-) as unknown as typeof TextFrame;
+);
 
 Text.displayName = "Text";

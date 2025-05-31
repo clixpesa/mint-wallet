@@ -1,3 +1,5 @@
+import { TokenLoader } from "@/ui/components/loading/TokenLoader";
+import { TransactionLoader } from "@/ui/components/loading/TransactionLoader";
 import { Text } from "@/ui/components/text/Text";
 import { StyleSheet } from "react-native";
 import { Text as BaseText, View } from "tamagui";
@@ -14,6 +16,8 @@ export default function HomeScreen() {
 			<Text variant="body1">This Guy</Text>
 			<Text variant="body2">This Guy</Text>
 			<Text variant="body3">This Guy</Text>
+			<TokenLoader opacity={0.15} withPrice />
+			<TransactionLoader opacity={0.15} />
 		</View>
 	);
 }
