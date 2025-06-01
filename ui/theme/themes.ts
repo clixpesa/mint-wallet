@@ -1,125 +1,66 @@
-import { tokens } from "./tokens";
+import { colorsDark, colorsLight } from './colors'
 
-const lightTheme = {
-	background: tokens.color.white,
-	backgroundHover: tokens.color.gray1,
-	backgroundPress: tokens.color.gray2,
-	backgroundFocus: tokens.color.gray3,
-	backgroundStrong: tokens.color.gray1,
-	transparent: "transparent",
+// remove $none from theme because it causes issues where $none tokens always resolve to transparent color
+// even if they are technically a gap or other space/size property
+// tamagui could make this so that themes only apply to color based properties, but would need a release
+const { none: darkTransparent, ...tamaguiColorsDark } = colorsDark
+const { none: lightTransparent, ...tamaguiColorsLight } = colorsLight
 
-	color: tokens.color.gray10,
-	colorHover: tokens.color.gray9,
-	colorPress: tokens.color.gray8,
-	colorFocus: tokens.color.gray8,
-	colorTransparent: "transparent",
+// TODO can convert tokens to createTokens() and then use them here
+// Tamagui will automatically convert them though, so it just saves a small amount of performance
+const light = {
+	// Design System
+	...tamaguiColorsLight,
 
-	borderColor: tokens.color.gray4,
-	borderColorHover: tokens.color.gray5,
-	borderColorPress: tokens.color.gray6,
-	borderColorFocus: tokens.color.gray7,
+	// Tamagui Theme
+	transparent: lightTransparent,
+	background: colorsLight.surface1,
+	backgroundHover: colorsLight.surface2,
+	backgroundPress: colorsLight.surface2,
+	backgroundFocus: colorsLight.surface2,
+	borderColor: colorsLight.none,
+	borderColorHover: colorsLight.none,
+	borderColorFocus: colorsLight.none,
+	outlineColor: colorsLight.none,
+	color: colorsLight.neutral1,
+	colorHover: colorsLight.accent1,
+	colorPress: colorsLight.accent1,
+	colorFocus: colorsLight.accent1,
+	shadowColor: 'rgba(0,0,0,0.15)',
+	shadowColorHover: 'rgba(0,0,0,0.2)',
+}
 
-	placeholderColor: tokens.color.gray5,
+type BaseTheme = typeof light
 
-	teal: tokens.color.teal8,
-	tealHover: tokens.color.teal9,
-	tealPress: tokens.color.teal10,
-	tealFocus: tokens.color.teal10,
-	tealTransparent: tokens.color.teal1,
+const dark: BaseTheme = {
+	...tamaguiColorsDark,
 
-	tealLight: tokens.color.teal4,
-	tealLightHover: tokens.color.teal4,
-	tealLightPress: tokens.color.teal3,
-	tealLightFocus: tokens.color.teal3,
+	transparent: darkTransparent,
+	background: colorsDark.surface1,
+	backgroundHover: colorsDark.surface2,
+	backgroundPress: colorsDark.surface2,
+	backgroundFocus: colorsDark.surface2,
+	borderColor: colorsDark.none,
+	borderColorHover: colorsDark.none,
+	borderColorFocus: colorsDark.none,
+	outlineColor: colorsDark.none,
+	color: colorsDark.neutral1,
+	colorHover: colorsDark.accent1,
+	colorPress: colorsDark.accent1,
+	colorFocus: colorsDark.accent1,
+	shadowColor: 'rgba(0,0,0,0.4)',
+	shadowColorHover: 'rgba(0,0,0,0.5)',
+}
 
-	secondary: tokens.color.gray5,
-	secondaryHover: tokens.color.gray6,
-	secondaryPress: tokens.color.gray7,
-	secondaryFocus: tokens.color.gray7,
-
-	// Success (green)
-	success: tokens.color.success6,
-	successHover: tokens.color.success7,
-	successPress: tokens.color.success8,
-	successFocus: tokens.color.success8,
-	successTransparent: tokens.color.success1,
-
-	// Warning (amber)
-	warning: tokens.color.warning6,
-	warningHover: tokens.color.warning7,
-	warningPress: tokens.color.warning8,
-	warningFocus: tokens.color.warning8,
-	warningTransparent: tokens.color.warning1,
-
-	shadowColor: "rgba(0,0,0,0.4)",
-	shadowColorHover: "rgba(0,0,0,0.5)",
-};
-
-type BaseTheme = typeof lightTheme;
-
-const darkTheme: BaseTheme = {
-	background: tokens.color.gray10,
-	backgroundHover: tokens.color.gray9,
-	backgroundPress: tokens.color.gray8,
-	backgroundFocus: tokens.color.gray7,
-	backgroundStrong: tokens.color.gray9,
-	transparent: "transparent",
-
-	color: tokens.color.white,
-	colorHover: tokens.color.gray2,
-	colorPress: tokens.color.gray3,
-	colorFocus: tokens.color.gray3,
-	colorTransparent: "transparent",
-
-	borderColor: tokens.color.gray8,
-	borderColorHover: tokens.color.gray7,
-	borderColorPress: tokens.color.gray6,
-	borderColorFocus: tokens.color.gray5,
-
-	placeholderColor: tokens.color.gray7,
-
-	teal: tokens.color.teal7,
-	tealHover: tokens.color.teal6,
-	tealPress: tokens.color.teal5,
-	tealFocus: tokens.color.teal5,
-	tealTransparent: tokens.color.teal11,
-
-	tealLight: tokens.color.teal3,
-	tealLightHover: tokens.color.teal3,
-	tealLightPress: tokens.color.teal2,
-	tealLightFocus: tokens.color.teal1,
-
-	secondary: tokens.color.gray7,
-	secondaryHover: tokens.color.gray6,
-	secondaryPress: tokens.color.gray5,
-	secondaryFocus: tokens.color.gray5,
-
-	// Success (green - darker shades)
-	success: tokens.color.success7,
-	successHover: tokens.color.success6,
-	successPress: tokens.color.success5,
-	successFocus: tokens.color.success5,
-	successTransparent: tokens.color.success11,
-
-	// Warning (amber - darker shades)
-	warning: tokens.color.warning7,
-	warningHover: tokens.color.warning6,
-	warningPress: tokens.color.warning5,
-	warningFocus: tokens.color.warning5,
-	warningTransparent: tokens.color.warning11,
-
-	shadowColor: "rgba(0,0,0,0.4)",
-	shadowColorHover: "rgba(0,0,0,0.5)",
-};
-
+// combine and narrow theme types before exporting
 const allThemes = {
-	light: lightTheme,
-	dark: darkTheme,
-};
+	dark,
+	light,
+}
 
-type ThemeName = keyof typeof allThemes;
+type ThemeName = keyof typeof allThemes
 type Themes = {
-	[key in ThemeName]: BaseTheme;
-};
+	[key in ThemeName]: BaseTheme
+}
 
-export const themes: Themes = allThemes;
+export const themes: Themes = allThemes
