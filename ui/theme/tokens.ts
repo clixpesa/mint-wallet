@@ -1,68 +1,66 @@
-import { createTokens } from "tamagui";
+import { createTokens, type ColorTokens } from "tamagui";
+import { DynamicColor } from '../hooks/useThemeColors';
+import { colors as color } from './colors';
+import { fonts } from "./fonts";
+import { themes } from './themes';
+
+const fontSize = {
+  heading1: fonts.heading1.fontSize,
+  heading2: fonts.heading2.fontSize,
+  heading3: fonts.heading3.fontSize,
+  subheading1: fonts.subheading1.fontSize,
+  subheading2: fonts.subheading2.fontSize,
+  body1: fonts.body1.fontSize,
+  body2: fonts.body2.fontSize,
+  body3: fonts.body3.fontSize,
+  buttonLabel1: fonts.buttonLabel1.fontSize,
+  buttonLabel2: fonts.buttonLabel2.fontSize,
+  buttonLabel3: fonts.buttonLabel3.fontSize,
+  buttonLabel4: fonts.buttonLabel4.fontSize,
+  monospace: fonts.monospace.fontSize,
+  true: fonts.body2.fontSize,
+}
+
+const iconSize = {
+	"2xs": 18,
+	xs: 20,
+	sm: 28,
+	md: 36,
+	lg: 40,
+	xl: 48,
+	"2xl": 64,
+	"3xl": 70,
+	"4xl": 100,
+	true: 40
+}
+
+const imageSizes = {
+  "3xs": 12,
+  "2xs": 16,
+  xs: 20,
+  vs: 24,
+  sm: 32,
+  md: 36,
+  lg: 40,
+  xl: 48,
+  "2xl": 64,
+  "3xl": 100,
+	true: 40
+}
 
 export const tokens = createTokens({
-	color: {
-		teal1: "#f0fdfa",
-		teal2: "#ccfbf1",
-		teal3: "#99f6e4",
-		teal4: "#5eead4",
-		teal5: "#2dd4bf",
-		teal6:  "#14b8a6",
-		teal7:  "#0d9488",
-		teal8:  "#0f766e",
-		teal9:  "#115e59",
-		teal10:  "#134e4a",
-		teal11:  "#042f2e",
-		teal12:  "#02201f",
-
-		// Success colors (green spectrum)
-		success1: "#f0fdf4",
-		success2: "#dcfce7",
-		success3: "#bbf7d0",
-		success4: "#86efac",
-		success5: "#4ade80",
-		success6: "#22c55e",
-		success7: "#16a34a",
-		success8: "#15803d",
-		success9: "#166534",
-		success10: "#14532d",
-		success11: "#052e16",
-		success12: "#071f11",
-
-		// Warning colors (amber spectrum)
-		warning1: "#fffbeb",
-		warning2: "#fef3c7",
-		warning3: "#fde68a",
-		warning4: "#fcd34d",
-		warning5: "#fbbf24",
-		warning6: "#f59e0b",
-		warning7: "#d97706",
-		warning8: "#b45309",
-		warning9: "#92400e",
-		warning10: "#78350f",
-		warning11: "#451a03",
-		warning12: "#3f1d06",
-
-		white: "#ffffff",
-		black: "#000000",
-		gray1: "#f8fafc",
-		gray2: "#f1f5f9",
-		gray3: "#e2e8f0",
-		gray4: "#cbd5e1",
-		gray5: "#94a3b8",
-		gray6: "#64748b",
-		gray7: "#475569",
-		gray8: "#334155",
-		gray9: "#1e293b",
-		gray10: "#0f172a",
-	},
+	color,
+	font: fontSize,
+	icon: iconSize,
+	image: imageSizes,
 	space: {
 		none: 0,
-		xs: 4,
-		vs: 6,
-		sm: 8,
-		md: 12,
-		lg: 16,
+		"2xs": 4,
+		xs: 6,
+		vs: 8,
+		sm: 12,
+		md: 16,
+		lg: 18,
 		vl: 20,
 		xl: 24,
 		"2xl": 32,
@@ -70,10 +68,12 @@ export const tokens = createTokens({
 		"4xl": 40,
 		"5xl": 48,
 		"6xl": 60,
-		true: 16,
+		true: 12,
 	},
 	size: {
-		0: 0,
+		none: 0,
+		"3xs": 1,
+		"2xs": 2,
 		xs: 4,
 		vs: 6,
 		sm: 8,
@@ -117,3 +117,99 @@ export const tokens = createTokens({
 		tooltip: 1080,
 	},
 });
+
+type ColorValue = DynamicColor | string | undefined | null
+
+export const getIsTokenFormat = (value: string): boolean => {
+  return value[0] === '$'
+}
+
+export const getIsValidThemeColor = (value: string): boolean => {
+  if (getIsTokenFormat(value)) {
+    const valueWithout$Prefix = value.slice(1)
+
+    // check if in color tokens or theme:
+    if (!(valueWithout$Prefix in color) && !(valueWithout$Prefix in themes.light)) {
+      return false
+    }
+
+    return true
+  }
+
+  return false
+}
+
+export const validateColorValue = (value: ColorValue): { isValid: boolean; error?: Error } => {
+  if (typeof value === 'string') {
+    if (getIsTokenFormat(value)) {
+      const isValidSporeColor = getIsValidThemeColor(value)
+
+      if (isValidSporeColor) {
+        return {
+          isValid: true,
+          error: undefined,
+        }
+      }
+
+      return {
+        isValid: true,
+        error: undefined,
+      }
+    }
+
+    if (
+      value[0] !== '#' &&
+      !value.startsWith('rgb(') &&
+      !value.startsWith('rgba(') &&
+      !value.startsWith('hsl(') &&
+      !value.startsWith('hsla(') &&
+      !value.startsWith('var(')
+    ) {
+      return {
+        isValid: false,
+        error: new Error(
+          `Invalid color value: ${value} this helper just does a rough check so if this error is wrong you can update this check!`,
+        ),
+      }
+    }
+  }
+
+  return {
+    isValid: true,
+    error: undefined,
+  }
+}
+
+export const validColor = (value: ColorValue): ColorTokens => {
+  if (process.env.NODE_ENV !== 'production') {
+    const { isValid, error } = validateColorValue(value)
+
+    if (!isValid) {
+      throw error
+    }
+  }
+
+  return value as ColorTokens
+}
+
+/**
+ * Returns the hover color token if it exists, otherwise returns the original color token passed in.
+ *
+ * @param {ColorValue} nonHoveredColor - The original color token.
+ * @returns {ColorTokens} The hover color token if it exists, otherwise the original color token.
+ */
+export const getMaybeHoverColor = (nonHoveredColor: ColorValue): ColorTokens => {
+  if (typeof nonHoveredColor === 'string' && getIsValidThemeColor(nonHoveredColor)) {
+    const maybeHoveredColor = `${nonHoveredColor}Hovered`
+
+    const isValidToken = getIsValidThemeColor(maybeHoveredColor)
+
+    if (!isValidToken) {
+      return nonHoveredColor as ColorTokens
+    }
+
+    return maybeHoveredColor as ColorTokens
+  }
+
+  return nonHoveredColor as unknown as ColorTokens
+}

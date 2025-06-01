@@ -75,9 +75,9 @@ const MEDIUM_WEIGHT = '500'
 const MEDIUM_WEIGHT_WEB = '535'
 
 const defaultWeights = {
-  book: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
+  sm: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
   true: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
-  medium: isWebApp ? MEDIUM_WEIGHT_WEB : MEDIUM_WEIGHT,
+  md: isWebApp ? MEDIUM_WEIGHT_WEB : MEDIUM_WEIGHT,
 }
 
 // on native, the Basel font files render down a few px
@@ -191,25 +191,25 @@ export const fonts = {
 // TODO: Tamagui breaks font weights on Android if face *not* defined
 // but breaks iOS if face is defined
 const face = {
-  [defaultWeights.book]: { normal: baselBook },
-  [defaultWeights.medium]: { normal: baselMedium },
+  [defaultWeights.sm]: { normal: baselBook },
+  [defaultWeights.md]: { normal: baselMedium },
 }
 
 export const headingFont = createFont({
   family: baselBook,
   ...(isAndroid ? { face } : null),
   size: {
-    small: fonts.heading3.fontSize,
-    medium: fonts.heading2.fontSize,
+    sm: fonts.heading3.fontSize,
+    md: fonts.heading2.fontSize,
     true: fonts.heading2.fontSize,
-    large: fonts.heading1.fontSize,
+    lg: fonts.heading1.fontSize,
   },
   weight: defaultWeights,
   lineHeight: {
-    small: fonts.heading3.lineHeight,
-    medium: fonts.heading2.lineHeight,
+    sm: fonts.heading3.lineHeight,
+    md: fonts.heading2.lineHeight,
     true: fonts.heading2.lineHeight,
-    large: fonts.heading1.lineHeight,
+    lg: fonts.heading1.lineHeight,
   },
 })
 
@@ -217,14 +217,14 @@ export const subHeadingFont = createFont({
   family: baselBook,
   ...(isAndroid ? { face } : null),
   size: {
-    small: fonts.subheading2.fontSize,
-    large: fonts.subheading1.fontSize,
+    sm: fonts.subheading2.fontSize,
+    lg: fonts.subheading1.fontSize,
     true: fonts.subheading1.fontSize,
   },
   weight: defaultWeights,
   lineHeight: {
-    small: fonts.subheading2.lineHeight,
-    large: fonts.subheading1.lineHeight,
+    sm: fonts.subheading2.lineHeight,
+    lg: fonts.subheading1.lineHeight,
     true: fonts.subheading1.lineHeight,
   },
 })
@@ -236,29 +236,29 @@ export const bodyFont = createFont({
   family: baselBook,
   ...(isAndroid ? { face } : null),
   size: {
-    micro: fonts.body4.fontSize,
-    small: fonts.body3.fontSize,
-    medium: fonts.body2.fontSize,
+    xs: fonts.body4.fontSize,
+    sm: fonts.body3.fontSize,
+    md: fonts.body2.fontSize,
     true: fonts.body2.fontSize,
-    large: fonts.body1.fontSize,
+    lg: fonts.body1.fontSize,
   },
   weight: defaultWeights,
   lineHeight: {
-    micro: fonts.body4.lineHeight,
-    small: fonts.body3.lineHeight,
-    medium: fonts.body2.lineHeight,
+    xs: fonts.body4.lineHeight,
+    sm: fonts.body3.lineHeight,
+    md: fonts.body2.lineHeight,
     true: fonts.body2.lineHeight,
-    large: fonts.body1.lineHeight,
+    lg: fonts.body1.lineHeight,
   },
 })
 
 export const buttonFont = createFont({
   family: baselMedium,
   size: {
-    micro: fonts.buttonLabel4.fontSize,
-    small: fonts.buttonLabel3.fontSize,
-    medium: fonts.buttonLabel2.fontSize,
-    large: fonts.buttonLabel1.fontSize,
+    xs: fonts.buttonLabel4.fontSize,
+    sm: fonts.buttonLabel3.fontSize,
+    md: fonts.buttonLabel2.fontSize,
+    lg: fonts.buttonLabel1.fontSize,
     true: fonts.buttonLabel2.fontSize,
   },
   weight: {
@@ -266,10 +266,10 @@ export const buttonFont = createFont({
     true: MEDIUM_WEIGHT,
   },
   lineHeight: {
-    micro: fonts.buttonLabel4.lineHeight,
-    small: fonts.buttonLabel3.lineHeight,
-    medium: fonts.buttonLabel2.lineHeight,
-    large: fonts.buttonLabel1.lineHeight,
+    xs: fonts.buttonLabel4.lineHeight,
+    sm: fonts.buttonLabel3.lineHeight,
+    md: fonts.buttonLabel2.lineHeight,
+    lg: fonts.buttonLabel1.lineHeight,
     true: fonts.buttonLabel2.lineHeight,
   },
 })
