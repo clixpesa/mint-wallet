@@ -8,16 +8,19 @@ export default function HomeScreen() {
 	return (
 		<View flex={1} content="center" items="center">
 			<BaseText>Testing UI</BaseText>
+			<Text variant="heading1">This Guy</Text>
 			<Text variant="heading2">This Guy</Text>
-
 			<Text variant="heading3">This Guy</Text>
 
 			<Text variant="subHeading1">This Guy</Text>
+			<Text variant="subHeading2">This Guy</Text>
 			<Text variant="body1">This Guy</Text>
 			<Text variant="body2">This Guy</Text>
 			<Text variant="body3">This Guy</Text>
-			<TokenLoader opacity={0.15} withPrice />
-			<ActivityLoader opacity={0.15} />
+			<Text variant="body4">This Guy</Text>
+
+			<TokenLoader opacity={1} withPrice />
+			<ActivityLoader opacity={1} />
 		</View>
 	);
 }

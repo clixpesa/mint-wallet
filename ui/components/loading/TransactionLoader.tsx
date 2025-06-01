@@ -8,7 +8,7 @@ interface TxLoaderProps {
 	withAmounts?: boolean;
 }
 
-export function TokenLoader({
+export function TransactionLoader({
 	opacity,
 	withAmounts = false,
 }: TxLoaderProps): JSX.Element {

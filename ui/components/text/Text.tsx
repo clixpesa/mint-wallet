@@ -40,17 +40,17 @@ export const TextFrame = styled(BaseText, {
 				maxFontSizeMultiplier: 1.2,
 			},
 			subHeading1: {
-				fontFamily: "$heading",
+				fontFamily: "$subHeading",
 				fontSize: "$lg",
 				lineHeight: "$lg",
-				fontWeight: "$rg",
+				fontWeight: "$md",
 				maxFontSizeMultiplier: 1.2,
 			},
 			subHeading2: {
-				fontFamily: "$heading",
+				fontFamily: "$subHeading",
 				fontSize: "$sm",
 				lineHeight: "$sm",
-				fontWeight: "$rg",
+				fontWeight: "$md",
 				maxFontSizeMultiplier: 1.4,
 			},
 			body1: {
