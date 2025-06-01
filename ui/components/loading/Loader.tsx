@@ -13,10 +13,10 @@ import { WalletLoader } from './WalletLoader'
 const Transaction = memo(function _Transaction({ repeat = 1 }: { repeat?: number }): React.JSX.Element {
   return (
     <Skeleton>
-      <Stack>
+      <Stack >
         {new Array(repeat).fill(null).map((_, i, { length }) => (
           <React.Fragment key={i}>
-            <TransactionLoader opacity={(length - i) / length} />
+            <TransactionLoader opacity={(length - i) / length} withAmounts/>
           </React.Fragment>
         ))}
       </Stack>
@@ -24,7 +24,7 @@ const Transaction = memo(function _Transaction({ repeat = 1 }: { repeat?: number
   )
 })
 
-const Activity = memo(function _Transaction({ repeat = 1 }: { repeat?: number }): React.JSX.Element {
+const Activity = memo(function _Activity({ repeat = 1 }: { repeat?: number }): React.JSX.Element {
   return (
     <Skeleton>
       <Stack>
@@ -107,7 +107,7 @@ function NFT({ repeat = 1 }: { repeat?: number }): React.JSX.Element {
       repeat === 1 ? (
         <NftCardLoader opacity={1} />
       ) : (
-        <Stack>
+        <Stack >
           {new Array(Math.floor(repeat / 2)).fill(null).map((_, i, { length }) => {
             const opacity = (length - i) / length
             return (
@@ -136,7 +136,7 @@ function Image(): React.JSX.Element {
 function Wallets({ repeat = 1 }: { repeat?: number }): React.JSX.Element {
   return (
     <Skeleton>
-      <Stack gap="$sm">
+      <Stack gap="$sm" ml="$lg">
         {new Array(repeat).fill(null).map((_, i, { length }) => (
           <React.Fragment key={i}>
             <WalletLoader opacity={(length - i) / length} />
@@ -151,6 +151,7 @@ export const Loader = {
   Box,
   NFT,
   Image,
+  Activity,
   SearchResult,
   Token,
   TransferProvider,
