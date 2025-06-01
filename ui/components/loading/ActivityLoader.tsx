@@ -1,12 +1,12 @@
+import { Text } from "@/ui/components/text";
 import type React from "react";
 import { Stack, XStack } from "tamagui";
-import { Text } from "../text";
 
 interface ActivityLoaderProps {
 	opacity: number;
 }
 
-export const TXN_HISTORY_LOADER_ICON_SIZE = "$4xl";
+export const TXN_HISTORY_LOADER_ICON_SIZE = "$icon.lg";
 
 export function ActivityLoader({
 	opacity,
@@ -18,7 +18,7 @@ export function ActivityLoader({
 					<Stack
 						items="center"
 						content="center"
-						bg="$secondary"
+						bg="$surface2"
 						rounded="$full"
 						height={TXN_HISTORY_LOADER_ICON_SIZE}
 						width={TXN_HISTORY_LOADER_ICON_SIZE}
@@ -34,7 +34,7 @@ export function ActivityLoader({
 						</XStack>
 						<Text
 							loading
-							color="$secondary"
+							color="$neutral2"
 							loadingPlaceholderText="Caption Text"
 							numberOfLines={1}
 							variant="subHeading2"

@@ -1,9 +1,9 @@
+import type { DynamicColor } from "@/ui/hooks/useThemeColors";
 import type { IconProps as TamaguiIconProps } from "@tamagui/helpers-icon";
 import { type JSX, createElement, forwardRef, useState } from "react";
 import type { Svg, SvgProps } from "react-native-svg";
 import type { ColorTokens, SpecificTokens, ThemeKeys } from "tamagui";
 import { Stack, View, isWeb, styled, usePropsAndStyle } from "tamagui";
-import type { DynamicColor } from "../../hooks/useThemeColors";
 import { withAnimated } from "./animated";
 
 type SvgPropsWithRef = SvgProps & {

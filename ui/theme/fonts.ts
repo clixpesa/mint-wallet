@@ -75,7 +75,7 @@ const MEDIUM_WEIGHT = '500'
 const MEDIUM_WEIGHT_WEB = '535'
 
 const defaultWeights = {
-  sm: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
+  rg: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
   true: isWebApp ? BOOK_WEIGHT_WEB : BOOK_WEIGHT,
   md: isWebApp ? MEDIUM_WEIGHT_WEB : MEDIUM_WEIGHT,
 }
@@ -191,7 +191,7 @@ export const fonts = {
 // TODO: Tamagui breaks font weights on Android if face *not* defined
 // but breaks iOS if face is defined
 const face = {
-  [defaultWeights.sm]: { normal: baselBook },
+  [defaultWeights.rg]: { normal: baselBook },
   [defaultWeights.md]: { normal: baselMedium },
 }
 

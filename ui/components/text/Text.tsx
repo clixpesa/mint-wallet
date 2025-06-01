@@ -8,7 +8,7 @@ import {
 	isWeb,
 	styled,
 } from "tamagui";
-import { Skeleton } from "../loading/Skeleton";
+import { Skeleton } from "../loading/Skeleton.native";
 import { HiddenFromScreenReaders } from "./HiddenFromScreenReaders";
 import { useEnableFontScaling } from "./useEnableFontScaling";
 
@@ -20,60 +20,102 @@ export const TextFrame = styled(BaseText, {
 		variant: {
 			heading1: {
 				fontFamily: "$heading",
-				fontSize: "$5xl",
-				lineHeight: "$6xl",
-				fontWeight: "$medium",
+				fontSize: "$lg",
+				lineHeight: "$lg",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.2,
 			},
 			heading2: {
 				fontFamily: "$heading",
-				fontSize: "$3xl",
-				lineHeight: "$5xl",
-				fontWeight: "$medium",
+				fontSize: "$md",
+				lineHeight: "$md",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.2,
 			},
 			heading3: {
 				fontFamily: "$heading",
-				fontSize: "$xl",
-				lineHeight: "$xl",
-				fontWeight: "$medium",
+				fontSize: "$sm",
+				lineHeight: "$sm",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.2,
 			},
 			subHeading1: {
 				fontFamily: "$heading",
-				fontSize: "$vl",
-				lineHeight: "$vl",
-				fontWeight: "$medium",
+				fontSize: "$lg",
+				lineHeight: "$lg",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.2,
 			},
 			subHeading2: {
 				fontFamily: "$heading",
-				fontSize: "$lg",
-				lineHeight: "$lg",
-				fontWeight: "$medium",
+				fontSize: "$sm",
+				lineHeight: "$sm",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.4,
 			},
 			body1: {
 				fontFamily: "$body",
-				fontSize: "$vl",
-				lineHeight: "$vl",
-				fontWeight: "$regular",
+				fontSize: "$lg",
+				lineHeight: "$lg",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.4,
 			},
 			body2: {
 				fontFamily: "$body",
-				fontSize: "$lg",
-				lineHeight: "$lg",
-				fontWeight: "$regular",
+				fontSize: "$md",
+				lineHeight: "$md",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.4,
 			},
 			body3: {
 				fontFamily: "$body",
-				fontSize: "$md",
-				lineHeight: "$md",
-				fontWeight: "$regular",
+				fontSize: "$sm",
+				lineHeight: "$sm",
+				fontWeight: "$rg",
 				maxFontSizeMultiplier: 1.4,
 			},
+			body4: {
+        fontFamily: '$body',
+        fontSize: '$xs',
+        lineHeight: '$xs',
+        fontWeight: '$rg',
+        maxFontSizeMultiplier: 1.4,
+      },
+      buttonLabel1: {
+        fontFamily: '$button',
+        fontSize: '$lg',
+        lineHeight: '$lg',
+        fontWeight: '$md',
+        maxFontSizeMultiplier: 1.2,
+      },
+      buttonLabel2: {
+        fontFamily: '$button',
+        fontSize: '$md',
+        lineHeight: '$md',
+        fontWeight: '$md',
+        maxFontSizeMultiplier: 1.2,
+      },
+      buttonLabel3: {
+        fontFamily: '$button',
+        fontSize: '$sm',
+        lineHeight: '$sm',
+        fontWeight: '$md',
+        maxFontSizeMultiplier: 1.2,
+      },
+      buttonLabel4: {
+        fontFamily: '$button',
+        fontSize: '$xs',
+        lineHeight: '$xs',
+        fontWeight: '$md',
+        maxFontSizeMultiplier: 1.2,
+      },
+      monospace: {
+        fontFamily: '$body',
+        fontSize:"$md",
+        lineHeight: "$md",
+        fontWeight: '$rg',
+        maxFontSizeMultiplier: 1.4,
+      },
 		},
 	} as const,
 
@@ -116,7 +158,7 @@ export const TextPlaceholder = ({
 			<YStack items="center" position="relative">
 				<HiddenFromScreenReaders>{children}</HiddenFromScreenReaders>
 				<Stack
-					bg={isWeb ? "$secondary" : "$secondaryHover"}
+					bg={isWeb ? "$surface3" : "$surface2"}
 					rounded="$full"
 					b="5%"
 					l={0}
@@ -191,7 +233,7 @@ export const Text = React.forwardRef<typeof TextFrame, TextProps>(
 			<TextVariant
 				ref={ref as any}
 				allowFontScaling={enableFontScaling}
-				color="$color"
+				color="$neutral1"
 				{...props}
 			>
 				{children}

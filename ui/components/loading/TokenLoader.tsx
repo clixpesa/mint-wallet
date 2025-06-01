@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { Stack, XStack, YStack, isWeb } from "tamagui";
 import { Text } from "../text";
-import { Skeleton } from "./Skeleton";
+import { Skeleton } from "./Skeleton.native";
 
 interface TokenLoaderProps {
 	opacity: number;
@@ -16,7 +16,7 @@ export function TokenLoader({
 		<XStack items="center" content="space-between" opacity={opacity} py="$sm">
 			<XStack items="center" gap="$md" overflow="hidden">
 				<Skeleton>
-					<Stack bg="$gray5" rounded="$full" height="$3xl" width="$3xl" />
+					<Stack bg="$neutral3" rounded="$full" height="$icon.md" width="$icon.md" />
 				</Skeleton>
 
 				<YStack items="flex-start">

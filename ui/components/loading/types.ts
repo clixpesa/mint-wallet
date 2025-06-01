@@ -1,4 +1,5 @@
-import type { ColorTokens } from "tamagui";
+import type { JSX } from "react";
+import type { ColorTokens, StackProps } from "tamagui";
 
 export type SpinningLoaderProps = {
 	size?: number;
@@ -6,3 +7,14 @@ export type SpinningLoaderProps = {
 	color?: ColorTokens;
 	unstyled?: boolean;
 };
+
+export type SkeletonProps = {
+  children: JSX.Element
+  contrast?: boolean
+  disabled?: boolean
+}
+
+export type ShineProps = {
+  disabled?: boolean
+  children: JSX.Element
+} & Omit<StackProps, 'children'>
