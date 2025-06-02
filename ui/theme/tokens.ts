@@ -22,8 +22,10 @@ const fontSize = {
 }
 
 const iconSize = {
+  "3xs": 16,
 	"2xs": 18,
 	xs: 20,
+  vs: 24,
 	sm: 28,
 	md: 36,
 	lg: 40,
