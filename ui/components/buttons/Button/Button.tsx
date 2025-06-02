@@ -13,7 +13,6 @@ import { getIsButtonDisabled } from './utils/getIsButtonDisabled'
 const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(function Button(
   {
     children,
-    fill = true,
     icon,
     shouldAnimateBetweenLoadingStates = true,
     variant = 'default',
@@ -43,7 +42,6 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(function Button(
   return (
     <CustomButtonFrame
       ref={ref}
-      fill={fill}
       focusScaling={focusScaling}
       emphasis={emphasis}
       variant={variant}
@@ -89,7 +87,6 @@ const ButtonComponent = forwardRef<TamaguiElement, ButtonProps>(function Button(
  * This component renders a customizable button with various styles and behaviors.
  *
  * @param {object} props - The properties for the Button component.
- * @param {boolean} [props.fill=true] - Whether the button should fill its container.
  * @param {string} [props.focusScaling='default'] - The scaling behavior when the button is focused.
  * @param {string} [props.emphasis='primary'] - The emphasis style of the button.
  * @param {string} [props.variant='default'] - The variant style of the button.

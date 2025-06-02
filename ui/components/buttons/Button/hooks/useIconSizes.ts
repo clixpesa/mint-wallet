@@ -18,11 +18,11 @@ const getIconSizesForButton = (): Record<Size, number> => ({
 
 // These are more straightforward
 const getIconSizesForIconButton = (): Record<Size, number> => ({
-  xxsmall: getTokenValue('$icon.3xs'),
-  xsmall: getTokenValue('$icon.3xs'),
-  small: getTokenValue('$icon.xs'),
-  medium: getTokenValue('$icon.vs'),
-  large: getTokenValue('$icon.vs'),
+  "2xs": getTokenValue('$icon.3xs'),
+  xs: getTokenValue('$icon.3xs'),
+  sm: getTokenValue('$icon.xs'),
+  md: getTokenValue('$icon.vs'),
+  lg: getTokenValue('$icon.vs'),
 })
 
 // We declare this because there could potentially be a race condition where `getConfig()` is called before the tamagui config is initialized

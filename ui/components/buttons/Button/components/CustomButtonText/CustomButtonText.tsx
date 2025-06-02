@@ -61,27 +61,27 @@ export const CustomButtonText = styled(Text, {
     // these are taken from Figma and mapped to the values in fonts.ts > buttonFont
     // https://github.com/Uniswap/universe/blob/main/packages/ui/src/theme/fonts.ts
     size: {
-      xxsmall: {
+      "2xs": {
         fontSize: '$xs',
         fontWeight: '$md',
         lineHeight: lineHeights["2xs"],
       },
-      xsmall: {
+      xs: {
         fontSize: '$xs',
         fontWeight: '$md',
         lineHeight: lineHeights.xs,
       },
-      small: {
+      sm: {
         fontSize: '$sm',
         fontWeight: '$md',
         lineHeight: lineHeights.sm,
       },
-      medium: {
+      md: {
         fontSize: '$md',
         fontWeight: '$md',
         lineHeight: lineHeights.md,
       },
-      large: {
+      lg: {
         fontSize: '$lg',
         fontWeight: '$md',
         lineHeight: lineHeights.lg,

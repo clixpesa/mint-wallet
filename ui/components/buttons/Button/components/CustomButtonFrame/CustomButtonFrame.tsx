@@ -21,7 +21,7 @@ const CustomButtonFrameWithoutCustomProps = styled(XStack, {
   // instead of setting border: 0 when no border, make it 1px but transparent, so the size or alignment of a button won't change unexpectedly between variants
   borderWidth: 1,
   items: 'center',
-  content: 'center',
+  justify: 'center',
   bg: '$transparent',
   borderColor: '$borderColor',
   focusVisibleStyle: {
@@ -182,13 +182,13 @@ const CustomButtonFrameWithoutCustomProps = styled(XStack, {
         gap: '$sm',
       },
     },
-    fill: {
+    /*fill: {
       true: {
         alignSelf: 'stretch',
         flex: 1,
         flexBasis: 0,
       },
-    },
+    },*/
     // TODO(WEB-6347): change variant name back to `disabled`
     isDisabled: (untypedIsDisabled, { props }) => {
       // @ts-expect-error we know this will potentially be on `props`

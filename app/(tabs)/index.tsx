@@ -1,17 +1,17 @@
-import { Loader } from "@/ui/components/loading/Loader";
+import { Button } from "@/ui/components/buttons/Button/Button";
+import { PlusMinusButton, PlusMinusButtonType } from "@/ui/components/buttons/IconButton/PlusMinusButton";
 import { Text } from "@/ui/components/text/Text";
 import { StyleSheet } from "react-native";
 import { Text as BaseText, View } from "tamagui";
+
 
 export default function HomeScreen() {
 	return (
 		<View flex={1} content="center" items="center">
 			<BaseText>Testing UI</BaseText>
 			<Text variant="heading3">This Guy</Text>
-
-			
-			<Loader.Wallets repeat={2}/>
-			
+			<Button   size="lg" loading width="85%">This Button</Button>
+			<PlusMinusButton type={PlusMinusButtonType.Minus} onPress={()=>{}} disabled={false} />
 		</View>
 	);
 }
