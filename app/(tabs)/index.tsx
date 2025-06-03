@@ -1,15 +1,18 @@
-import { Button, PlusMinusButton, PlusMinusButtonType, Text, View } from "@/ui";
+import { ActivityLoader, Button, PlusMinusButton, PlusMinusButtonType, Text, View } from "@/ui";
+import { TokenLoader } from "@/ui/components/loading/TokenLoader";
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 
 
 export default function HomeScreen() {
 	const [loading, setLoading] = useState(false);
-	return (
+	return (  
 		<View flex={1} content="center" items="center">
 			<Text>Testing UI</Text>
 			<Text variant="heading3">This Guy</Text>
-			<Button   size="lg"  width="85%" loading={loading} >This Button</Button>
+			<Button  variant="branded" size="lg"  width="85%" loading={loading} >This Button</Button>
+			<ActivityLoader opacity={1}/>
+			<TokenLoader opacity={1}/>
 			<PlusMinusButton type={PlusMinusButtonType.Minus} onPress={()=>setLoading(!loading)} disabled={false} />
 		</View>
 	);

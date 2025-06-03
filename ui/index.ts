@@ -69,6 +69,7 @@ export { useThemeColors, type DynamicColor } from "./hooks/useThemeColors";
 //Layout
 
 //Loaders
+export * from "./components/loading/ActivityLoader";
 export * from './components/loading/FlexLoader';
 export * from './components/loading/Loader';
 export * from './components/loading/NftCardLoader';
