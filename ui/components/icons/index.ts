@@ -7,6 +7,8 @@ export * from "./InvestLine";
 export * from "./PantoneFill";
 export * from "./PantoneLine";
 export * from './Plus';
+export * from "./SpacesFill";
+export * from "./SpacesLine";
 export * from "./Wallet";
 export * from "./WalletFill";
 export * from "./WalletLine";

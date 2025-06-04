@@ -18,7 +18,7 @@ export {
   Select,
   Sheet,
   Spacer,
-  Square, styled, Tabs,
+  Square, Stack, styled, Tabs,
   Theme, useComposedRefs,
   useIsTouchDevice,
   useMedia,

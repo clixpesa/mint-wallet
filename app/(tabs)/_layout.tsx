@@ -1,39 +1,47 @@
+import { Stack, useThemeColors } from "@/ui";
+import {
+	HomeFill, HomeLine,
+	InvestFill, InvestLine,
+	PantoneFill, PantoneLine,
+	SpacesFill, SpacesLine
+} from "@/ui/components/icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
-import { HapticTab } from "@/components/HapticTab";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useThemeColors } from "@/ui";
-import { HomeFill, HomeLine, InvestFill, InvestLine, PantoneFill, PantoneLine, WalletFill, WalletLine } from "@/ui/components/icons";
-
 export default function TabLayout() {
-	const colorScheme = useColorScheme();
 	const colors = useThemeColors()
 	return (
 		<Tabs
-			screenOptions={({route}) => ({
+			screenOptions={{
 				tabBarActiveTintColor: colors.accent1.val,
-				headerShown: false,
-				tabBarButton: HapticTab,
+				headerShown: false,	
 				tabBarStyle: Platform.select({
 					ios: {
 						// Use a transparent background on iOS to show the blur effect
 						position: "absolute",
-						height: 64
+						height: 64,
+						
 					},
 					default: {
-						height: 64
+						height: 64,
+						
+						
 					},
 				}),
-			})}
+				tabBarLabelStyle: {
+					fontSize: 14
+				}
+			}}
 		>
 			<Tabs.Screen
 				name="index"
 				options={{
 					title: "Home",
 					tabBarIcon: ({focused,  color }) => (
-						focused ? <HomeFill color={color} size={24}/> : <HomeLine color={color} size={24}/>
+						<Stack bg={focused ? "$tealLight": null} py={2} px={20} rounded="$full">
+							{focused ? <HomeFill color={color} size={24}/> : <HomeLine color={color} size={24}/>}
+						</Stack>
 					),
 				}}
 			/>
@@ -42,7 +50,9 @@ export default function TabLayout() {
 				options={{
 					title: "Spaces",
 					tabBarIcon: ({ focused, color }) => (
-						focused ? <WalletFill color={color} size={24}/> : <WalletLine color={color}size={24}/>
+						<Stack bg={focused ? "$tealLight": null} py={2} px={20} rounded="$full">
+							{ focused ? <SpacesFill color={color} size={24}/> : <SpacesLine color={color}size={24}/> }
+						</Stack>
 					),
 				}}
 			/>
@@ -51,7 +61,9 @@ export default function TabLayout() {
 				options={{
 					title: "Invest",
 					tabBarIcon: ({ focused, color }) => (
-						focused ? <InvestFill color={color} size={24}/> : <InvestLine color={color} size={24}/>
+						<Stack bg={focused ? "$tealLight": null} py={2} px={20} rounded="$full">
+							{focused ? <InvestFill color={color} size={24}/> : <InvestLine color={color} size={24}/>}
+						</Stack>
 					),
 				}}
 			/>
@@ -60,7 +72,9 @@ export default function TabLayout() {
 				options={{
 					title: "Extras",
 					tabBarIcon: ({ focused, color }) => (
-						focused ? <PantoneFill color={color} size={24}/> : <PantoneLine color={color} size={24}/>
+						<Stack bg={focused ? "$tealLight": null} py={2} px={20} rounded="$full">
+							{focused ? <PantoneFill color={color} size={24}/> : <PantoneLine color={color} size={24}/>}
+						</Stack>
 					),
 				}}
 			/>
