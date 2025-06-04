@@ -18,16 +18,16 @@ const adjustedSize = (fontSize: number): number => {
 // on web, it's the full family name in the file
 const fontFamilyByPlatform = {
   android: {
-    medium: 'Basel-Grotesk-Medium',
-    book: 'Basel-Grotesk-Book',
+    medium: "Inter-Medium",//'Basel-Grotesk-Medium',
+    book: "Inter-Regular",//'Basel-Grotesk-Book',
   },
   ios: {
     medium: 'Basel Grotesk',
     book: 'Basel Grotesk',
   },
   web: {
-    medium: 'Basel Grotesk Medium',
-    book: 'Basel Grotesk Book',
+    medium: "Inter Medium", //'Basel Grotesk Medium',
+    book: "Inter Regular", //'Basel Grotesk Book',
   },
 }
 

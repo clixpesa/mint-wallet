@@ -3,76 +3,68 @@ import React from "react";
 import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Circle, Text } from "tamagui";
+import { useThemeColors } from "@/ui";
+import { HomeFill, HomeLine, InvestFill, InvestLine, PantoneFill, PantoneLine, WalletFill, WalletLine } from "@/ui/components/icons";
 
 export default function TabLayout() {
 	const colorScheme = useColorScheme();
-
+	const colors = useThemeColors()
 	return (
 		<Tabs
-			screenOptions={{
-				tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+			screenOptions={({route}) => ({
+				tabBarActiveTintColor: colors.accent1.val,
 				headerShown: false,
 				tabBarButton: HapticTab,
-				tabBarBackground: TabBarBackground,
 				tabBarStyle: Platform.select({
 					ios: {
 						// Use a transparent background on iOS to show the blur effect
 						position: "absolute",
+						height: 64
 					},
-					default: {},
+					default: {
+						height: 64
+					},
 				}),
-			}}
+			})}
 		>
 			<Tabs.Screen
 				name="index"
 				options={{
 					title: "Home",
-					tabBarIcon: ({ color }) => (
-						<IconSymbol size={28} name="house.fill" color={color} />
+					tabBarIcon: ({focused,  color }) => (
+						focused ? <HomeFill color={color} size={24}/> : <HomeLine color={color} size={24}/>
 					),
 				}}
 			/>
 			<Tabs.Screen
-				name="actions" // This can be any unique name
+				name="spaces"
 				options={{
-					title: "", // Empty title to avoid label
-					tabBarButton: (props) => (
-						<Circle
-							size="$2xl"
-							bg="$teal10"
-							mb="$2xl"
-							onPress={props.onPress}
-							style={{
-								shadowColor: "#000",
-								shadowOffset: { width: 0, height: 2 },
-								shadowOpacity: 0.25,
-								shadowRadius: 3.84,
-								elevation: 5,
-							}}
-						>
-							<Text color="white" fontWeight="bold">
-								+
-							</Text>
-						</Circle>
+					title: "Spaces",
+					tabBarIcon: ({ focused, color }) => (
+						focused ? <WalletFill color={color} size={24}/> : <WalletLine color={color}size={24}/>
 					),
-					tabBarIcon: () => null,
 				}}
 			/>
-
 			<Tabs.Screen
-				name="explore"
+				name="invest"
 				options={{
-					title: "Explore",
-					tabBarIcon: ({ color }) => (
-						<IconSymbol size={28} name="paperplane.fill" color={color} />
+					title: "Invest",
+					tabBarIcon: ({ focused, color }) => (
+						focused ? <InvestFill color={color} size={24}/> : <InvestLine color={color} size={24}/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="extras"
+				options={{
+					title: "Extras",
+					tabBarIcon: ({ focused, color }) => (
+						focused ? <PantoneFill color={color} size={24}/> : <PantoneLine color={color} size={24}/>
 					),
 				}}
 			/>
 		</Tabs>
 	);
 }
+

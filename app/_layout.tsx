@@ -1,12 +1,21 @@
 import { UIProvider } from "@/ui";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import React, { StrictMode } from "react";
 import "react-native-reanimated";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
 
 export default function RootLayout() {
 	const [loaded] = useFonts({
-		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+		SpaceMono: require("@/ui/assets/fonts/SpaceMono-Regular.ttf"),
+		InputMono: require("@/ui/assets/fonts/InputMono-Regular.ttf"),
+		InterBold: require('@/ui/assets/fonts/Inter-Bold.ttf'),
+		InterMedium: require('@/ui/assets/fonts/Inter-Medium.ttf'),
+		InterRegular: require('@/ui/assets/fonts/Inter-Regular.ttf'),
+		InterSemiBold: require('@/ui/assets/fonts/Inter-SemiBold.ttf'),
 	});
 
 	if (!loaded) {
@@ -15,12 +24,32 @@ export default function RootLayout() {
 	}
 
 	return (
-		<UIProvider>
+		<StrictMode>
+			<SafeAreaProvider>
+				<UIProvider>	
+					<AppOuter />
+				</UIProvider>
+			</SafeAreaProvider>
+		</StrictMode>
+	);
+}
+
+function AppOuter(): React.JSX.Element | null {
+	return (
+		<BottomSheetModalProvider>
+			<AppInner />
+		</BottomSheetModalProvider>
+	)
+}
+
+function AppInner(): React.JSX.Element {
+	return (
+		<SafeAreaView style={{ flex: 1}}>
 			<Stack>
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 				<Stack.Screen name="+not-found" />
 			</Stack>
 			<StatusBar style="auto" />
-		</UIProvider>
-	);
+		</SafeAreaView>
+	)
 }
