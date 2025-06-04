@@ -12,7 +12,7 @@ module.exports = (api) => {
           disableExtraction: process.env.NODE_ENV === 'development',
         },
       ],
-      /*[
+      [
         'module-resolver',
         {
           alias: {
@@ -24,7 +24,7 @@ module.exports = (api) => {
       ],
 
       // NOTE: this is only necessary if you are using reanimated for animations
-      'react-native-reanimated/plugin',*/
+      'react-native-reanimated/plugin',
     ],
   }
 }

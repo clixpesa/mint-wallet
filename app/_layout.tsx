@@ -1,11 +1,17 @@
+import { store } from "@/store/redux";
 import { UIProvider } from "@/ui";
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { StrictMode } from "react";
+import "react-native-get-random-values";
+import { install } from "react-native-quick-crypto";
 import "react-native-reanimated";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
+
+install();
 
 
 export default function RootLayout() {
@@ -36,9 +42,11 @@ export default function RootLayout() {
 
 function AppOuter(): React.JSX.Element | null {
 	return (
-		<BottomSheetModalProvider>
-			<AppInner />
-		</BottomSheetModalProvider>
+		<Provider store={store}>
+			<BottomSheetModalProvider>
+				<AppInner />
+			</BottomSheetModalProvider>
+		</Provider>
 	)
 }
 
