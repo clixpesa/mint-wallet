@@ -21,12 +21,9 @@ export default function TabLayout() {
 						// Use a transparent background on iOS to show the blur effect
 						position: "absolute",
 						height: 64,
-						
 					},
 					default: {
 						height: 64,
-						
-						
 					},
 				}),
 				tabBarLabelStyle: {
