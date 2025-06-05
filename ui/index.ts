@@ -55,6 +55,7 @@ export * from "./UIProvider";
 export { Button } from './components/buttons/Button/Button';
 export { IconButton, type IconButtonProps } from './components/buttons/IconButton/IconButton';
 export * from './components/buttons/IconButton/PlusMinusButton';
+export * from './components/input';
 export * from './components/text';
 export * from './components/touchable';
 

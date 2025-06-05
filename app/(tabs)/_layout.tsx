@@ -23,6 +23,7 @@ export default function TabLayout() {
 						height: 64,
 					},
 					default: {
+						
 						height: 64,
 					},
 				}),

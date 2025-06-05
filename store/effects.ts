@@ -8,6 +8,7 @@ export const storeEffects = (startListening: any) => {
     actionCreator: setEncryptedItem,
     effect: async (action) => {
       const {key, value} = action.payload
+      console.log(key, value)
       await appStorage.setItem(key, value)
     }
   })
