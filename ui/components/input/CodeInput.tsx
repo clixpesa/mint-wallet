@@ -6,11 +6,12 @@ import { Stack } from "tamagui"
 export const CodeInput = ({...rest}: OtpInputProps) => {
   const colors = useThemeColors()
   return (
+
     <Stack px="$4xl" >
       <OtpInput 
         focusColor={colors.accent1.val}
         hideStick={true}
-        blurOnFilled={true}
+        //blurOnFilled={true}
         theme={{
           pinCodeContainerStyle: {
             borderWidth: 2,

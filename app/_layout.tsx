@@ -55,9 +55,9 @@ function AppInner(): React.JSX.Element {
 		<SafeAreaView style={{ flex: 1}}>
 			<Stack>
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen name="+not-found" />
+				<Stack.Screen name="+not-found" />		
 			</Stack>
-			<StatusBar style="auto" />
+			<StatusBar style="auto" />	
 		</SafeAreaView>
 	)
 }

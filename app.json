@@ -16,7 +16,7 @@
         "foregroundImage": "./ui/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "package": "com.kachdn.clix"
     },
     "web": {

@@ -9,9 +9,11 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
+
 export default function TabLayout() {
 	const colors = useThemeColors()
 	return (
+		//<KeyboardAvoidingView style={{ flex: 1 }}  behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -100}>
 		<Tabs
 			screenOptions={{
 				tabBarActiveTintColor: colors.accent1.val,
@@ -20,11 +22,10 @@ export default function TabLayout() {
 					ios: {
 						// Use a transparent background on iOS to show the blur effect
 						position: "absolute",
-						height: 64,
+						height: 64 
 					},
 					default: {
-						
-						height: 64,
+						height: 64,		
 					},
 				}),
 				tabBarLabelStyle: {
@@ -77,6 +78,7 @@ export default function TabLayout() {
 				}}
 			/>
 		</Tabs>
+		//</KeyboardAvoidingView>
 	);
 }
 
