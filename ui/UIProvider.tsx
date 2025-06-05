@@ -15,7 +15,7 @@ export function UIProvider({
 }: Omit<TamaguiProviderProps, "config">) {
 	const selectedColorScheme = useSelectedColorScheme();
 	const isDark = selectedColorScheme === "dark";
-
+	
 	return (
 		<TamaguiProvider
 			config={config}

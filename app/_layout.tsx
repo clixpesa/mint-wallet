@@ -1,5 +1,5 @@
 import { store } from "@/store/redux";
-import { UIProvider } from "@/ui";
+import { UIProvider, useThemeColors } from "@/ui";
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -51,8 +51,9 @@ function AppOuter(): React.JSX.Element | null {
 }
 
 function AppInner(): React.JSX.Element {
+	const colors = useThemeColors()
 	return (
-		<SafeAreaView style={{ flex: 1}}>
+		<SafeAreaView style={{ flex: 1, backgroundColor: colors.background.val}} >
 			<Stack>
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 				<Stack.Screen name="+not-found" />		
