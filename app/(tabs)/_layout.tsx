@@ -1,6 +1,4 @@
 import { useThemeColors } from "@/ui";
-//import { Tabs } from "expo-router";
-
 import {
 	createNativeBottomTabNavigator,
 	NativeBottomTabNavigationEventMap,
@@ -70,7 +68,7 @@ export default function TabLayout() {
 				options={{
 					title: "Extras",
 					tabBarIcon: ({ focused }) => (focused ? 
-						require("@/ui/assets/images/nav-icons/pantone-line.svg") : 
+						require("@/ui/assets/images/nav-icons/pantone-fill.svg") : 
 						require("@/ui/assets/images/nav-icons/pantone-line.svg")
 					),
 				}}
