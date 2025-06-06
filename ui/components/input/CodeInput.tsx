@@ -1,14 +1,19 @@
 import { useThemeColors } from "@/ui/hooks/useThemeColors"
-import { OtpInput, OtpInputProps } from "react-native-otp-entry"
+import { forwardRef } from "react"
+import { OtpInput, OtpInputProps, OtpInputRef } from "react-native-otp-entry"
 import { Stack } from "tamagui"
 
+export type CodeInputRef = OtpInputRef
 
-export const CodeInput = ({...rest}: OtpInputProps) => {
+export const CodeInput = forwardRef<OtpInputRef, OtpInputProps>(
+  (props, ref) => {
   const colors = useThemeColors()
+  const {numberOfDigits, ...rest} = props
   return (
 
-    <Stack px="$4xl" >
-      <OtpInput 
+    <Stack px={numberOfDigits === 4 ? "$6xl" : "$4xl"} >
+      <OtpInput
+        ref={ref}
         focusColor={colors.accent1.val}
         hideStick={true}
         //blurOnFilled={true}
@@ -26,4 +31,8 @@ export const CodeInput = ({...rest}: OtpInputProps) => {
       />
   </Stack>
   )
-}
+})
+
+
+
+CodeInput.displayName = "CodeInput"

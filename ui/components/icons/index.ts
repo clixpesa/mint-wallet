@@ -1,4 +1,5 @@
 export * from "./CheckCircle";
+export * from "./Chevron";
 export * from "./CircleSpinner";
 export * from "./EmptySpinner";
 export * from "./Google";
@@ -9,6 +10,7 @@ export * from "./InvestLine";
 export * from "./PantoneFill";
 export * from "./PantoneLine";
 export * from './Plus';
+export * from "./RotatableChevron";
 export * from "./SpacesFill";
 export * from "./SpacesLine";
 export * from "./Wallet";

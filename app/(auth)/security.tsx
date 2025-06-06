@@ -1,9 +1,82 @@
-import { Text, View } from "@/ui"
+import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
+import { AnimatedYStack, SpinningLoader, Stack, Text, TouchableArea, View, XStack, YStack } from "@/ui";
+import { SecurityHeader } from "@/ui/assets";
+import { CodeInput, CodeInputRef } from "@/ui/components/input/CodeInput";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { Image } from "react-native";
 
 export default function SecurityScreen() {
+  const isBiometricCapable = false
+  const codeInputRef = useRef<CodeInputRef>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [use4Digits, setUse4Digits] = useState<boolean>(false)
+  const [initialCode, setInitialCode ] = useState<string | undefined>(undefined)
+  const handleVerification = async (code: string) => {
+    try {
+      if(!initialCode){
+        setInitialCode(code)
+        codeInputRef.current?.clear()
+      }else{
+        setIsLoading(true)
+        setTimeout(()=>{
+          console.log("Code is same:", code === initialCode)
+          setIsLoading(false)
+          if(initialCode === code) router.push("/(auth)/username")
+        }, 2000)
+      }
+      
+    }catch(e){
+      console.warn(e)
+    }
+  }
+
   return (
-    <View flex={1} justify="center" items="center">
-      <Text>Setup Security</Text>
-    </View>
+       <View flex={1} bg="$surface1" items="center">
+         <AnimatedYStack grow={1} width="95%" items="center" gap="$xl" >
+          <XStack gap="$2xl" items="center" width="95%" >
+            <HeaderBackButton />
+            <XStack gap="$sm" py="$xl" width="100%">
+              <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
+              <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
+              <Stack bg="$accent1" height={6} width="15%" rounded="$2xl" />
+              <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
+            </XStack>
+           </XStack>
+           <Image resizeMode="contain" source={SecurityHeader} style={{width: "100%", height: "15%", opacity: 0.85}}  />
+           <YStack width="95%" items="center" gap="$md" >
+            <Text allowFontScaling={false} text="center" variant="subHeading1">
+              Protect your wallet
+            </Text>
+            <Text color="$neutral2" text="center" variant="subHeading2" width="85%">
+              {`Adding ${isBiometricCapable ? "biometric security" : "a passcode"} will ensure that you are the only one with access.`}
+            </Text>
+           </YStack>
+          <YStack  items="center" gap="$lg">
+            <Text>{`Enter ${initialCode ? "the" : "a"} ${use4Digits ? 4 : 6} digit passcode ${initialCode ? "again." : ""}`}</Text>
+            <CodeInput 
+              ref={codeInputRef}
+              numberOfDigits={use4Digits ? 4 : 6} 
+              onFilled={(code) =>  handleVerification(code)} 
+               secureTextEntry />
+            <XStack justify="space-between" px="$xs" minW="80%">
+              <Text color="$neutral2">
+                {use4Digits
+                  ? "Prefer 6 digit PIN?"
+                  : "Prefer 4 digit PIN?"}
+              </Text>
+              <TouchableArea hitSlop={16} onPress={() => setUse4Digits(!use4Digits)}>
+                <Text
+                  color="$accent1"
+                  variant="buttonLabel1"
+                >
+                  {use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
+                </Text>
+              </TouchableArea>
+              </XStack>
+            {isLoading ? <SpinningLoader size={28}/> : null}
+          </YStack>
+         </AnimatedYStack>
+       </View>
   )
 }
