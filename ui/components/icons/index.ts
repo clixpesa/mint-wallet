@@ -1,5 +1,6 @@
 export * from "./CircleSpinner";
 export * from "./EmptySpinner";
+export * from "./Google";
 export * from "./HomeFill";
 export * from "./HomeLine";
 export * from "./InvestFill";

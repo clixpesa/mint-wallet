@@ -1,1 +1,2 @@
-//Nothing here yet
+//components
+export * from "./components/TermsContent";

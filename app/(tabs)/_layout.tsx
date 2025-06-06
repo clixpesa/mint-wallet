@@ -39,8 +39,7 @@ export default function TabLayout() {
 					tabBarIcon: ({focused}) => (focused ? 
 						require("@/ui/assets/images/nav-icons/home-fill.svg") : 
 						require("@/ui/assets/images/nav-icons/home-line.svg")
-					),
-					
+					),			
 				}}
 			/>
 			<Tabs.Screen

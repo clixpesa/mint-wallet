@@ -6,7 +6,7 @@ import { Stack } from "tamagui";
 export const PhoneInput = ({...rest}: PhoneInputProps) => {
   const colors = useThemeColors()
   return (
-    <Stack px="$4xl" >
+    <Stack >
       <BasePhoneInput 
         defaultValues={{
           countryCode: "KE",
@@ -17,7 +17,8 @@ export const PhoneInput = ({...rest}: PhoneInputProps) => {
         theme={{
           containerStyle: {
             minWidth: 320,
-            borderWidth: 2
+            borderWidth: 2,
+            borderRadius: 20 
           },
           textInputStyle: {
             fontSize: 22,

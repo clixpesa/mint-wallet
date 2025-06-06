@@ -22,14 +22,16 @@ export const TextInput = forwardRef<Input, InputProps>(function _TextInput(
       placeholderTextColor="$neutral3"
       px="$md"
       py="$sm"
+      borderColor="$surface3"
+      borderWidth={2}
       selectionColor={colors.neutral3.val}
       focusStyle={{
         borderWidth: 2,
-        borderColor: "$surface3",
+        borderColor: "$neutral3",
         outlineWidth: 0
       }}
       hoverStyle={{
-        borderWidth: 1, borderColor: '$surface3', outlineWidth: 0
+        borderWidth: 2, borderColor: '$surface3', outlineWidth: 0
       }}
       
       onBlur={onBlur}
