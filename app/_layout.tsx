@@ -1,20 +1,17 @@
+import { useAppState } from "@/features/essentials/appState";
+import "@/features/utils/shims";
 import { store } from "@/store/redux";
 import { UIProvider, useThemeColors } from "@/ui";
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Slot, Stack, router, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { StrictMode } from "react";
-import "react-native-get-random-values";
-import { install } from "react-native-quick-crypto";
-import "react-native-reanimated";
+import React, { StrictMode, useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 
-install();
-
-
 export default function RootLayout() {
+	const hasAccount = useAppState((s) => s.hasAccount)
 	const [loaded] = useFonts({
 		SpaceMono: require("@/ui/assets/fonts/SpaceMono-Regular.ttf"),
 		InputMono: require("@/ui/assets/fonts/InputMono-Regular.ttf"),
@@ -24,7 +21,9 @@ export default function RootLayout() {
 		InterSemiBold: require('@/ui/assets/fonts/Inter-SemiBold.ttf'),
 	});
 
-	if (!loaded) {
+
+
+	if (!loaded && hasAccount !== null) {
 		// Async font loading only occurs in development.
 		return null;
 	}
@@ -52,12 +51,29 @@ function AppOuter(): React.JSX.Element | null {
 
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors()
+	const segments = useSegments()
+	const hasAccount = true//useAppState((s) => s.hasAccount)
+	const isUnlocked = useAppState((s)=> s.isUnlocked)
+	useEffect(() => {
+	
+		if(!hasAccount) {
+			router.replace("/(auth)/sign-in") 
+		} else if (hasAccount && !isUnlocked) {
+			router.replace("/(auth)/unlock")
+		}
+	}, [hasAccount, isUnlocked])
+	const inAuthRoute = segments[0] === "(auth)"
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: colors.background.val}} >
-			<Stack>
-				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen name="+not-found" />		
-			</Stack>
+			{inAuthRoute ? (
+				<Stack>
+					<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+					<Stack.Screen name="+not-found" />		
+				</Stack> 
+			) : (
+				<Slot />
+			)}
 			<StatusBar style="auto" />	
 		</SafeAreaView>
 	)
