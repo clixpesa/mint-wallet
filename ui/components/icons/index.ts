@@ -1,3 +1,4 @@
+export * from "./CheckCircle";
 export * from "./CircleSpinner";
 export * from "./EmptySpinner";
 export * from "./Google";

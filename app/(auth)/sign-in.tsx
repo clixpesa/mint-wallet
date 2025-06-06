@@ -42,8 +42,9 @@ export default function SignInScreen() {
   return (
     <View flex={1} bg="$surface1" items="center">
       <AnimatedYStack grow={1} width="95%" items="center" gap="$md" >
-        <XStack gap="$lg" py="$xl">
+        <XStack gap="$sm" py="$xl">
           <Stack bg="$accent1" height={6} width="15%" rounded="$2xl" />
+          <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
           <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
           <Stack bg="$tealThemed" height={6} width="15%" rounded="$2xl" />
         </XStack>
