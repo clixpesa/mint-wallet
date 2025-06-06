@@ -9,6 +9,7 @@ export const CodeInput = forwardRef<OtpInputRef, OtpInputProps>(
   (props, ref) => {
   const colors = useThemeColors()
   const {numberOfDigits, ...rest} = props
+  
   return (
 
     <Stack px={numberOfDigits === 4 ? "$6xl" : "$4xl"} >
@@ -27,6 +28,7 @@ export const CodeInput = forwardRef<OtpInputRef, OtpInputProps>(
             color: colors.neutral1.val
           }
         }}
+        numberOfDigits={numberOfDigits}
         {...rest}
       />
   </Stack>

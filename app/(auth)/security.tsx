@@ -65,7 +65,7 @@ export default function SecurityScreen() {
                   ? "Prefer 6 digit PIN?"
                   : "Prefer 4 digit PIN?"}
               </Text>
-              <TouchableArea hitSlop={16} onPress={() => setUse4Digits(!use4Digits)}>
+              <TouchableArea hitSlop={16} onPress={() => { codeInputRef.current?.clear(), setInitialCode(undefined), setUse4Digits(!use4Digits)}}>
                 <Text
                   color="$accent1"
                   variant="buttonLabel1"
