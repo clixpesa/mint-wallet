@@ -22,8 +22,6 @@ export default function UsernameScreen() {
       console.warn(e)
     }
   }
-
-
   return (
        <View flex={1} bg="$surface1" items="center">
          <AnimatedYStack flex={1} grow={1} width="95%" items="center" gap="$xl" >

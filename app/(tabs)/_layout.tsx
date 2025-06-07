@@ -25,7 +25,6 @@ export default function TabLayout() {
 		<Tabs
 			tabBarStyle={{
 				backgroundColor: colors.background.val
-				
 			}}
 			labeled={true}
 			activeIndicatorColor={colors.tealThemed.val}

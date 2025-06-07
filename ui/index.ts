@@ -37,8 +37,7 @@ export type {
   ImageProps,
   InputProps,
   PopperProps,
-  SpaceTokens,
-  TabLayout,
+  SpaceTokens, StackProps, TabLayout,
   TabsTabProps,
   TamaguiElement,
   TamaguiProviderProps,
@@ -56,9 +55,14 @@ export { Button } from './components/buttons/Button/Button';
 export { IconButton, type IconButtonProps } from './components/buttons/IconButton/IconButton';
 export * from './components/buttons/IconButton/PlusMinusButton';
 export * from './components/input';
-
 export * from './components/text';
 export * from './components/touchable';
+export { Unicon } from './components/Unicon';
+export * from './components/Unicon/utils';
+export * from './components/UniversalImage/types';
+export * from './components/UniversalImage/UniversalImage';
+export * from './components/UniversalImage/utils';
+
 
 //types
 export type { ButtonEmphasis, ButtonProps, ButtonVariant } from './components/buttons/Button/types';

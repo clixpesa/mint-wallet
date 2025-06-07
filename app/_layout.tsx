@@ -52,7 +52,7 @@ function AppOuter(): React.JSX.Element | null {
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors()
 	const segments = useSegments()
-	const hasAccount = useAppState((s) => s.hasAccount)
+	const hasAccount = true//useAppState((s) => s.hasAccount)
 	const isUnlocked = useAppState((s)=> s.isUnlocked)
 	useEffect(() => {
 	
