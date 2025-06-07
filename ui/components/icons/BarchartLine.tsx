@@ -1,8 +1,8 @@
 import { Path, Svg } from "react-native-svg";
 import { createIcon } from "../factories/createIcon";
 
-export const [InvestLine, AnimatedInvestLine] = createIcon({
-  name: "InvestLine",
+export const [BarchartLine, AnimatedBarchartLine] = createIcon({
+  name: "BarchartLine",
   getIcon: (props) => (
     <Svg viewBox="0 0 24 24" fill="none" {...props}>
       <Path 

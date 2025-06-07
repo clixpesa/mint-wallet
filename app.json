@@ -26,7 +26,6 @@
     },
     "plugins": [
       "expo-router",
- 
       [
         "expo-splash-screen",
         {
@@ -48,7 +47,16 @@
             "./ui/assets/fonts/SpaceMono-Regular.ttf"
           ]
         }
-      ]
+      ],
+      "expo-secure-store",
+      ["react-native-bottom-tabs", {
+        "theme": "material3"
+      }],
+      ["expo-build-properties", {
+        "ios":{
+          "useFrameworks": "static"
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true

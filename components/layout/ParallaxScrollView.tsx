@@ -1,3 +1,6 @@
+import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
+import { SpacesHeader } from '@/features/essentials';
+import { LinearGradient, View } from "@/ui";
 import type { PropsWithChildren, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -7,23 +10,16 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated';
 
-import { ThemedView } from '@/components/ThemedView';
-import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
 }>;
 
-export default function ParallaxScrollView({
+export  function ParallaxScrollView({
   children,
   headerImage,
-  headerBackgroundColor,
 }: Props) {
-  const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
@@ -45,7 +41,7 @@ export default function ParallaxScrollView({
   });
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container} bg="$surface1">
       <Animated.ScrollView
         ref={scrollRef}
         scrollEventThrottle={16}
@@ -54,14 +50,15 @@ export default function ParallaxScrollView({
         <Animated.View
           style={[
             styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
             headerAnimatedStyle,
           ]}>
+          <LinearGradient width="100%" height={HEADER_HEIGHT} colors={["$surface1", "$surface3"]} position="absolute"/>
+          <SpacesHeader />
           {headerImage}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <View style={styles.content}  bg="$surface1">{children}</View>
       </Animated.ScrollView>
-    </ThemedView>
+    </View>
   );
 }
 

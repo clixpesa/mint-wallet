@@ -47,6 +47,6 @@ export function useSelectedColorScheme(): "light" | "dark" {
 		return currentThemeSetting === ThemeSettingType.Dark ? "dark" : "light";
 	}
 
-	const systemTheme = isDarkMode ? "dark" : "light";
+	const systemTheme = "light" //isDarkMode ? "dark" : "light";
 	return systemTheme;
 }
