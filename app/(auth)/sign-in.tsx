@@ -65,13 +65,14 @@ export default function SignInScreen() {
           <XStack justify="space-between" px="$xs">
             <Text color="$neutral2">
             {useEmail
-								? "Prefer phone number sign up?"
+								? "Prefer phone sign up?"
 								: "Prefer email sign up?"}
             </Text>
             <TouchableArea hitSlop={16} onPress={() => setUseEmail(!useEmail)}>
 							<Text
 								color="$accent1"
-								variant="buttonLabel1"
+								variant="buttonLabel2"
+                mr="$3xs"
 							>
 								{useEmail ? "Use phone" : "Use Email"}
 							</Text>

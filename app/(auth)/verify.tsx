@@ -48,7 +48,7 @@ export default function VerifyScreen() {
              {`Verify your ${params.source === "phone" ? "phone number" : "email"}`}
            </Text>
            <Text color="$neutral2" text="center" variant="subHeading2" width="85%">
-             {`Enter the verification code we sent to this ${params.source === "phone" ? "phone number:" : "email:"} ${params.entry}`}
+             {`Enter the verification code we sent to:  ${params.entry}`}
            </Text>
            </YStack>
           <CodeInput ref={codeInputRef} onFilled={(code) => {setIsLoading(true),handleVerification(code)}} blurOnFilled/>

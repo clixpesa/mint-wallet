@@ -2882,9 +2882,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.7.2":
-  version: 1.7.2
-  resolution: "@shopify/react-native-skia@npm:1.7.2"
+"@shopify/react-native-skia@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@shopify/react-native-skia@npm:1.5.0"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -2899,7 +2899,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: ./scripts/setup-canvaskit.js
-  checksum: 10/b48c0ebddc0099b37efceb2c1830e0d4a51bb487db41cecd75f43cda848a616e1a092b49f91d252d8a7e0e8818ec029606a983139ccb94337f3ce4205c843204
+  checksum: 10/899dfb184f14e3e07eef310881afa467ba0732a2a6b51e92fb00e831ad1f7adddb86fdc4d89da7d95a0d2f5aa356eba4c118d4e04bf57d659a32a3834de636dd
   languageName: node
   linkType: hard
 
@@ -6226,7 +6226,7 @@ __metadata:
     "@react-navigation/elements": "npm:^2.3.8"
     "@react-navigation/native": "npm:^7.0.14"
     "@reduxjs/toolkit": "npm:^2.8.2"
-    "@shopify/react-native-skia": "npm:1.7.2"
+    "@shopify/react-native-skia": "npm:1.5.0"
     "@tamagui/babel-plugin": "npm:~1.125.17"
     "@tamagui/config": "npm:~1.125.17"
     "@tamagui/font-inter": "npm:~1.125.17"
@@ -6262,7 +6262,7 @@ __metadata:
     react-i18next: "npm:^15.5.2"
     react-native: "npm:0.76.9"
     react-native-bottom-tabs: "npm:^0.9.1"
-    react-native-fast-image: "npm:^8.6.3"
+    react-native-fast-image: "npm:8.6.3"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-get-random-values: "npm:~1.11.0"
     react-native-mmkv: "npm:^3.2.0"
@@ -11863,7 +11863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fast-image@npm:^8.6.3":
+"react-native-fast-image@npm:8.6.3":
   version: 8.6.3
   resolution: "react-native-fast-image@npm:8.6.3"
   peerDependencies:
