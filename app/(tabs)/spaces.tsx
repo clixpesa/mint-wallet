@@ -1,9 +1,7 @@
-import { StyleSheet } from "react-native";
-
 import { ParallaxScrollView } from "@/components/layout/ParallaxScrollView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { SpacesHeader } from "@/features/essentials";
-import { Text } from "@/ui";
+import { SpacesHeader, SpacesTabs } from "@/features/spaces";
+import { StyleSheet } from "react-native";
 
 export default function SpacesScreen() {
   return (
@@ -18,7 +16,7 @@ export default function SpacesScreen() {
         />
       }
     >
-    <Text>Spaces Home</Text>
+      <SpacesTabs />
     </ParallaxScrollView>
   );
 }

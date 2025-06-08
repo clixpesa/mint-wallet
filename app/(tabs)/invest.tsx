@@ -2,12 +2,12 @@ import { StyleSheet } from "react-native";
 
 import { ParallaxScrollView } from "@/components/layout/ParallaxScrollView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { InvestHeader } from "@/features/essentials";
+import { InvestHeader, InvestTabs } from "@/features/investments";
 import { Text } from "@/ui";
 
 export default function InvestScreen() {
   return (
-    <ParallaxScrollView
+    <ParallaxScrollView 
       header={
         <InvestHeader/>
       }
@@ -23,7 +23,7 @@ export default function InvestScreen() {
         </>
       }
     >
-    <Text>Investments</Text>
+    <InvestTabs/>
     </ParallaxScrollView>
   );
 }
