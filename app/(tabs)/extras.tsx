@@ -1,5 +1,5 @@
-import { ExtrasHeader } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
+import { ExtrasHeader } from "@/features/extras";
 import { LinearGradient, Text, View } from "@/ui";
 import { useDispatch } from "react-redux";
 

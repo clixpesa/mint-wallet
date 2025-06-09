@@ -12,9 +12,7 @@ export default function UsernameScreen() {
     setIsLoading(true)
     try {
       setTimeout(()=>{
-        console.log(username)
         setIsLoading(false)
-
         router.replace("/")
       }, 2000)
       

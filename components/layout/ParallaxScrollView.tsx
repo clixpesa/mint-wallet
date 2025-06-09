@@ -1,5 +1,4 @@
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
-import { SpacesHeader } from '@/features/essentials';
 import { LinearGradient, View } from "@/ui";
 import type { PropsWithChildren, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
@@ -13,12 +12,14 @@ import Animated, {
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
+  headerContent: ReactElement;
+  header: ReactElement;
 }>;
 
 export  function ParallaxScrollView({
   children,
-  headerImage,
+  header,
+  headerContent,
 }: Props) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -53,8 +54,8 @@ export  function ParallaxScrollView({
             headerAnimatedStyle,
           ]}>
           <LinearGradient width="100%" height={HEADER_HEIGHT} colors={["$surface1", "$surface3"]} position="absolute"/>
-          <SpacesHeader />
-          {headerImage}
+          {header}
+          {headerContent}
         </Animated.View>
         <View style={styles.content}  bg="$surface1">{children}</View>
       </Animated.ScrollView>
@@ -72,8 +73,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 32,
     gap: 16,
     overflow: 'hidden',
+    minHeight: 400
   },
 });

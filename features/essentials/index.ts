@@ -1,5 +1,5 @@
 //components
-export * from "./components/Headers";
+export * from "./components/Header";
 export * from "./components/ResendTimer";
 export * from "./components/TermsContent";
 

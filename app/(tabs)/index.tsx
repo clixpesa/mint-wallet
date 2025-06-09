@@ -13,7 +13,7 @@ export default function HomeScreen() {
 			<LinearGradient width="100%" height="100%" colors={["$surface1", "$surface3"]} position="absolute"/>
 				<HomeHeader />
 				<Text>Home Page</Text>
-			
+				<Text color="$neutral2">App overview and popular app content</Text>
 		</View>
 	);
 }

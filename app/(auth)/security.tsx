@@ -20,7 +20,6 @@ export default function SecurityScreen() {
       }else{
         setIsLoading(true)
         setTimeout(()=>{
-          console.log("Code is same:", code === initialCode)
           setIsLoading(false)
           if(initialCode === code) router.push("/(auth)/username")
         }, 2000)
@@ -68,7 +67,8 @@ export default function SecurityScreen() {
               <TouchableArea hitSlop={16} onPress={() => { codeInputRef.current?.clear(), setInitialCode(undefined), setUse4Digits(!use4Digits)}}>
                 <Text
                   color="$accent1"
-                  variant="buttonLabel1"
+                  variant="buttonLabel2"
+                  mr="$3xs"
                 >
                   {use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
                 </Text>

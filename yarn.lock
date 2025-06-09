@@ -2774,6 +2774,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/material-top-tabs@npm:^7.2.14":
+  version: 7.2.14
+  resolution: "@react-navigation/material-top-tabs@npm:7.2.14"
+  dependencies:
+    "@react-navigation/elements": "npm:^2.4.3"
+    color: "npm:^4.2.3"
+    react-native-tab-view: "npm:^4.1.1"
+  peerDependencies:
+    "@react-navigation/native": ^7.1.10
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-pager-view: ">= 6.0.0"
+    react-native-safe-area-context: ">= 4.0.0"
+  checksum: 10/aacf3f61655bc99146c55ff9ba9d48fd2043fa7ca206d4aa61828c3ea2a68420831c1c8f14627b1735c348e78620f7587ca4d7e11bd2687afeeb3d9f6d587d5b
+  languageName: node
+  linkType: hard
+
 "@react-navigation/native-stack@npm:^7.2.0":
   version: 7.3.14
   resolution: "@react-navigation/native-stack@npm:7.3.14"
@@ -2882,9 +2899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.7.2":
-  version: 1.7.2
-  resolution: "@shopify/react-native-skia@npm:1.7.2"
+"@shopify/react-native-skia@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@shopify/react-native-skia@npm:1.5.0"
   dependencies:
     canvaskit-wasm: "npm:0.39.1"
     react-reconciler: "npm:0.27.0"
@@ -2899,7 +2916,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: ./scripts/setup-canvaskit.js
-  checksum: 10/b48c0ebddc0099b37efceb2c1830e0d4a51bb487db41cecd75f43cda848a616e1a092b49f91d252d8a7e0e8818ec029606a983139ccb94337f3ce4205c843204
+  checksum: 10/899dfb184f14e3e07eef310881afa467ba0732a2a6b51e92fb00e831ad1f7adddb86fdc4d89da7d95a0d2f5aa356eba4c118d4e04bf57d659a32a3834de636dd
   languageName: node
   linkType: hard
 
@@ -6224,9 +6241,10 @@ __metadata:
     "@react-native-masked-view/masked-view": "npm:^0.3.2"
     "@react-navigation/bottom-tabs": "npm:^7.2.0"
     "@react-navigation/elements": "npm:^2.3.8"
+    "@react-navigation/material-top-tabs": "npm:^7.2.14"
     "@react-navigation/native": "npm:^7.0.14"
     "@reduxjs/toolkit": "npm:^2.8.2"
-    "@shopify/react-native-skia": "npm:1.7.2"
+    "@shopify/react-native-skia": "npm:1.5.0"
     "@tamagui/babel-plugin": "npm:~1.125.17"
     "@tamagui/config": "npm:~1.125.17"
     "@tamagui/font-inter": "npm:~1.125.17"
@@ -6262,17 +6280,19 @@ __metadata:
     react-i18next: "npm:^15.5.2"
     react-native: "npm:0.76.9"
     react-native-bottom-tabs: "npm:^0.9.1"
-    react-native-fast-image: "npm:^8.6.3"
+    react-native-fast-image: "npm:8.6.3"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-get-random-values: "npm:~1.11.0"
     react-native-mmkv: "npm:^3.2.0"
     react-native-otp-entry: "npm:^1.8.4"
+    react-native-pager-view: "npm:6.5.1"
     react-native-phone-entry: "npm:^0.2.2"
     react-native-quick-crypto: "npm:^0.7.14"
     react-native-reanimated: "npm:~3.16.1"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.4.0"
     react-native-svg: "npm:15.8.0"
+    react-native-tab-view: "npm:^4.1.1"
     react-native-web: "npm:~0.19.13"
     react-native-webview: "npm:13.12.5"
     react-redux: "npm:^9.2.0"
@@ -11863,7 +11883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fast-image@npm:^8.6.3":
+"react-native-fast-image@npm:8.6.3":
   version: 8.6.3
   resolution: "react-native-fast-image@npm:8.6.3"
   peerDependencies:
@@ -11949,6 +11969,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/7c1159f0e4066b7cf3a1f399c5fbfa163f0d2841d3f9dd0a2ea386b94497107fc5837b2cf0de2b46e83fc42122c949dc9be0a1ce2282fef1cb6d842d1f1c099a
+  languageName: node
+  linkType: hard
+
+"react-native-pager-view@npm:6.5.1":
+  version: 6.5.1
+  resolution: "react-native-pager-view@npm:6.5.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/3edba80853d8b3b42b3d64cda99894ef75c5e1190321b4f20c85bee289d0f28d7fe6a0736606eecf900522ffb368e4de7ef01d143ea1f67325f76e91168f4e5e
   languageName: node
   linkType: hard
 
@@ -12046,6 +12076,19 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/9a60d1f33539c41ca50b2c21e6d8909e52a3bdf67b29b9231c7ffe72120fc8cb6d7fca45723bd9219b993202ade2343c97c7e4f53de7ee2446279ac91426b096
+  languageName: node
+  linkType: hard
+
+"react-native-tab-view@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "react-native-tab-view@npm:4.1.1"
+  dependencies:
+    use-latest-callback: "npm:^0.2.3"
+  peerDependencies:
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-pager-view: ">= 6.0.0"
+  checksum: 10/39d0b169a19f551e874e762d9f6c95c825159be6b436b818dcce7a5657caa926bc8d8e672cff0788ed46a09ee4d78f691712d637a8359bcf26c224f6cc27d4fd
   languageName: node
   linkType: hard
 
