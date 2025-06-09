@@ -1,12 +1,14 @@
 
 import { Text, View, useThemeColors } from "@/ui";
+import { fonts } from "@/ui/theme/fonts";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 
 const Tab = createMaterialTopTabNavigator();
 
 function DummyScreen() {
   return (  
-    <View flex={1} items="center" bg="$surface1">
+    <View flex={1} items="center" justify="center" bg="$surface1">
         <Text>Tab Page</Text>
         <Text color="$neutral2">Tab Content</Text>
     </View>
@@ -17,20 +19,27 @@ export function SpacesTabs(){
   const colors = useThemeColors()
   return(
     <Tab.Navigator
-    screenOptions={{
-      tabBarLabelStyle: { textTransform: 'none', fontSize: 20 },
-      tabBarScrollEnabled: true,
-      tabBarStyle: {
-        width: "auto",
-      },
-      tabBarPressColor: colors.surface1.val
-  }}
-    >
-      <Tab.Screen name='overview' component={DummyScreen} options={{ tabBarLabel: 'Overview' }}/>
-      <Tab.Screen name='vaults' component={DummyScreen} options={{ tabBarLabel: 'Vaults' }}/>
-      <Tab.Screen name='groups' component={DummyScreen} options={{ tabBarLabel: 'Groups' }}/>
-      <Tab.Screen name='challenge' component={DummyScreen} options={{ tabBarLabel: 'Challenge' }}/>
-      <Tab.Screen name='fundme' component={DummyScreen} options={{ tabBarLabel: 'Fund Me' }}/>
-    </Tab.Navigator>
+      screenOptions={{
+        tabBarLabelStyle: { textTransform: 'none', fontSize: 18,  fontFamily: fonts.buttonLabel1.family},
+        tabBarScrollEnabled: true,
+        tabBarActiveTintColor: colors.neutral1.val,
+        tabBarIndicatorStyle: {
+          borderBottomWidth: 4,        
+          borderColor: colors.accent1.val,
+          borderRadius: 99999,
+          width: "23%",
+          marginHorizontal: "5%",
+        },
+        tabBarStyle: {
+          width: "auto",
+          elevation: 0
+        },
+        tabBarPressColor: colors.surface1.val,
+      }}
+      >
+        <Tab.Screen name='savings' component={DummyScreen} options={{ tabBarLabel: 'Savings'}}/>
+        <Tab.Screen name='groups' component={DummyScreen} options={{ tabBarLabel: 'Groups' }}/>
+        <Tab.Screen name='collections' component={DummyScreen} options={{ tabBarLabel: 'Collections' }}/>
+      </Tab.Navigator>
   )
 }

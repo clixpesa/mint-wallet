@@ -20,7 +20,6 @@ export default function SecurityScreen() {
       }else{
         setIsLoading(true)
         setTimeout(()=>{
-          console.log("Code is same:", code === initialCode)
           setIsLoading(false)
           if(initialCode === code) router.push("/(auth)/username")
         }, 2000)

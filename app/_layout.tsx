@@ -6,7 +6,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from "expo-font";
 import { Slot, Stack, router, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { StrictMode, useEffect } from "react";
+import React, { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 
@@ -29,13 +29,13 @@ export default function RootLayout() {
 	}
 
 	return (
-		<StrictMode>
+		//<StrictMode>
 			<SafeAreaProvider>
 				<UIProvider>	
 					<AppOuter />
 				</UIProvider>
 			</SafeAreaProvider>
-		</StrictMode>
+		//</StrictMode>
 	);
 }
 
@@ -52,7 +52,7 @@ function AppOuter(): React.JSX.Element | null {
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors()
 	const segments = useSegments()
-	const hasAccount = true//useAppState((s) => s.hasAccount)
+	const hasAccount = useAppState((s) => s.hasAccount)
 	const isUnlocked = useAppState((s)=> s.isUnlocked)
 	useEffect(() => {
 	

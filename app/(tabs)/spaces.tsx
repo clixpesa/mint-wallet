@@ -3,6 +3,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { SpacesHeader, SpacesTabs } from "@/features/spaces";
 import { StyleSheet } from "react-native";
 
+
 export default function SpacesScreen() {
   return (
     <ParallaxScrollView
@@ -16,7 +17,7 @@ export default function SpacesScreen() {
         />
       }
     >
-      <SpacesTabs />
+     <SpacesTabs />
     </ParallaxScrollView>
   );
 }
