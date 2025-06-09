@@ -9,7 +9,7 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 270;
 
 type Props = PropsWithChildren<{
   headerContent: ReactElement;
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
   header: {
     height: HEADER_HEIGHT,
     overflow: 'hidden',
+    alignItems: "center"
   },
   content: {
     flex: 1,

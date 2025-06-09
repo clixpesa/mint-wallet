@@ -1,3 +1,5 @@
+export * from "./ArrowDownCircle";
+export * from "./Bank";
 export * from "./BarchartFill";
 export * from "./BarchartLine";
 export * from "./Bell";
@@ -5,10 +7,12 @@ export * from "./BellOn";
 export * from "./CheckCircle";
 export * from "./Chevron";
 export * from "./CircleSpinner";
+export * from "./Currency";
 export * from "./Earth";
 export * from "./EmptySpinner";
 export * from "./Eye";
 export * from "./Google";
+export * from "./Hamburger";
 export * from "./HomeFill";
 export * from "./HomeLine";
 export * from "./PantoneFill";
@@ -21,10 +25,10 @@ export * from "./ScanHome";
 export * from "./Search";
 export * from "./SearchMinus";
 export * from "./SearchPlus";
+export * from "./SendAction";
 export * from "./SpacesFill";
 export * from "./SpacesLine";
 export * from "./Wallet";
 export * from "./WalletFill";
 export * from "./WalletLine";
-
 

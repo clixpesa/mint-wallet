@@ -13,7 +13,6 @@ export default function VerifyScreen() {
   const handleVerification = async (code: string) => {
     try {
       setTimeout(()=>{
-        console.log(code)
         setIsLoading(false)
         router.push("/(auth)/security")
       }, 2000)

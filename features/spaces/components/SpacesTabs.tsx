@@ -15,10 +15,11 @@ function DummyScreen() {
   );
 }
 
-export function SpacesTabs(){
+export function SpacesTabs({onTabSelect}: {onTabSelect: (props: { index: number }) => void}){
   const colors = useThemeColors()
   return(
     <Tab.Navigator
+      onTabSelect={onTabSelect}
       screenOptions={{
         tabBarLabelStyle: { textTransform: 'none', fontSize: 18,  fontFamily: fonts.buttonLabel1.family},
         tabBarScrollEnabled: true,
@@ -29,15 +30,17 @@ export function SpacesTabs(){
           borderRadius: 99999,
           width: "23%",
           marginHorizontal: "5%",
+         
         },
         tabBarStyle: {
           width: "auto",
           elevation: 0
         },
         tabBarPressColor: colors.surface1.val,
+        
       }}
       >
-        <Tab.Screen name='savings' component={DummyScreen} options={{ tabBarLabel: 'Savings'}}/>
+        <Tab.Screen name='savings' component={DummyScreen} options={{ tabBarLabel: 'Savings' }}/>
         <Tab.Screen name='groups' component={DummyScreen} options={{ tabBarLabel: 'Groups' }}/>
         <Tab.Screen name='collections' component={DummyScreen} options={{ tabBarLabel: 'Collections' }}/>
       </Tab.Navigator>
