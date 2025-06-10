@@ -10,7 +10,7 @@ export function ActionButton({
 	return (
 		<TouchableArea flex={1} scaleTo={0.96} onPress={onPress} height={80}>
 			<YStack
-				bg="$tealLight"
+				bg="$tealThemed"
 				rounded="$vl"
 				p="$sm"
 				gap="$sm"

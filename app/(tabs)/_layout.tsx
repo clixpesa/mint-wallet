@@ -1,4 +1,5 @@
 import { useThemeColors } from "@/ui";
+import { fonts } from "@/ui/theme/fonts";
 import {
 	createNativeBottomTabNavigator,
 	NativeBottomTabNavigationEventMap,
@@ -30,6 +31,11 @@ export default function TabLayout() {
 			activeIndicatorColor={colors.tealThemed.val}
 			tabBarActiveTintColor={colors.accent1.val}
 			translucent={true}
+			tabLabelStyle={{
+				fontFamily: fonts.buttonLabel2.family,
+				fontSize: 14,
+				fontWeight: "700"
+			}}
 		>
 			<Tabs.Screen
 				name="index"

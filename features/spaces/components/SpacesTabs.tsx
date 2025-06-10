@@ -22,15 +22,14 @@ export function SpacesTabs({onTabSelect}: {onTabSelect: (props: { index: number 
       onTabSelect={onTabSelect}
       screenOptions={{
         tabBarLabelStyle: { textTransform: 'none', fontSize: 18,  fontFamily: fonts.buttonLabel1.family},
-        tabBarScrollEnabled: true,
+        //tabBarScrollEnabled: true,
         tabBarActiveTintColor: colors.neutral1.val,
         tabBarIndicatorStyle: {
           borderBottomWidth: 4,        
           borderColor: colors.accent1.val,
           borderRadius: 99999,
-          width: "23%",
-          marginHorizontal: "5%",
-         
+          width: "40%", //width: "23%",
+          marginHorizontal: "5%",  
         },
         tabBarStyle: {
           width: "auto",
@@ -42,7 +41,7 @@ export function SpacesTabs({onTabSelect}: {onTabSelect: (props: { index: number 
       >
         <Tab.Screen name='savings' component={DummyScreen} options={{ tabBarLabel: 'Savings' }}/>
         <Tab.Screen name='groups' component={DummyScreen} options={{ tabBarLabel: 'Groups' }}/>
-        <Tab.Screen name='collections' component={DummyScreen} options={{ tabBarLabel: 'Collections' }}/>
+        {/*<Tab.Screen name='collections' component={DummyScreen} options={{ tabBarLabel: 'Collections' }}/> */}
       </Tab.Navigator>
   )
 }
