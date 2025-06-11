@@ -10,7 +10,7 @@ export function SavingsLanding() {
             <SafeFill size={28} color="$surface1" />
           </Stack>
           <Stack width="83%">
-            <Text variant="subHeading2">Get great rates, paid daily</Text>
+            <Text variant="subHeading2">Get paid daily on your savings</Text>
             <Text variant="body3" color="$neutral2">
               Start saving today and put your cash to work. Earn upto 8.84% APY. 
             </Text>

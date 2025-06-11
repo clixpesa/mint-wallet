@@ -1,6 +1,7 @@
-import { HomeCard, HomeHeader } from "@/features/essentials";
+import { HomeCard, HomeHeader, ProductsCard } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
-import { LinearGradient, View } from "@/ui";
+import { TransactionsCard } from "@/features/wallet";
+import { LinearGradient, View, YStack } from "@/ui";
 import { useDispatch } from "react-redux";
 
 export default function HomeScreen() {
@@ -11,8 +12,12 @@ export default function HomeScreen() {
 	return (  
 		<View flex={1} items="center" bg="$surface1">
 			<LinearGradient width="100%" height="100%" colors={["$surface1", "$surface3"]} position="absolute"/>
-				<HomeHeader />
-				<HomeCard />
+			<HomeHeader />
+			<HomeCard />
+			<YStack gap="$sm" width="92%">
+				<TransactionsCard />
+				<ProductsCard />
+			</YStack>
 		</View>
 	);
 }

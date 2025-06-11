@@ -24,7 +24,6 @@ export function GroupsLanding() {
             <Text variant="subHeading2">Join or create saving circles</Text>
             <Text variant="body3" color="$neutral2">
               Save in a circle and let your crew help you reach your goals. 
-
             </Text>
           </Stack>
         </XStack>

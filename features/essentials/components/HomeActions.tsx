@@ -1,10 +1,10 @@
 import { ActionButton } from "@/components/Buttons/ActionButton";
 import { useThemeColors, XStack } from "@/ui";
 import {
-  ArrowDownCircle,
-  Bank,
-  Hamburger,
-  SendAction,
+	ArrowDownCircle,
+	Bank,
+	MoreHorizontal,
+	SendAction
 } from "@/ui/components/icons";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
@@ -45,7 +45,7 @@ export function HomeActions(): JSX.Element {
 				onPress: onPressReceive,
 			},
 			{
-				Icon: Hamburger,
+				Icon: MoreHorizontal,
 				label: "More",
 				onPress: onPressMore,
 			},
