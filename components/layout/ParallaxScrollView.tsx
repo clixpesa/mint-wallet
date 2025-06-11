@@ -74,8 +74,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    flexGrow: 1,
     gap: 16,
     overflow: 'hidden',
-    minHeight: 400
+    minHeight: 435
   },
 });

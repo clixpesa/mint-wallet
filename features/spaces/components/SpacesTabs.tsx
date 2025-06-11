@@ -2,6 +2,8 @@
 import { Text, View, useThemeColors } from "@/ui";
 import { fonts } from "@/ui/theme/fonts";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { GroupsLanding } from "../groups/GroupsLanding";
+import { SavingsLanding } from "../savings/SavingsLanding";
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -39,8 +41,8 @@ export function SpacesTabs({onTabSelect}: {onTabSelect: (props: { index: number 
         
       }}
       >
-        <Tab.Screen name='savings' component={DummyScreen} options={{ tabBarLabel: 'Savings' }}/>
-        <Tab.Screen name='groups' component={DummyScreen} options={{ tabBarLabel: 'Groups' }}/>
+        <Tab.Screen name='savings' component={SavingsLanding} options={{ tabBarLabel: 'Savings' }}/>
+        <Tab.Screen name='groups' component={GroupsLanding} options={{ tabBarLabel: 'Groups' }}/>
         {/*<Tab.Screen name='collections' component={DummyScreen} options={{ tabBarLabel: 'Collections' }}/> */}
       </Tab.Navigator>
   )

@@ -142,11 +142,11 @@ const sporeLight = {
 
   accent1:  '#0f766e',
   accent1Hovered: '#115e59',
-  accent2: '#02201f',
-  accent2Hovered: '#042f2e',
+  accent2: '#ccfbf1',
+  accent2Hovered: '#99f6e4',
   accent2Solid:  '#f0fdfa',
-  accent3: '#222222',
-  accent3Hovered: colors.black,
+  accent3: '#02201f',
+  accent3Hovered: '#042f2e',
 
   statusSuccess: '#0C8911',
   statusSuccessHovered: '#06742C',

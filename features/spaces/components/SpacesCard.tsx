@@ -39,7 +39,7 @@ export const SpacesCard = ({index}: {index: number}) => {
                     size={{ width: iconSize, height: iconSize, resizeMode: UniversalImageResizeMode.Cover }}
                     uri={item.ownerIcon}
                   />
-                  <Stack ml={-8} rounded="$full" bg="$neutral3" width={iconSize} justify="center" items="center" opacity={0.95}>
+                  <Stack ml={-8} rounded="$full" bg="$neutral3" width={iconSize} justify="center" items="center" >
                     <Text color="$surface1" variant="body3">+{item.members - 1}</Text>
                   </Stack>
                 </XStack>
