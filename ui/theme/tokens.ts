@@ -69,6 +69,7 @@ const spacing = {
   "6xl": 60,
   true: 8,
 }
+export type IconSizeTokens = `$${keyof typeof iconSize}`
 
 export const tokens = createTokens({
 	color,

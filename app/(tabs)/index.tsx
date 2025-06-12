@@ -1,8 +1,9 @@
 import { HomeCard, HomeHeader, ProductsCard } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
 import { TransactionsCard } from "@/features/wallet";
-import { LinearGradient, View, YStack } from "@/ui";
+import { LinearGradient, Switch, View, YStack } from "@/ui";
 import { useDispatch } from "react-redux";
+
 
 export default function HomeScreen() {
 	const dispatch = useDispatch()
@@ -17,7 +18,9 @@ export default function HomeScreen() {
 			<YStack gap="$sm" width="92%">
 				<TransactionsCard />
 				<ProductsCard />
+				
 			</YStack>
+			<Switch variant="branded" />
 		</View>
 	);
 }
