@@ -1,31 +1,31 @@
-import { createTokens, type ColorTokens } from "tamagui";
-import { DynamicColor } from '../hooks/useThemeColors';
-import { colors as color } from './colors';
+import { type ColorTokens, createTokens } from "tamagui";
+import type { DynamicColor } from "../hooks/useThemeColors";
+import { colors as color } from "./colors";
 import { fonts } from "./fonts";
-import { themes } from './themes';
+import { themes } from "./themes";
 
 const fontSize = {
-  heading1: fonts.heading1.fontSize,
-  heading2: fonts.heading2.fontSize,
-  heading3: fonts.heading3.fontSize,
-  subheading1: fonts.subheading1.fontSize,
-  subheading2: fonts.subheading2.fontSize,
-  body1: fonts.body1.fontSize,
-  body2: fonts.body2.fontSize,
-  body3: fonts.body3.fontSize,
-  buttonLabel1: fonts.buttonLabel1.fontSize,
-  buttonLabel2: fonts.buttonLabel2.fontSize,
-  buttonLabel3: fonts.buttonLabel3.fontSize,
-  buttonLabel4: fonts.buttonLabel4.fontSize,
-  monospace: fonts.monospace.fontSize,
-  true: fonts.body2.fontSize,
-}
+	heading1: fonts.heading1.fontSize,
+	heading2: fonts.heading2.fontSize,
+	heading3: fonts.heading3.fontSize,
+	subheading1: fonts.subheading1.fontSize,
+	subheading2: fonts.subheading2.fontSize,
+	body1: fonts.body1.fontSize,
+	body2: fonts.body2.fontSize,
+	body3: fonts.body3.fontSize,
+	buttonLabel1: fonts.buttonLabel1.fontSize,
+	buttonLabel2: fonts.buttonLabel2.fontSize,
+	buttonLabel3: fonts.buttonLabel3.fontSize,
+	buttonLabel4: fonts.buttonLabel4.fontSize,
+	monospace: fonts.monospace.fontSize,
+	true: fonts.body2.fontSize,
+};
 
 const iconSize = {
-  "3xs": 16,
+	"3xs": 16,
 	"2xs": 18,
 	xs: 20,
-  vs: 24,
+	vs: 24,
 	sm: 28,
 	md: 36,
 	lg: 40,
@@ -33,43 +33,43 @@ const iconSize = {
 	"2xl": 64,
 	"3xl": 70,
 	"4xl": 100,
-	true: 40
-}
+	true: 40,
+};
 
 const imageSizes = {
-  "3xs": 12,
-  "2xs": 16,
-  xs: 20,
-  vs: 24,
-  sm: 32,
-  md: 36,
-  lg: 40,
-  xl: 48,
-  "2xl": 64,
-  "3xl": 100,
-	true: 40
-}
+	"3xs": 12,
+	"2xs": 16,
+	xs: 20,
+	vs: 24,
+	sm: 32,
+	md: 36,
+	lg: 40,
+	xl: 48,
+	"2xl": 64,
+	"3xl": 100,
+	true: 40,
+};
 
 const spacing = {
-  none: 0,
-  "4xs": 1,
-  "3xs": 2,
-  "2xs": 4,
-  xs: 6,
-  vs: 8,
-  sm: 12,
-  md: 16,
-  lg: 18,
-  vl: 20,
-  xl: 24,
-  "2xl": 32,
-  "3xl": 36,
-  "4xl": 40,
-  "5xl": 48,
-  "6xl": 60,
-  true: 8,
-}
-export type IconSizeTokens = `$${keyof typeof iconSize}`
+	none: 0,
+	"4xs": 1,
+	"3xs": 2,
+	"2xs": 4,
+	xs: 6,
+	vs: 8,
+	sm: 12,
+	md: 16,
+	lg: 18,
+	vl: 20,
+	xl: 24,
+	"2xl": 32,
+	"3xl": 36,
+	"4xl": 40,
+	"5xl": 48,
+	"6xl": 60,
+	true: 8,
+};
+export type IconSizeTokens = `$${keyof typeof iconSize}`;
 
 export const tokens = createTokens({
 	color,
@@ -108,79 +108,84 @@ export const tokens = createTokens({
 	},
 });
 
-type ColorValue = DynamicColor | string | undefined | null
+type ColorValue = DynamicColor | string | undefined | null;
 
 export const getIsTokenFormat = (value: string): boolean => {
-  return value[0] === '$'
-}
+	return value[0] === "$";
+};
 
 export const getIsValidThemeColor = (value: string): boolean => {
-  if (getIsTokenFormat(value)) {
-    const valueWithout$Prefix = value.slice(1)
+	if (getIsTokenFormat(value)) {
+		const valueWithout$Prefix = value.slice(1);
 
-    // check if in color tokens or theme:
-    if (!(valueWithout$Prefix in color) && !(valueWithout$Prefix in themes.light)) {
-      return false
-    }
+		// check if in color tokens or theme:
+		if (
+			!(valueWithout$Prefix in color) &&
+			!(valueWithout$Prefix in themes.light)
+		) {
+			return false;
+		}
 
-    return true
-  }
+		return true;
+	}
 
-  return false
-}
+	return false;
+};
 
-export const validateColorValue = (value: ColorValue): { isValid: boolean; error?: Error } => {
-  if (typeof value === 'string') {
-    if (getIsTokenFormat(value)) {
-      const isValidSporeColor = getIsValidThemeColor(value)
+export const validateColorValue = (
+	value: ColorValue,
+): { isValid: boolean; error?: Error } => {
+	if (typeof value === "string") {
+		if (getIsTokenFormat(value)) {
+			const isValidSporeColor = getIsValidThemeColor(value);
 
-      if (isValidSporeColor) {
-        return {
-          isValid: true,
-          error: undefined,
-        }
-      }
+			if (isValidSporeColor) {
+				return {
+					isValid: true,
+					error: undefined,
+				};
+			}
 
-      return {
-        isValid: true,
-        error: undefined,
-      }
-    }
+			return {
+				isValid: true,
+				error: undefined,
+			};
+		}
 
-    if (
-      value[0] !== '#' &&
-      !value.startsWith('rgb(') &&
-      !value.startsWith('rgba(') &&
-      !value.startsWith('hsl(') &&
-      !value.startsWith('hsla(') &&
-      !value.startsWith('var(')
-    ) {
-      return {
-        isValid: false,
-        error: new Error(
-          `Invalid color value: ${value} this helper just does a rough check so if this error is wrong you can update this check!`,
-        ),
-      }
-    }
-  }
+		if (
+			value[0] !== "#" &&
+			!value.startsWith("rgb(") &&
+			!value.startsWith("rgba(") &&
+			!value.startsWith("hsl(") &&
+			!value.startsWith("hsla(") &&
+			!value.startsWith("var(")
+		) {
+			return {
+				isValid: false,
+				error: new Error(
+					`Invalid color value: ${value} this helper just does a rough check so if this error is wrong you can update this check!`,
+				),
+			};
+		}
+	}
 
-  return {
-    isValid: true,
-    error: undefined,
-  }
-}
+	return {
+		isValid: true,
+		error: undefined,
+	};
+};
 
 export const validColor = (value: ColorValue): ColorTokens => {
-  if (process.env.NODE_ENV !== 'production') {
-    const { isValid, error } = validateColorValue(value)
+	if (process.env.NODE_ENV !== "production") {
+		const { isValid, error } = validateColorValue(value);
 
-    if (!isValid) {
-      throw error
-    }
-  }
+		if (!isValid) {
+			throw error;
+		}
+	}
 
-  return value as ColorTokens
-}
+	return value as ColorTokens;
+};
 
 /**
  * Returns the hover color token if it exists, otherwise returns the original color token passed in.
@@ -188,18 +193,23 @@ export const validColor = (value: ColorValue): ColorTokens => {
  * @param {ColorValue} nonHoveredColor - The original color token.
  * @returns {ColorTokens} The hover color token if it exists, otherwise the original color token.
  */
-export const getMaybeHoverColor = (nonHoveredColor: ColorValue): ColorTokens => {
-  if (typeof nonHoveredColor === 'string' && getIsValidThemeColor(nonHoveredColor)) {
-    const maybeHoveredColor = `${nonHoveredColor}Hovered`
+export const getMaybeHoverColor = (
+	nonHoveredColor: ColorValue,
+): ColorTokens => {
+	if (
+		typeof nonHoveredColor === "string" &&
+		getIsValidThemeColor(nonHoveredColor)
+	) {
+		const maybeHoveredColor = `${nonHoveredColor}Hovered`;
 
-    const isValidToken = getIsValidThemeColor(maybeHoveredColor)
+		const isValidToken = getIsValidThemeColor(maybeHoveredColor);
 
-    if (!isValidToken) {
-      return nonHoveredColor as ColorTokens
-    }
+		if (!isValidToken) {
+			return nonHoveredColor as ColorTokens;
+		}
 
-    return maybeHoveredColor as ColorTokens
-  }
+		return maybeHoveredColor as ColorTokens;
+	}
 
-  return nonHoveredColor as unknown as ColorTokens
-}
+	return nonHoveredColor as unknown as ColorTokens;
+};

@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@biomejs/biome": "^1.9.4",
     "@tamagui/babel-plugin": "~1.125.17",
     "@types/aes-js": "^3",
     "@types/react": "~18.3.12",
