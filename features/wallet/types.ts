@@ -1,5 +1,14 @@
 import type { Chain } from "viem";
 
+export enum Currency {
+	USD = "USD",
+	EUR = "EUR",
+	GBP = "GBP",
+	KES = "KES",
+	UGX = "UGX",
+	TZS = "TZS",
+}
+
 export enum ChainId {
 	Mainnet = 1,
 	Avalanche = 43114,

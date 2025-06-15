@@ -7,3 +7,6 @@ export * from "./components/TransactionsCard";
 
 // Types
 export * from "./types";
+
+// Rates
+export * from "./rates";

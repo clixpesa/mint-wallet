@@ -1,6 +1,6 @@
 import { Screen } from "@/components/layout/Screen";
-import { TokenLogo } from "@/components/logos/TokenLogo";
-import { Text, XStack, YStack } from "@/ui";
+import { TokenItem } from "@/components/lists/TokenItem";
+import { Text, YStack } from "@/ui";
 import { ScanQr } from "@/ui/components/icons";
 
 //TODO: Add filters bases on supported chains
@@ -51,30 +51,18 @@ export default function AssetsScreen() {
 					<Text color="$neutral2" pl="$xs">
 						Shillings
 					</Text>
-					<XStack items="center" justify="space-between">
-						<XStack gap="$sm">
-							<TokenLogo
-								chainId={43114}
-								symbol="KELI"
-								url="https://assets.coingecko.com/coins/images/38958/standard/MENTO_TOKEN_icon_200.png"
-								//hideNetworkLogo={true} hide logo when zero balance
-							/>
-							<YStack gap="$2xs">
-								<Text variant="subHeading2">KELI</Text>
-								<Text variant="body3" color="$neutral2">
-									KES Lira
-								</Text>
-							</YStack>
-						</XStack>
-						<YStack px="$2xs" gap="$2xs">
-							<Text variant="subHeading2" text="right">
-								0.00
-							</Text>
-							<Text variant="body3" color="$neutral2" text="right">
-								~ $0.00
-							</Text>
-						</YStack>
-					</XStack>
+					<TokenItem
+						tokenInfo={{
+							name: "KES Lira",
+							symbol: "KELI",
+							logoUrl: require("@/ui/assets/images/token-logos/keli-logo.png"),
+							chainId: 43114,
+						}}
+						amount={{
+							actual: 10,
+							inUSD: 0.077,
+						}}
+					/>
 				</YStack>
 				<YStack
 					bg="$surface1"
@@ -88,52 +76,30 @@ export default function AssetsScreen() {
 					<Text color="$neutral2" pl="$xs">
 						Dollars
 					</Text>
-					<XStack items="center" justify="space-between">
-						<XStack gap="$sm">
-							<TokenLogo
-								chainId={43114}
-								symbol="USDC"
-								url={require("@/ui/assets/images/token-logos/usdc-logo.png")}
-							/>
-							<YStack width="58%" gap="$2xs">
-								<Text variant="subHeading2">USDC</Text>
-								<Text variant="body3" color="$neutral2">
-									USD Coin
-								</Text>
-							</YStack>
-						</XStack>
-						<YStack px="$2xs" gap="$2xs">
-							<Text variant="subHeading2" text="right">
-								0.00
-							</Text>
-							<Text variant="body3" color="$neutral2" text="right">
-								~ $0.00
-							</Text>
-						</YStack>
-					</XStack>
-					<XStack items="center" justify="space-between">
-						<XStack gap="$sm">
-							<TokenLogo
-								chainId={43114}
-								symbol="KELI"
-								url={require("@/ui/assets/images/token-logos/tether-logo.png")}
-							/>
-							<YStack width="58%" gap="$2xs">
-								<Text variant="subHeading2">USDT</Text>
-								<Text variant="body3" color="$neutral2">
-									Tether USD
-								</Text>
-							</YStack>
-						</XStack>
-						<YStack px="$2xs" gap="$2xs">
-							<Text variant="subHeading2" text="right">
-								0.00
-							</Text>
-							<Text variant="body3" color="$neutral2" text="right">
-								~ $0.00
-							</Text>
-						</YStack>
-					</XStack>
+					<TokenItem
+						tokenInfo={{
+							name: "USD Coin",
+							symbol: "USDC",
+							logoUrl: require("@/ui/assets/images/token-logos/usdc-logo.png"),
+							chainId: 43114,
+						}}
+						amount={{
+							actual: 0.005,
+							inUSD: 0.005,
+						}}
+					/>
+					<TokenItem
+						tokenInfo={{
+							name: "Tether USD",
+							symbol: "USDT",
+							logoUrl: require("@/ui/assets/images/token-logos/tether-logo.png"),
+							chainId: 43114,
+						}}
+						amount={{
+							actual: 0.0,
+							inUSD: 0.0,
+						}}
+					/>
 				</YStack>
 			</YStack>
 		</Screen>
