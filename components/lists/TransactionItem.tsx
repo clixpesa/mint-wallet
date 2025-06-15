@@ -1,6 +1,7 @@
-import { type ChainId, Currency, getRate } from "@/features/wallet";
+import { TokenLogo } from "@/components/logos/TokenLogo";
 import { Text, TouchableArea, XStack, YStack } from "@/ui";
-import { TokenLogo } from "../logos/TokenLogo";
+import { getRate } from "../../features/wallet/rates";
+import { type ChainId, Currency } from "../../features/wallet/types";
 
 export type TxItemParams = {
 	tokenInfo: {

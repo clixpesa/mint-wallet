@@ -1,7 +1,8 @@
 import { Screen } from "@/components/layout/Screen";
 import { TokenItem } from "@/components/lists/TokenItem";
 import { Text, YStack } from "@/ui";
-import { ScanQr } from "@/ui/components/icons";
+import { QrCode } from "@/ui/components/icons";
+import { router } from "expo-router";
 
 //TODO: Add filters bases on supported chains
 
@@ -10,8 +11,8 @@ export default function AssetsScreen() {
 		<Screen
 			title="Your Assets"
 			rightElement={{
-				Icon: <ScanQr size={30} color="$neutral3" />,
-				onPress: () => {},
+				Icon: <QrCode size={24} color="$neutral2" />,
+				onPress: () => router.navigate("/(transactions)/ramps/receive"),
 			}}
 		>
 			<YStack gap="$xs" mt="$lg" width="92%" items="center">
