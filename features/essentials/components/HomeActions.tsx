@@ -1,10 +1,10 @@
 import { ActionButton } from "@/components/Buttons/ActionButton";
-import { useThemeColors, XStack } from "@/ui";
+import { XStack, useThemeColors } from "@/ui";
 import {
 	ArrowDownCircle,
 	Bank,
 	MoreHorizontal,
-	SendAction
+	SendAction,
 } from "@/ui/components/icons";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
@@ -19,13 +19,13 @@ export function HomeActions(): JSX.Element {
 		router.push("/(transactions)/ramps/deposit");
 	}, []);
 	const onPressSend = useCallback(() => {
-		router.push("/(transactions)/transfer/send");
+		router.push("/(transactions)/transfer/recipient");
 	}, []);
 	const onPressReceive = useCallback(() => {
 		router.push("/(transactions)/ramps/receive");
 	}, []);
 	const onPressMore = useCallback(() => {
-		console.log("OpenModal")
+		console.log("OpenModal");
 	}, []);
 	const actions = useMemo(
 		() => [
@@ -53,10 +53,7 @@ export function HomeActions(): JSX.Element {
 		[onPressDeposit, onPressSend, onPressReceive, onPressMore],
 	);
 	return (
-		<XStack
-			gap="$xs"
-			my="$md"
-		>
+		<XStack gap="$xs" my="$md">
 			{actions.map(({ label, Icon, onPress }, idx) => (
 				<ActionButton
 					key={idx}
@@ -67,7 +64,7 @@ export function HomeActions(): JSX.Element {
 					iconSize={iconSize}
 				/>
 			))}
-      {/*Add Modal*/}
+			{/*Add Modal*/}
 		</XStack>
 	);
 }

@@ -1,7 +1,9 @@
+import { isAddress, isSameAddress } from "@/utilities/addresses";
 import { useMemoCompare } from "@/utilities/react/hooks";
 import { useDebounce } from "@/utilities/time/timing";
 import isEqual from "lodash/isEqual";
 import { useCallback, useMemo } from "react";
+import dummyUsers from "./dummyusers.json";
 
 export interface SearchableRecipient {
 	key: string;
@@ -11,6 +13,14 @@ export interface SearchableRecipient {
 	txs: number;
 }
 
+interface DummyUser {
+	uuid: string;
+	phone: string | null;
+	name: string | null;
+	tag?: string | null;
+	address: Address;
+}
+
 export function useRecipientSearch(searchTerm: string): {
 	recipients: SearchableRecipient[];
 	searchTerm: string;
@@ -18,20 +28,48 @@ export function useRecipientSearch(searchTerm: string): {
 } {
 	// get recipients based on searchTerm
 	const getRecipients = useCallback((): SearchableRecipient[] => {
-		if (!searchTerm) {
+		if (!searchTerm.trim()) {
 			return [];
 		}
 
 		const recipients: SearchableRecipient[] = [];
+		const isAddressSearch =
+			searchTerm.startsWith("0x") && isAddress(searchTerm);
+		const isPhoneSearch =
+			(searchTerm.startsWith("+") || searchTerm.startsWith("0")) &&
+			searchTerm.length > 9 &&
+			!isAddressSearch;
 		// Mock implementation
-		recipients.push({
-			key: "1",
-			name: "John Doe",
-			address: "0x1234567890abcdef1234567890abcdef12345678" as Address,
-			phone: "555-1234",
-			txs: 5,
+		const matchedUsers: DummyUser[] = dummyUsers.filter((user) => {
+			if (isAddressSearch) {
+				return isSameAddress(user.address, searchTerm);
+			}
+			if (isPhoneSearch) {
+				return user.phone?.includes(searchTerm.slice(2));
+			}
+			return (
+				user.tag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				user.address.toLowerCase().includes(searchTerm.toLowerCase())
+			);
 		});
-
+		if (isAddressSearch && matchedUsers.length === 0) {
+			recipients.push({
+				key: `addr-${searchTerm}`,
+				name: null,
+				address: searchTerm as Address,
+				phone: null,
+				txs: 0,
+			});
+		}
+		recipients.push(
+			...matchedUsers.map((user) => ({
+				key: user.uuid,
+				name: user.name || user.tag || null,
+				address: user.address as Address,
+				phone: user.phone,
+				txs: 0,
+			})),
+		);
 		return recipients;
 	}, [searchTerm]);
 
