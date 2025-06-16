@@ -75,6 +75,7 @@
     "@biomejs/biome": "^1.9.4",
     "@tamagui/babel-plugin": "~1.125.17",
     "@types/aes-js": "^3",
+    "@types/lodash": "^4.17.17",
     "@types/qrcode": "^1",
     "@types/react": "~18.3.12",
     "@types/react-native-get-random-values": "^1",
