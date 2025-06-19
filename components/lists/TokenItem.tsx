@@ -36,7 +36,7 @@ export function TokenItem({
 						url={tokenInfo.logoUrl}
 						hideNetworkLogo={hideNetworkLogo}
 					/>
-					<YStack width="58%" gap="$2xs">
+					<YStack gap="$2xs">
 						<Text variant="subHeading2">{tokenInfo.symbol}</Text>
 						<Text variant="body3" color="$neutral2">
 							{tokenInfo.name}

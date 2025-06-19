@@ -6,8 +6,8 @@ import { HomeActions } from "./HomeActions";
 export const HomeCard = () => {
 	const totalBalUSD = 1000;
 	return (
-		<YStack width="92%" mt="$sm">
-			<XStack justify="space-between">
+		<YStack width="95%" mt="$sm">
+			<XStack justify="space-between" mx="$2xs">
 				<YStack gap="$2xs">
 					<Text color="$neutral2">Your Balance </Text>
 					<Text variant="heading2" fontWeight="800" color="$neutral1">
