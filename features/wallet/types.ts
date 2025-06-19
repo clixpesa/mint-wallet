@@ -27,3 +27,9 @@ export interface ChainInfo extends Chain {
 	readonly explorer: { name: string; url: `${string}/`; apiUrl?: string };
 	readonly logo: string;
 }
+
+export interface EnabledChainsInfo {
+	chains: ChainId[];
+	isTestnet: boolean;
+	defaultChain: ChainId;
+}

@@ -12,3 +12,21 @@ export function getChainName(chainId: ChainId): string {
 export function isTestnet(chainId: ChainId): boolean {
 	return Boolean(supportedChains[chainId]?.testnet);
 }
+
+export const getEnabledChains = (isTestnet: boolean | undefined): ChainId[] => {
+	const enabledChains: ChainId[] = [];
+	if (isTestnet) {
+		enabledChains.push(
+			...Object.keys(supportedChains)
+				.map((key) => Number(key) as ChainId)
+				.filter((chainId) => supportedChains[chainId]?.testnet),
+		);
+	} else {
+		enabledChains.push(
+			...Object.keys(supportedChains)
+				.map((key) => Number(key) as ChainId)
+				.filter((chainId) => !supportedChains[chainId]?.testnet),
+		);
+	}
+	return enabledChains;
+};

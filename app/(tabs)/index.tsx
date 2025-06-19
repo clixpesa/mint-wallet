@@ -5,6 +5,7 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
+import { useEnabledChains } from "@/features/wallet/hooks";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useState } from "react";
 import { RefreshControl } from "react-native";
@@ -14,6 +15,8 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
+	const enabledChainInfo = useEnabledChains();
+	console.log(enabledChainInfo);
 
 	const onRefresh = () => {
 		setRefreshing(true);

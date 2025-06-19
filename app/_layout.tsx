@@ -1,3 +1,4 @@
+import { TestnetModeBanner } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
 import "@/features/utils/shims";
 import { store } from "@/store/redux";
@@ -54,7 +55,7 @@ function AppOuter(): React.JSX.Element | null {
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors();
 	const segments = useSegments();
-	const hasAccount = true; //useAppState((s) => s.hasAccount)
+	const hasAccount = useAppState((s) => s.hasAccount);
 	const isUnlocked = true; //useAppState((s) => s.isUnlocked);
 	useEffect(() => {
 		if (!hasAccount) {
@@ -67,6 +68,7 @@ function AppInner(): React.JSX.Element {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: colors.background.val }}>
+			<TestnetModeBanner />
 			{inAuthRoute ? (
 				<Stack>
 					<Stack.Screen name="(auth)" options={{ headerShown: false }} />
