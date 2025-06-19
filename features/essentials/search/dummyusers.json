@@ -1,0 +1,72 @@
+[
+  {
+    "uuid": "03232787",
+    "phone": "+254712345678",
+    "name": "John Kamau",
+    "tag": "Family",
+    "address": "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u"
+  },
+  {
+    "uuid": "13232788",
+    "phone": "+254723456789",
+    "name": null,
+    "tag": "@wanja",
+    "address": "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+  },
+  {
+    "uuid": "23232789",
+    "phone": "+254734567890",
+    "name": "James Omondi",
+    "tag": "@vusiness",
+    "address": "0x3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w"
+  },
+  {
+    "uuid": "33232790",
+    "phone": "+254745678901",
+    "name": "Grace Atieno",
+    "tag": "@friend",
+    "address": "0x4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x"
+  },
+  {
+    "uuid": "43232791",
+    "phone": "+254756789012",
+    "name": "David Mwangi",
+    "tag": null,
+    "address": "0x5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y"
+  },
+  {
+    "uuid": "53232792",
+    "phone": "+254767890123",
+    "name": "Sarah Akinyi",
+    "tag": "@clinet",
+    "address": "0x6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z"
+  },
+  {
+    "uuid": "63232793",
+    "phone": "+254778901234",
+    "name": "Peter Kipchoge",
+    "tag": "@plkJuinur",
+    "address": "0x7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a"
+  },
+  {
+    "uuid": "73232794",
+    "phone": "+254789012345",
+    "name": "Lilian Wambui",
+    "tag": null,
+    "address": "0x8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b"
+  },
+  {
+    "uuid": "83232795",
+    "phone": "+254790123456",
+    "name": null,
+    "tag": "@otis",
+    "address": "0x9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c"
+  },
+  {
+    "uuid": "93232796",
+    "phone": "+254701234567",
+    "name": "Esther Njeri",
+    "tag": "@estherN",
+    "address": "0x0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d"
+  }
+]
