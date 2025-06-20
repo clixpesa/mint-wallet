@@ -7,3 +7,6 @@ export * from "./types";
 
 // Rates
 export * from "./rates";
+
+// Contexts
+export * from "./contexts/WalletContext";

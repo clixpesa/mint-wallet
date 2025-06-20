@@ -29,7 +29,13 @@ export interface ChainInfo extends Chain {
 }
 
 export interface EnabledChainsInfo {
-	chains: ChainId[];
+	chains: ChainId[]; //ChainInfo[];
 	isTestnet: boolean;
-	defaultChain: ChainId;
+	defaultChainId: ChainId;
 }
+
+export type MnemonicData = {
+	address: string;
+	mnemonic?: { phrase: string; path: string; locale: string } | string | null;
+	enMnemonic?: string;
+};
