@@ -1,4 +1,6 @@
 import { zustandMmkvStorage } from "@/store/storage";
+import { getAuth, onAuthStateChanged } from "@react-native-firebase/auth";
+import { useEffect } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -14,7 +16,7 @@ export interface AppState {
 const initialAppState = {
 	hasAccount: false,
 	isUnlocked: false,
-	testnetEnabled: false,
+	testnetEnabled: true,
 };
 
 export const useAppState = create<AppState>()(
@@ -32,8 +34,31 @@ export const useAppState = create<AppState>()(
 
 			partialize: (state) => ({
 				hasAccount: state.hasAccount,
-				testnetEnabled: state.testnetEnabled,
 			}),
 		},
 	),
 );
+
+export const useHasAccount = () => {
+	useEffect(() => {
+		// Try to load user from storage first
+		console.log("Checking for user");
+		/*let storedUser: FirebaseAuthTypes.User | null = null;
+		const getStoredUser = async () => {
+			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
+		};
+		getStoredUser();
+
+		if (storedUser) {
+			useAppState.getState().setHasAccount(true);
+		}*/
+		const subscriber = onAuthStateChanged(getAuth(), async (user) => {
+			//if (user) await appStorage.setItem("user", user.toJSON());
+
+			useAppState.getState().setHasAccount(!!user);
+		});
+
+		return subscriber; // unsubscribe on unmount
+	}, []);
+	return useAppState((state) => state.hasAccount);
+};

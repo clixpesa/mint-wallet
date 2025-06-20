@@ -78,9 +78,9 @@ export default function SecurityScreen() {
 						<TouchableArea
 							hitSlop={16}
 							onPress={() => {
-								codeInputRef.current?.clear(),
-									setInitialCode(undefined),
-									setUse4Digits(!use4Digits);
+								codeInputRef.current?.clear();
+								setInitialCode(undefined);
+								setUse4Digits(!use4Digits);
 							}}
 						>
 							<Text color="$accent1" variant="buttonLabel2" mr="$3xs">

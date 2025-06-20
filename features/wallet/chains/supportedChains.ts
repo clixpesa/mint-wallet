@@ -8,6 +8,7 @@ import {
 	mainnet,
 	sepolia,
 } from "viem/chains";
+
 import { ChainId, type ChainInfo } from "../types";
 
 export const supportedChains: Record<ChainId, ChainInfo> = {

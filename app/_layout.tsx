@@ -1,5 +1,5 @@
 import { TestnetModeBanner } from "@/features/essentials";
-import { useAppState } from "@/features/essentials/appState";
+import { useAppState, useHasAccount } from "@/features/essentials/appState";
 import "@/features/utils/shims";
 import { store } from "@/store/redux";
 import { UIProvider, useThemeColors } from "@/ui";
@@ -55,7 +55,7 @@ function AppOuter(): React.JSX.Element | null {
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors();
 	const segments = useSegments();
-	const hasAccount = useAppState((s) => s.hasAccount);
+	const hasAccount = useHasAccount();
 	const isUnlocked = true; //useAppState((s) => s.isUnlocked);
 	useEffect(() => {
 		if (!hasAccount) {

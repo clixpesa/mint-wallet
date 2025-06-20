@@ -25,6 +25,7 @@ export type OnboardingContext = {
 	) => Promise<FirebaseAuthTypes.UserCredential | undefined>;
 	sendPhoneOTP: (phoneNumber: string) => Promise<void>;
 	sendEmailOTP: (email: string) => Promise<void>;
+	storeMnemonic: (keyParams: string) => Promise<void>;
 	getSignedInUser: () => FirebaseAuthTypes.User | null;
 	resetOnboardingContextData: () => void;
 };
@@ -34,7 +35,7 @@ const initialOnboardingContext: OnboardingContext = {
 	signInWithOTP: async () => undefined,
 	sendPhoneOTP: async () => undefined,
 	sendEmailOTP: async () => undefined,
-	//generateAccounts: async () => undefined,
+	storeMnemonic: async () => undefined,
 	getSignedInUser: () => null,
 	resetOnboardingContextData: () => undefined,
 };
@@ -52,8 +53,7 @@ export function OnboardingContextProvider({
 
 	useEffect(() => {
 		// Try to load user from storage first
-		console.log("Loading user in OnboardingContext");
-		let storedUser: FirebaseAuthTypes.User | null = null;
+		/*let storedUser: FirebaseAuthTypes.User | null = null;
 		const getStoredUser = async () => {
 			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
 		};
@@ -62,7 +62,7 @@ export function OnboardingContextProvider({
 		if (storedUser) {
 			console.log("User found in storage", storedUser);
 			setSignedInUser(storedUser);
-		}
+		}*/
 		const subscriber = onAuthStateChanged(getAuth(), (user) => {
 			setSignedInUser(user);
 		});
@@ -107,7 +107,8 @@ export function OnboardingContextProvider({
 			if (source === "phone") {
 				const credential = PhoneAuthProvider.credential(verificationId, code);
 				userCredential = await signInWithCredential(getAuth(), credential);
-				await appStorage.setItem("user", userCredential.user.toJSON());
+				//await appStorage.setItem("user", userCredential.user.toJSON());
+				await storeMnemonic(userCredential.user.uid);
 				setSignedInUser(userCredential.user);
 			} else if (source === "email") {
 				const instance = httpsCallable(getFunctions(), "verifyEmailWithOTP");
@@ -126,8 +127,8 @@ export function OnboardingContextProvider({
 						response.data?.message,
 					);
 
-					await appStorage.setItem("user", userCredential.user.toJSON());
-					console.log(userCredential.user);
+					//await appStorage.setItem("user", userCredential.user.toJSON());
+					await storeMnemonic(userCredential.user.uid);
 					setSignedInUser(userCredential.user);
 				}
 			}
@@ -143,6 +144,12 @@ export function OnboardingContextProvider({
 		return signedInUser;
 	};
 
+	const storeMnemonic = async (userId: string) => {
+		const instance = httpsCallable(getFunctions(), "getStoredNode");
+		const mnemonicData = (await instance({ userId })).data;
+		await appStorage.setItem(userId, mnemonicData);
+	};
+
 	const resetOnboardingContextData = (): void => {
 		setSignedInUser(null);
 		setVerificationId(null);
@@ -155,7 +162,7 @@ export function OnboardingContextProvider({
 				sendPhoneOTP,
 				sendEmailOTP,
 				signInWithOTP,
-				//generateAccounts,
+				storeMnemonic,
 				getSignedInUser,
 				resetOnboardingContextData,
 			}}
