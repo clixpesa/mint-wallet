@@ -1,0 +1,170 @@
+import { appStorage } from "@/store/storage";
+import { logger } from "@/utilities/logger/logger";
+import {
+	type FirebaseAuthTypes,
+	PhoneAuthProvider,
+	getAuth,
+	onAuthStateChanged,
+	signInWithCredential,
+	signInWithEmailAndPassword,
+	signInWithPhoneNumber,
+} from "@react-native-firebase/auth";
+import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
+import {
+	type PropsWithChildren,
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
+
+export type OnboardingContext = {
+	signInWithOTP: (
+		code: string,
+		source: string,
+	) => Promise<FirebaseAuthTypes.UserCredential | undefined>;
+	sendPhoneOTP: (phoneNumber: string) => Promise<void>;
+	sendEmailOTP: (email: string) => Promise<void>;
+	getSignedInUser: () => FirebaseAuthTypes.User | null;
+	resetOnboardingContextData: () => void;
+};
+
+const initialOnboardingContext: OnboardingContext = {
+	//signInWithGoogle: async () => undefined,
+	signInWithOTP: async () => undefined,
+	sendPhoneOTP: async () => undefined,
+	sendEmailOTP: async () => undefined,
+	//generateAccounts: async () => undefined,
+	getSignedInUser: () => null,
+	resetOnboardingContextData: () => undefined,
+};
+
+const OnboardingContext = createContext<OnboardingContext>(
+	initialOnboardingContext,
+);
+
+export function OnboardingContextProvider({
+	children,
+}: PropsWithChildren<unknown>): JSX.Element {
+	const [signedInUser, setSignedInUser] =
+		useState<FirebaseAuthTypes.User | null>(null);
+	const [verificationId, setVerificationId] = useState<string | null>(null);
+
+	useEffect(() => {
+		// Try to load user from storage first
+		console.log("Loading user in OnboardingContext");
+		let storedUser: FirebaseAuthTypes.User | null = null;
+		const getStoredUser = async () => {
+			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
+		};
+		getStoredUser();
+
+		if (storedUser) {
+			console.log("User found in storage", storedUser);
+			setSignedInUser(storedUser);
+		}
+		const subscriber = onAuthStateChanged(getAuth(), (user) => {
+			setSignedInUser(user);
+		});
+
+		return subscriber; // unsubscribe on unmount
+	}, []);
+
+	const sendPhoneOTP = async (phoneNumber: string) => {
+		resetOnboardingContextData();
+		try {
+			const confirm = await signInWithPhoneNumber(getAuth(), phoneNumber);
+			setVerificationId(confirm.verificationId);
+		} catch (error) {
+			logger.error(error, {
+				tags: {
+					file: "OnboardingContext",
+					function: "sendPhoneOTP",
+				},
+			});
+		}
+	};
+
+	const sendEmailOTP = async (email: string) => {
+		resetOnboardingContextData();
+		try {
+			const instance = httpsCallable(getFunctions(), "sendEmailOTP");
+			const response = await instance({ email });
+			setVerificationId(email);
+		} catch (error) {
+			logger.error(error, {
+				tags: {
+					file: "OnboardingContext",
+					function: "sendEmailOTP",
+				},
+			});
+		}
+	};
+
+	const signInWithOTP = async (code: string, source: string) => {
+		try {
+			let userCredential = undefined;
+			if (source === "phone") {
+				const credential = PhoneAuthProvider.credential(verificationId, code);
+				userCredential = await signInWithCredential(getAuth(), credential);
+				await appStorage.setItem("user", userCredential.user.toJSON());
+				setSignedInUser(userCredential.user);
+			} else if (source === "email") {
+				const instance = httpsCallable(getFunctions(), "verifyEmailWithOTP");
+				const response = (await instance({
+					email: verificationId,
+					otp: code,
+				})) as {
+					data: {
+						message: string;
+					};
+				};
+				if (verificationId && response) {
+					userCredential = await signInWithEmailAndPassword(
+						getAuth(),
+						verificationId,
+						response.data?.message,
+					);
+
+					await appStorage.setItem("user", userCredential.user.toJSON());
+					console.log(userCredential.user);
+					setSignedInUser(userCredential.user);
+				}
+			}
+			return userCredential;
+		} catch (error) {
+			logger.error(error, {
+				tags: { file: "OnboardingContext", function: "signInWithOTP" },
+			});
+		}
+	};
+
+	const getSignedInUser = (): FirebaseAuthTypes.User | null => {
+		return signedInUser;
+	};
+
+	const resetOnboardingContextData = (): void => {
+		setSignedInUser(null);
+		setVerificationId(null);
+	};
+
+	return (
+		<OnboardingContext.Provider
+			value={{
+				//signInWithGoogle,
+				sendPhoneOTP,
+				sendEmailOTP,
+				signInWithOTP,
+				//generateAccounts,
+				getSignedInUser,
+				resetOnboardingContextData,
+			}}
+		>
+			{children}
+		</OnboardingContext.Provider>
+	);
+}
+
+export function useOnboardingContext(): OnboardingContext {
+	return useContext(OnboardingContext);
+}

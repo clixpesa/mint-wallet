@@ -9,3 +9,6 @@ export * from "./components/TransactionsCard";
 
 //hooks
 export * from "./search/hooks";
+
+//contexts
+export * from "./contexts/OnboardingContext";

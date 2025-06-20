@@ -52,3 +52,6 @@ yarn-error.*
 *.tsbuildinfo
 
 .tamagui
+
+google-services.prod.json
+google-services.test.json
