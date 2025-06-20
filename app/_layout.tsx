@@ -1,6 +1,7 @@
 import { TestnetModeBanner } from "@/features/essentials";
 import { useAppState, useHasAccount } from "@/features/essentials/appState";
 import "@/features/utils/shims";
+import { WalletContextProvider } from "@/features/wallet";
 import { store } from "@/store/redux";
 import { UIProvider, useThemeColors } from "@/ui";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -75,7 +76,9 @@ function AppInner(): React.JSX.Element {
 					<Stack.Screen name="+not-found" />
 				</Stack>
 			) : (
-				<Slot />
+				<WalletContextProvider>
+					<Slot />
+				</WalletContextProvider>
 			)}
 			<StatusBar style="auto" />
 		</SafeAreaView>

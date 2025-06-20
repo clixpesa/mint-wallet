@@ -5,18 +5,16 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
-import { useEnabledChains } from "@/features/wallet/hooks";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
+import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
-	const enabledChainInfo = useEnabledChains();
-	console.log(enabledChainInfo);
 
 	const onRefresh = () => {
 		setRefreshing(true);
@@ -35,6 +33,7 @@ export default function HomeScreen() {
 			<HomeHeader />
 			<ScrollView
 				width="100%"
+				grow={1}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}
@@ -48,6 +47,9 @@ export default function HomeScreen() {
 				<YStack gap="$sm" width="92%">
 					<TransactionsCard />
 					<ProductsCard />
+					<Button height="$3xl" onPress={() => {}}>
+						Test func
+					</Button>
 				</YStack>
 			</ScrollView>
 		</View>
