@@ -1,14 +1,10 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Text, TouchableArea, XStack } from "@/ui";
 import { BarchartLine, ScanHome } from "@/ui/components/icons";
-import { getAuth } from "@react-native-firebase/auth";
+import { useAppState } from "../appState";
 
 export const HomeHeader = () => {
-	const getUser = async () => {
-		const currentUser = getAuth().currentUser;
-
-		console.log(await currentUser?.getIdTokenResult());
-	};
+	const user = useAppState((s) => s.user);
 	return (
 		<XStack
 			width="100%"
@@ -18,9 +14,13 @@ export const HomeHeader = () => {
 			justify="space-between"
 		>
 			<XStack gap="$sm" items="center">
-				<TouchableArea onPress={getUser}>
+				<TouchableArea onPress={() => {}}>
 					<AccountIcon
-						address="0x765DE816845861e75A25fCA122bb6898B8B1282a"
+						address={
+							user.mainAddress
+								? user.mainAddress
+								: "0x765de816845861e75a25fca122bb6898b8b1282a"
+						}
 						size={40}
 					/>
 				</TouchableArea>

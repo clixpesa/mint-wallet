@@ -8,15 +8,41 @@ export interface AppState {
 	hasAccount: boolean;
 	isUnlocked: boolean;
 	testnetEnabled?: boolean; // Optional property for testnet
+	user: {
+		uid: string;
+		tag: string;
+		name?: string; // Optional property for user full name
+		email?: string;
+		phoneNumber?: string;
+		eoaAddress?: Address;
+		mainAddress?: Address;
+	};
 	setHasAccount: (value: boolean) => void;
 	setIsUnlocked: (value: boolean) => void;
 	setTestnetEnabled: (value: boolean) => void;
+	setUser: (user: {
+		uid: string;
+		tag: string;
+		name?: string;
+		email?: string;
+		phoneNumber?: string;
+	}) => void;
+	setUserAddresses: (eoaAddress?: Address, mainAddress?: Address) => void;
 }
 
 const initialAppState = {
 	hasAccount: false,
 	isUnlocked: false,
-	testnetEnabled: true,
+	testnetEnabled: true, // Default to false, can be set later
+	user: {
+		uid: "",
+		tag: "",
+		name: "",
+		email: undefined,
+		phoneNumber: undefined,
+		eoaAddress: undefined,
+		mainAddress: undefined,
+	},
 };
 
 export const useAppState = create<AppState>()(
@@ -26,6 +52,15 @@ export const useAppState = create<AppState>()(
 			setHasAccount: (value) => set({ hasAccount: value }),
 			setIsUnlocked: (value) => set({ isUnlocked: value }),
 			setTestnetEnabled: (value) => set({ testnetEnabled: value }),
+			setUser: (user) => set({ user }),
+			setUserAddresses: (eoaAddress, mainAddress) =>
+				set((state) => ({
+					user: {
+						...state.user,
+						eoaAddress,
+						mainAddress,
+					},
+				})),
 		}),
 		{
 			name: "app-state",
@@ -34,6 +69,7 @@ export const useAppState = create<AppState>()(
 
 			partialize: (state) => ({
 				hasAccount: state.hasAccount,
+				user: state.user,
 			}),
 		},
 	),
@@ -54,8 +90,19 @@ export const useHasAccount = () => {
 		}*/
 		const subscriber = onAuthStateChanged(getAuth(), async (user) => {
 			//if (user) await appStorage.setItem("user", user.toJSON());
-
+			const thisUser = useAppState.getState().user;
 			useAppState.getState().setHasAccount(!!user);
+			if (user) {
+				const { uid, displayName, email, phoneNumber } = user;
+				useAppState.getState().setUser({
+					...thisUser,
+					uid,
+					tag: displayName || "",
+					name: displayName || undefined,
+					email: email || undefined,
+					phoneNumber: phoneNumber || undefined,
+				});
+			}
 		});
 
 		return subscriber; // unsubscribe on unmount

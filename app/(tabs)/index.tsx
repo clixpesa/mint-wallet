@@ -15,6 +15,8 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
+	const user = useAppState((s) => s.user);
+	console.log(user);
 
 	const onRefresh = () => {
 		setRefreshing(true);

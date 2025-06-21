@@ -17,6 +17,7 @@ import {
 } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
 
+import { useAppState } from "@/features/essentials/appState";
 import { appStorage } from "@/store/storage";
 import { getAuth } from "@react-native-firebase/auth";
 import { mnemonicToAccount } from "viem/accounts";
@@ -26,7 +27,6 @@ import {
 } from "../account-abstraction/createSmartAccountClient";
 import { toSimpleSmartAccount } from "../account-abstraction/toSimpleSmartAccount";
 import { createPimlicoClient } from "../bundler/pimlico";
-
 import { getChainInfo } from "../chains/utils";
 import { useEnabledChains } from "../hooks";
 import { ChainId, type MnemonicData } from "../types";
@@ -60,6 +60,9 @@ export function WalletContextProvider({
 	children,
 }: PropsWithChildren): JSX.Element {
 	const { chains, defaultChainId } = useEnabledChains();
+	//console.log(chains);
+	const setUserAddresses = useAppState((s) => s.setUserAddresses);
+	const isTestnetEnabled = useAppState((s) => s.testnetEnabled);
 	const [state, setState] = useState<
 		Omit<WalletContext, "isLoading" | "currentChainId" | "updateCurrentChainId">
 	>({
@@ -71,11 +74,14 @@ export function WalletContextProvider({
 	});
 	const [isLoading, setIsLoading] = useState(false);
 	const [currentChainId, setCurrentChainId] = useState<ChainId>(defaultChainId);
-
+	//const chains = getEnabledChains(isTestnetEnabled);
+	//console.log(chains);
 	const currentChain = useMemo(() => {
 		const chainId = chains.find((chain) => chain === currentChainId);
 		return chainId ? getChainInfo(chainId) : null;
 	}, [currentChainId, chains]);
+
+	//console.log(currentChain);
 
 	const updateCurrentChainId = useCallback((chainId: ChainId) => {
 		setCurrentChainId(chainId);
@@ -167,6 +173,8 @@ export function WalletContextProvider({
 				},
 			});
 
+			setUserAddresses(eoaAccount.account.address, mainAccount.account.address);
+
 			setState({
 				eoaAccount,
 				mainAccount,
@@ -183,7 +191,7 @@ export function WalletContextProvider({
 		} finally {
 			setIsLoading(false);
 		}
-	}, [currentChain, getMnemonic]);
+	}, [currentChain, getMnemonic, setUserAddresses]);
 
 	useEffect(() => {
 		if (currentChain) {

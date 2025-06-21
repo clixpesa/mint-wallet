@@ -1,5 +1,6 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Screen } from "@/components/layout/Screen";
+import { useAppState } from "@/features/essentials/appState";
 import {
 	QRCodeDisplay,
 	Stack,
@@ -23,10 +24,13 @@ import { router } from "expo-router";
 import { useCallback, useRef } from "react";
 
 export default function ReciveScreen() {
+	const user = useAppState((s) => s.user);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const colors = useThemeColors();
-	const address = "0x765DE816845861e75A25fCA122bb6898B8B1282a";
-	const phone = "+254712345678";
+	const address = user.mainAddress
+		? user.mainAddress
+		: "0x765DE816845861e75A25fCA122bb6898B8B1282a";
+	const phone = user.phoneNumber || user.email;
 	const clixtag = "kachdn";
 
 	const copyToClipboard = async (text: string) => {
