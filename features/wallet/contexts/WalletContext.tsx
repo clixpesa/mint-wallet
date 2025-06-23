@@ -223,3 +223,8 @@ export function useWalletContext(): WalletContext {
 	}
 	return context;
 }
+
+export function usePublicClient(): PublicClient | null {
+	const { publicClient } = useContext(WalletContext);
+	return publicClient;
+}

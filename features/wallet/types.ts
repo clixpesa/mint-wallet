@@ -34,8 +34,33 @@ export interface EnabledChainsInfo {
 	defaultChainId: ChainId;
 }
 
+export type Address = `0x${string}`; // Ethereum-style address format
+
 export type MnemonicData = {
 	address: string;
 	mnemonic?: { phrase: string; path: string; locale: string } | string | null;
 	enMnemonic?: string;
 };
+
+export type Balance = {
+	balance: number;
+	balanceUSD: number;
+};
+
+export type TokenType = "Dollar" | "Local" | "Native" | "Other";
+export type TokenId = `${string}_${ChainId}`; // e.g., "USDC_1" for USDC on Ethereum Mainnet
+
+export type Token = {
+	chainId: ChainId;
+	address: Address;
+	name: string;
+	symbol: string;
+	decimals: number;
+	logo?: string; // Optional logo URL
+	isNative?: boolean; // Indicates if it's a native token (e.g., ETH, AVAX)
+};
+
+export type TokenWithBalance = Token &
+	Balance & {
+		type?: TokenType; // Optional type for categorization
+	};

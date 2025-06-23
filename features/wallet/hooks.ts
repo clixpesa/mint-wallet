@@ -1,6 +1,11 @@
 import { useAppState } from "@/features/essentials/appState";
 import { getEnabledChains } from "./chains/utils";
-import { ChainId, type EnabledChainsInfo } from "./types";
+import { getEnabledTokens } from "./tokens/utils";
+import {
+	ChainId,
+	type EnabledChainsInfo,
+	type TokenWithBalance,
+} from "./types";
 
 export function useEnabledChains(): EnabledChainsInfo {
 	const isTestnet = useAppState((state) => state.testnetEnabled);
@@ -17,4 +22,14 @@ export function useEnabledChains(): EnabledChainsInfo {
 		isTestnet: Boolean(isTestnet),
 		defaultChainId: isTestnet ? ChainId.AvalancheFuji : ChainId.Avalanche,
 	};
+}
+
+export function useEnabledTokens(): TokenWithBalance[] {
+	const { chains } = useEnabledChains();
+	const tokens = getEnabledTokens(chains);
+	return tokens.map((token) => ({
+		...token,
+		balance: 0, // Placeholder for balance, should be fetched from a service
+		balanceUSD: 0, // Placeholder for USD value, should be fetched from a service
+	}));
 }
