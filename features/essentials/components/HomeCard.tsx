@@ -27,7 +27,7 @@ export const HomeCard = () => {
 						</Text>
 						<TouchableArea bg="$bluePastel" rounded="$full" py="$4xs" px="$sm">
 							<Text variant="subHeading2" color="$neutral1">
-								+{overdraft}
+								+{overdraft.toFixed(2)}
 							</Text>
 						</TouchableArea>
 					</XStack>

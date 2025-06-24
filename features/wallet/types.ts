@@ -56,7 +56,7 @@ export type Token = {
 	name: string;
 	symbol: string;
 	decimals: number;
-	logo?: string; // Optional logo URL
+	logo: string; // Optional logo URL
 	isNative?: boolean; // Indicates if it's a native token (e.g., ETH, AVAX)
 };
 

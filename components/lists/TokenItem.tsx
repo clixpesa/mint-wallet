@@ -1,5 +1,5 @@
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { Text, TouchableArea, XStack, YStack } from "@/ui";
+import { Text, XStack, YStack } from "@/ui";
 import { getRate } from "../../features/wallet/rates";
 import { type ChainId, Currency } from "../../features/wallet/types";
 
@@ -27,31 +27,29 @@ export function TokenItem({
 		? amount.inUSD * rate.conversionRate
 		: 0;
 	return (
-		<TouchableArea onPress={() => console.log(tokenInfo)}>
-			<XStack items="center" justify="space-between">
-				<XStack gap="$sm">
-					<TokenLogo
-						chainId={tokenInfo.chainId}
-						symbol={tokenInfo.symbol}
-						url={tokenInfo.logoUrl}
-						hideNetworkLogo={hideNetworkLogo}
-					/>
-					<YStack gap="$2xs">
-						<Text variant="subHeading2">{tokenInfo.symbol}</Text>
-						<Text variant="body3" color="$neutral2">
-							{tokenInfo.name}
-						</Text>
-					</YStack>
-				</XStack>
-				<YStack px="$2xs" gap="$2xs">
-					<Text variant="subHeading2" text="right">
-						{amount.actual < 0.005 ? "0.00" : amount.actual.toFixed(2)}
-					</Text>
-					<Text variant="body3" color="$neutral2" text="right">
-						~{`${rate?.symbol} ${eqvAmount.toFixed(2)}`}
+		<XStack items="center" justify="space-between">
+			<XStack gap="$sm">
+				<TokenLogo
+					chainId={tokenInfo.chainId}
+					symbol={tokenInfo.symbol}
+					url={tokenInfo.logoUrl}
+					hideNetworkLogo={hideNetworkLogo}
+				/>
+				<YStack gap="$2xs">
+					<Text variant="subHeading2">{tokenInfo.symbol}</Text>
+					<Text variant="body3" color="$neutral2">
+						{tokenInfo.name}
 					</Text>
 				</YStack>
 			</XStack>
-		</TouchableArea>
+			<YStack px="$2xs" gap="$2xs">
+				<Text variant="subHeading2" text="right">
+					{amount.actual < 0.005 ? "0.00" : amount.actual.toFixed(2)}
+				</Text>
+				<Text variant="body3" color="$neutral2" text="right">
+					~{`${rate?.symbol} ${eqvAmount.toFixed(2)}`}
+				</Text>
+			</YStack>
+		</XStack>
 	);
 }
