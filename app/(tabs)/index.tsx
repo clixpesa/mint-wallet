@@ -6,9 +6,9 @@ import {
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
 import { fetchTokenBalances } from "@/features/wallet";
-import { useEnabledChains } from "@/features/wallet/hooks";
+import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 import { Button } from "tamagui";
@@ -16,11 +16,8 @@ import { Button } from "tamagui";
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
-	const { chains } = useEnabledChains();
-
 	const user = useAppState((s) => s.user);
-
-	console.log(user);
+	const fetchBalances = useWalletState((s) => s.fetchBalances);
 
 	const onRefresh = () => {
 		setRefreshing(true);
@@ -33,6 +30,10 @@ export default function HomeScreen() {
 		);
 		console.log(balances);
 	};
+
+	useEffect(() => {
+		if (user.mainAddress) fetchBalances(user.mainAddress);
+	}, [user, fetchBalances]);
 
 	return (
 		<View flex={1} items="center" bg="$surface1">

@@ -1,28 +1,33 @@
+import { getRate } from "@/features/wallet";
+import { useBalances } from "@/features/wallet/walletState";
 import { Stack, Text, TouchableArea, XStack, YStack } from "@/ui";
 import { Currency, RotatableChevron } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { HomeActions } from "./HomeActions";
 
 export const HomeCard = () => {
-	const totalBalUSD = 1000;
+	const { totalBalanceUSD, overdraft, currency } = useBalances();
+	const { symbol, conversionRate } = getRate(currency);
+	const balInCurreny = totalBalanceUSD * conversionRate;
+	const balSplit = balInCurreny.toFixed(2).split(".");
 	return (
 		<YStack width="95%" mt="$sm">
 			<XStack justify="space-between" mx="$2xs">
 				<YStack gap="$2xs">
 					<Text color="$neutral2">Your Balance </Text>
 					<Text variant="heading2" fontWeight="800" color="$neutral1">
-						Ksh 999,999
+						{`${symbol} ${balSplit[0]}`}
 						<Text variant="heading2" fontWeight="800" color="$neutral3">
-							.99
+							.{balSplit[1]}
 						</Text>
 					</Text>
 					<XStack items="center" gap="$2xs">
 						<Text variant="subHeading2" color="$neutral2">
-							≈ $7,740.70
+							≈ ${totalBalanceUSD.toFixed(2)}
 						</Text>
 						<TouchableArea bg="$bluePastel" rounded="$full" py="$4xs" px="$sm">
 							<Text variant="subHeading2" color="$neutral1">
-								+1,000
+								+{overdraft}
 							</Text>
 						</TouchableArea>
 					</XStack>

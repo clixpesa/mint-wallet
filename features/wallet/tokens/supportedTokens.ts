@@ -68,6 +68,15 @@ export const supportedTokens: Record<string, Token> = {
 		logo: require("@/ui/assets/images/token-logos/tether-logo.png"),
 		isNative: false,
 	},
+	[`KxSH_${ChainId.AvalancheFuji}`]: {
+		chainId: ChainId.AvalancheFuji,
+		address: "0xC236a4959d5671C19ED5f238e1C3a92C4a3a6b20",
+		name: "Stable KES Shilling",
+		symbol: "KxSH",
+		decimals: 18,
+		logo: require("@/ui/assets/images/token-logos/keli-logo.png"),
+		isNative: false,
+	},
 	//Base Tokens
 	[`USDC_${ChainId.Base}`]: {
 		chainId: ChainId.Base,
@@ -104,6 +113,15 @@ export const supportedTokens: Record<string, Token> = {
 		symbol: "USDT",
 		decimals: 6,
 		logo: require("@/ui/assets/images/token-logos/tether-logo.png"),
+		isNative: false,
+	},
+	[`KxSH_${ChainId.BaseSepolia}`]: {
+		chainId: ChainId.BaseSepolia,
+		address: "0x236d5ad19a5e5c5ae80910de96141272aef27e38",
+		name: "Stable KES Shilling",
+		symbol: "KxSH",
+		decimals: 18,
+		logo: require("@/ui/assets/images/token-logos/keli-logo.png"),
 		isNative: false,
 	},
 	//Celo Tokens
@@ -151,6 +169,15 @@ export const supportedTokens: Record<string, Token> = {
 		symbol: "USDC",
 		decimals: 6,
 		logo: require("@/ui/assets/images/token-logos/usdc-logo.png"),
+		isNative: false,
+	},
+	[`KxSH_${ChainId.Alfajores}`]: {
+		chainId: ChainId.Alfajores,
+		address: "0x98e52b6ed6b0aa82175f797729486ef46a8e9fa0",
+		name: "Stable KES Shilling",
+		symbol: "KxSH",
+		decimals: 18,
+		logo: require("@/ui/assets/images/token-logos/keli-logo.png"),
 		isNative: false,
 	},
 };

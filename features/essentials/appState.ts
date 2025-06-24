@@ -1,6 +1,7 @@
 import { zustandMmkvStorage } from "@/store/storage";
 import { getAuth, onAuthStateChanged } from "@react-native-firebase/auth";
 import { useEffect } from "react";
+import type { Address } from "viem";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
