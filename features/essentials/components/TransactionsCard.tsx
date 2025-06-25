@@ -12,42 +12,57 @@ import {
 	YStack,
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
-import { useState } from "react";
+import { memo, useMemo } from "react";
 import { useAppState } from "../appState";
 
-export const TransactionsCard = () => {
+const MemoizedTransactionItem = memo(TransactionItem);
+
+export const TransactionsCard = memo(() => {
 	const tokens = useEnabledTokens();
-	const user = useAppState((s) => s.user);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const mainAddress = useAppState((s) => s.user.mainAddress);
 
 	const {
 		data,
 		error,
 		isLoading: txLoading,
 	} = useGetAllTokenTxsQuery({
-		address: user.mainAddress,
+		address: mainAddress,
 		tokens: tokens,
+		// Consider adding refetchOnMountOrArgChange: false if appropriate
 	});
-	const transactions = getAllTokenTxs(data?.transactions, user.mainAddress);
+
+	// Memoize transactions to prevent recalculations
+	const transactions = useMemo(
+		() => getAllTokenTxs(data?.transactions, mainAddress),
+		[data?.transactions, mainAddress],
+	);
+
+	// Memoize the first two transactions
+	const displayedTransactions = useMemo(
+		() => transactions.slice(0, 2),
+		[transactions],
+	);
+
+	const isLoading = txLoading || !data;
 
 	return (
 		<YStack
 			bg="$surface1"
 			width="100%"
 			px="$md"
-			py={isLoading || txLoading || !data ? "$2xs" : "$md"}
+			py={isLoading ? "$2xs" : "$md"}
 			mt={transactions.length > 0 ? "$md" : "$3xl"}
 			rounded="$lg"
 			gap="$md"
 		>
-			{isLoading || txLoading || !data ? (
+			{isLoading ? (
 				<TransactionLoader opacity={1} withAmounts />
-			) : transactions.length ? (
-				transactions.slice(0, 2).map((item) => {
+			) : displayedTransactions.length ? (
+				displayedTransactions.map((item) => {
 					const token = getTokenById(item.tokenId);
 					return item ? (
-						<TransactionItem
-							key={item?.id}
+						<MemoizedTransactionItem
+							key={`${item.id}_${item.tokenId}`}
 							txInfo={{
 								title: item.title,
 								date: item.date,
@@ -66,30 +81,37 @@ export const TransactionsCard = () => {
 					) : null;
 				})
 			) : (
-				<XStack items="center" gap="$sm">
-					<Stack
-						bg="$neutral3"
-						height={48}
-						rounded="$full"
-						width={48}
-						items="center"
-						justify="center"
-					>
-						<NoTransactions size={32} color="$surface1" />
-					</Stack>
-					<Text variant="subHeading1" color="$neutral2">
-						{" "}
-						No transactions yet
-					</Text>
-				</XStack>
+				<NoTransactionsView />
 			)}
-			{!isLoading && !txLoading && transactions.length > 0 && (
-				<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
-					<Text variant="subHeading2" color="$neutral2">
-						See all
-					</Text>
-				</TouchableArea>
-			)}
+
+			{!isLoading && transactions.length > 0 && <SeeAllButton />}
 		</YStack>
 	);
-};
+});
+
+// Extracted components to prevent recreation on parent render
+const NoTransactionsView = memo(() => (
+	<XStack items="center" gap="$sm">
+		<Stack
+			bg="$neutral3"
+			height={48}
+			rounded="$full"
+			width={48}
+			items="center"
+			justify="center"
+		>
+			<NoTransactions size={32} color="$surface1" />
+		</Stack>
+		<Text variant="subHeading1" color="$neutral2">
+			No transactions yet
+		</Text>
+	</XStack>
+));
+
+const SeeAllButton = memo(() => (
+	<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
+		<Text variant="subHeading2" color="$neutral2">
+			See all
+		</Text>
+	</TouchableArea>
+));
