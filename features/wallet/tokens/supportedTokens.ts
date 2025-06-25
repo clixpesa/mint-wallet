@@ -99,7 +99,7 @@ export const supportedTokens: Record<string, Token> = {
 	//Base Sepolia Tokens
 	[`USDC_${ChainId.BaseSepolia}`]: {
 		chainId: ChainId.BaseSepolia,
-		address: "0x322eFeE04a2e3ABE0EA5c874E196eEe56c8B3c3C",
+		address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
 		name: "USD Coin",
 		symbol: "USDC",
 		decimals: 6,

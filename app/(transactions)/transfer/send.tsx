@@ -56,8 +56,6 @@ export default function SendScreen() {
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 
-	console.log(tokenInfo);
-
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
 		bottomSheetModalRef.current?.present();

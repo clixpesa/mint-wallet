@@ -8,6 +8,7 @@ import { useAppState } from "@/features/essentials/appState";
 import { fetchTokenBalances } from "@/features/wallet";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
+
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
@@ -17,6 +18,7 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
+
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
 
 	const onRefresh = () => {

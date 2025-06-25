@@ -5,6 +5,10 @@ export function getTokenId(chainId: ChainId, symbol: string): TokenId {
 	return `${symbol}_${chainId}`;
 }
 
+export function getTokenById(tokenId: TokenId): Token {
+	return supportedTokens[tokenId];
+}
+
 export function getTokensByChainId(chainId: ChainId): Token[] {
 	return Object.values(supportedTokens).filter(
 		(token) => token.chainId === chainId,

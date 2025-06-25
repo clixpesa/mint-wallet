@@ -171,3 +171,27 @@ export function debounceCallback<T extends (...args: void[]) => void>(
 		cancelDebounce,
 	};
 }
+
+export const throttle = async <T>(
+	tasks: (() => Promise<T>)[],
+	maxPerSecond: number,
+	interval = 1000,
+): Promise<T[]> => {
+	const results: T[] = [];
+	const queue = [...tasks];
+
+	while (queue.length) {
+		const batch = queue.splice(0, maxPerSecond);
+		const batchStart = Date.now();
+
+		const batchResults = await Promise.all(batch.map((task) => task()));
+		results.push(...batchResults);
+
+		const elapsed = Date.now() - batchStart;
+		if (elapsed < interval && queue.length) {
+			await new Promise((resolve) => setTimeout(resolve, interval - elapsed));
+		}
+	}
+
+	return results;
+};
