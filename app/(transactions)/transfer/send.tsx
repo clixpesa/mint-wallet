@@ -6,6 +6,7 @@ import {
 	type ChainId,
 	type TokenWithBalance,
 	getRate,
+	useWalletContext,
 } from "@/features/wallet";
 import { useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
@@ -36,7 +37,7 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type HeaderParams = {
 	address: Address;
@@ -52,9 +53,10 @@ export default function SendScreen() {
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
 	const [useCurrency, setUseCurrency] = useState<boolean>(true);
-	const [isOverdraft, setIsOverdraft] = useState<boolean>(true);
+	const [isOverdraft, setIsOverdraft] = useState<boolean>(false);
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
+	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
@@ -72,6 +74,21 @@ export default function SendScreen() {
 		),
 		[],
 	);
+
+	console.log(isLoading);
+
+	const onConfirmSend = () => {
+		console.log(mainAccount?.chain);
+		if (!isOverdraft) {
+			console.log("tranfering tokens");
+		} else {
+			console.log("Transfering with overdraft");
+		}
+	};
+
+	useEffect(() => {
+		updateCurrentChainId(tokenInfo.chainId);
+	}, [tokenInfo, updateCurrentChainId]);
 
 	return (
 		<View flex={1} items="center" bg="$surface1">
@@ -183,9 +200,11 @@ export default function SendScreen() {
 			</Button>
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
-				snapPoints={isReview ? ["55%"] : ["50%", "90%"]}
+				snapPoints={isReview ? ["100%"] : ["50%", "90%"]}
 				backdropComponent={renderBackdrop}
 				onDismiss={() => inputRef.current?.focus()}
+				enableContentPanningGesture={false}
+				handleIndicatorStyle={{ backgroundColor: "#ffffff" }}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
 					{isReview ? (
@@ -204,6 +223,8 @@ export default function SendScreen() {
 							}}
 							recipient={params}
 							isOverdraft={isOverdraft}
+							isLoading={isLoading}
+							onConfirmSend={onConfirmSend}
 						/>
 					) : (
 						<TokenList
@@ -251,6 +272,8 @@ type ReviewContentType = {
 		rate: number;
 	};
 	isOverdraft: boolean;
+	isLoading: boolean;
+	onConfirmSend: () => void;
 };
 
 const ReviewContent = ({
@@ -259,8 +282,9 @@ const ReviewContent = ({
 	currency,
 	isOverdraft,
 	recipient,
+	isLoading,
+	onConfirmSend,
 }: ReviewContentType) => {
-	console.log(recipient);
 	return (
 		<>
 			<YStack gap="$md" mt="$lg" width="85%">
@@ -324,8 +348,10 @@ const ReviewContent = ({
 					bg: "$blueVibrant",
 				}}*/
 				b="$3xl"
+				loading={isLoading}
 				position="absolute"
 				width="85%"
+				onPress={onConfirmSend}
 			>
 				Confirm send
 			</Button>

@@ -152,6 +152,15 @@ export const supportedTokens: Record<string, Token> = {
 		logo: require("@/ui/assets/images/token-logos/tether-logo.png"),
 		isNative: false,
 	},
+	[`cKES_${ChainId.Celo}`]: {
+		chainId: ChainId.Celo,
+		address: "0x456a3D042C0DbD3db53D5489e98dFb038553B0d0",
+		name: "Celo Kenyan Shilling",
+		symbol: "cKES",
+		decimals: 18,
+		logo: require("@/ui/assets/images/token-logos/ckes-logo.png"),
+		isNative: false,
+	},
 	//Celo Alfajores Tokens
 	[`cUSD_${ChainId.Alfajores}`]: {
 		chainId: ChainId.Alfajores,
@@ -174,10 +183,19 @@ export const supportedTokens: Record<string, Token> = {
 	[`KxSH_${ChainId.Alfajores}`]: {
 		chainId: ChainId.Alfajores,
 		address: "0x98e52b6ed6b0aa82175f797729486ef46a8e9fa0",
-		name: "Stable KES Shilling",
+		name: "Kenyan Lira Shilling",
 		symbol: "KxSH",
 		decimals: 18,
 		logo: require("@/ui/assets/images/token-logos/keli-logo.png"),
+		isNative: false,
+	},
+	[`cKES_${ChainId.Alfajores}`]: {
+		chainId: ChainId.Alfajores,
+		address: "0x1E0433C1769271ECcF4CFF9FDdD515eefE6CdF92",
+		name: "Celo Kenyan Shilling",
+		symbol: "cKES",
+		decimals: 18,
+		logo: require("@/ui/assets/images/token-logos/ckes-logo.png"),
 		isNative: false,
 	},
 };

@@ -120,6 +120,7 @@ export function WalletContextProvider({
 	}, []);
 
 	const initializeWallet = useCallback(async () => {
+		console.log("Changing wallets");
 		setIsLoading(true);
 		const user = getAuth().currentUser;
 		try {
@@ -227,4 +228,14 @@ export function useWalletContext(): WalletContext {
 export function usePublicClient(): PublicClient | null {
 	const { publicClient } = useContext(WalletContext);
 	return publicClient;
+}
+
+export function useMainAccount(): SmartAccountClient | null {
+	const { mainAccount } = useContext(WalletContext);
+	return mainAccount;
+}
+
+export function useEOAccount(): WalletClient | null {
+	const { eoaAccount } = useContext(WalletContext);
+	return eoaAccount;
 }

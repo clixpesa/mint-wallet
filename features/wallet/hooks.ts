@@ -23,7 +23,7 @@ export function useEnabledChains(): EnabledChainsInfo {
 	return {
 		chains: chainIds,
 		isTestnet: Boolean(isTestnet),
-		defaultChainId: isTestnet ? ChainId.AvalancheFuji : ChainId.Avalanche,
+		defaultChainId: isTestnet ? ChainId.Alfajores : ChainId.Celo,
 	};
 }
 
