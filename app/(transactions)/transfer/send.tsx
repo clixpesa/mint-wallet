@@ -64,6 +64,7 @@ export default function SendScreen() {
 	const [isSending, setIsSending] = useState<boolean>(false);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
+	const [txHash, setTxHash] = useState<string>();
 
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
@@ -101,8 +102,8 @@ export default function SendScreen() {
 				token: tokenInfo,
 				amount: actualAmount,
 			});
+			setTxHash(txHash);
 			setIsTxLoading(false);
-			console.log(txHash);
 		} else {
 			console.log("Transfering with overdraft");
 		}

@@ -5,7 +5,7 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
-import { fetchTokenBalances } from "@/features/wallet";
+import { getTokensByChainId } from "@/features/wallet";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 
@@ -27,10 +27,8 @@ export default function HomeScreen() {
 	};
 
 	const handleTestFns = async () => {
-		const balances = await fetchTokenBalances(
-			"0x590392F06AC76c82F49C01219CF121A553Aa2e58",
-		);
-		console.log(balances);
+		const contracts = getTokensByChainId(44787);
+		console.log(contracts);
 	};
 
 	useEffect(() => {
