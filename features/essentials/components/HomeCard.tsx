@@ -99,7 +99,7 @@ export const HomeCard = () => {
 			<HomeActions />
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
-				snapPoints={["50%"]}
+				snapPoints={["52%"]}
 				backdropComponent={renderBackdrop}
 				onDismiss={() => {}}
 			>

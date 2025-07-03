@@ -2,6 +2,7 @@ import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
+import { transferFunds } from "@/features/contracts/tokens";
 import {
 	type ChainId,
 	type TokenWithBalance,
@@ -15,8 +16,10 @@ import {
 	Input,
 	Separator,
 	Spacer,
+	Stack,
 	Text,
 	TouchableArea,
+	UniversalImage,
 	View,
 	XStack,
 	YStack,
@@ -24,6 +27,7 @@ import {
 import {
 	ArrowDown,
 	ArrowUpDown,
+	CheckmarkCircle,
 	RotatableChevron,
 	Search,
 	X,
@@ -36,8 +40,9 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Address } from "viem";
 
 type HeaderParams = {
 	address: Address;
@@ -55,6 +60,8 @@ export default function SendScreen() {
 	const [useCurrency, setUseCurrency] = useState<boolean>(true);
 	const [isOverdraft, setIsOverdraft] = useState<boolean>(false);
 	const [isReview, setIsReview] = useState<boolean>(true);
+	const [isTxLoading, setIsTxLoading] = useState<boolean>(true);
+	const [isSending, setIsSending] = useState<boolean>(false);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 
@@ -75,12 +82,27 @@ export default function SendScreen() {
 		[],
 	);
 
-	console.log(isLoading);
+	const onConfirmSend = async () => {
+		setIsSending(true);
+		setIsTxLoading(true);
+		//console.log(mainAccount?.chain);
+		const actualAmount = amount
+			? useCurrency && tokenInfo.symbol.includes("USD")
+				? (Number(amount) / conversionRate).toFixed(6)
+				: amount
+			: "0.00";
 
-	const onConfirmSend = () => {
-		console.log(mainAccount?.chain);
-		if (!isOverdraft) {
+		console.log(actualAmount);
+		if (!isOverdraft && mainAccount && amount) {
 			console.log("tranfering tokens");
+			const txHash = await transferFunds({
+				account: mainAccount,
+				recipient: params.address as Address,
+				token: tokenInfo,
+				amount: actualAmount,
+			});
+			setIsTxLoading(false);
+			console.log(txHash);
 		} else {
 			console.log("Transfering with overdraft");
 		}
@@ -200,32 +222,55 @@ export default function SendScreen() {
 			</Button>
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
-				snapPoints={isReview ? ["100%"] : ["50%", "90%"]}
+				snapPoints={
+					isReview ? (isSending ? ["100%"] : ["55%"]) : ["50%", "90%"]
+				}
 				backdropComponent={renderBackdrop}
 				onDismiss={() => inputRef.current?.focus()}
-				enableContentPanningGesture={false}
-				handleIndicatorStyle={{ backgroundColor: "#ffffff" }}
+				enableContentPanningGesture={!isSending}
+				handleIndicatorStyle={isSending ? { backgroundColor: "#ffffff" } : null}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
 					{isReview ? (
-						<ReviewContent
-							tokenInfo={tokenInfo}
-							amount={
-								amount
-									? useCurrency && tokenInfo.symbol.includes("USD")
-										? Number(amount) / conversionRate
-										: Number(amount)
-									: 0
-							}
-							currency={{
-								symbol: symbol,
-								rate: conversionRate,
-							}}
-							recipient={params}
-							isOverdraft={isOverdraft}
-							isLoading={isLoading}
-							onConfirmSend={onConfirmSend}
-						/>
+						isSending ? (
+							<SendContent
+								tokenInfo={tokenInfo}
+								amount={
+									amount
+										? useCurrency && tokenInfo.symbol.includes("USD")
+											? Number(amount) / conversionRate
+											: Number(amount)
+										: 0
+								}
+								currency={{
+									symbol: symbol,
+									rate: conversionRate,
+								}}
+								recipient={params}
+								isLoading={isTxLoading}
+								onPressDone={() => router.navigate("/")}
+								onViewReciept={() => {}}
+							/>
+						) : (
+							<ReviewContent
+								tokenInfo={tokenInfo}
+								amount={
+									amount
+										? useCurrency && tokenInfo.symbol.includes("USD")
+											? Number(amount) / conversionRate
+											: Number(amount)
+										: 0
+								}
+								currency={{
+									symbol: symbol,
+									rate: conversionRate,
+								}}
+								recipient={params}
+								isOverdraft={isOverdraft}
+								isLoading={isLoading}
+								onConfirmSend={onConfirmSend}
+							/>
+						)
 					) : (
 						<TokenList
 							tokens={tokens}
@@ -449,5 +494,124 @@ const TokenList = ({
 				)}
 			</YStack>
 		</YStack>
+	);
+};
+
+type SendContentType = {
+	tokenInfo: { chainId: ChainId; symbol: string; logo: string };
+	recipient: { name: string; address: Address };
+	amount: number;
+	currency: {
+		symbol: string;
+		rate: number;
+	};
+	isLoading: boolean;
+	onPressDone: () => void;
+	onViewReciept: () => void;
+};
+
+const SendContent = ({
+	tokenInfo,
+	amount,
+	currency,
+	recipient,
+	isLoading,
+	onPressDone,
+	onViewReciept,
+}: SendContentType) => {
+	return (
+		<Stack flex={1} justify="center">
+			<YStack gap="$md" width="85%" mb="$5xl">
+				{isLoading ? (
+					<Stack self="center" mr="$xl">
+						<UniversalImage
+							uri={require("@/ui/assets/gifs/send.gif")}
+							size={{ height: 80, width: 80 }}
+						/>
+					</Stack>
+				) : (
+					<YStack gap="$md">
+						<CheckmarkCircle color="$statusSuccess" size={80} self="center" />
+						<Text text="center">Your transfer was successfull!</Text>
+					</YStack>
+				)}
+				<Text text="center" variant="subHeading1">
+					{isLoading ? "You're sending..." : "You sent"}
+				</Text>
+				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
+					<YStack>
+						<Text variant="heading3" color={"$neutral1"}>
+							{amount.toFixed(3)} {tokenInfo.symbol}
+						</Text>
+						<Text color={"$neutral2"}>
+							{currency.symbol}{" "}
+							{tokenInfo.symbol.includes("USD")
+								? (Number(amount) * currency.rate).toFixed(2)
+								: amount.toFixed(2)}
+						</Text>
+					</YStack>
+					<TokenLogo
+						chainId={tokenInfo.chainId}
+						symbol={tokenInfo.symbol}
+						url={tokenInfo.logo}
+						size={42}
+					/>
+				</XStack>
+				{isLoading ? (
+					<Stack self="center">
+						<UniversalImage
+							uri={require("@/ui/assets/gifs/arrow-down.gif")}
+							size={{ height: 30, width: 30 }}
+						/>
+					</Stack>
+				) : (
+					<ArrowDown size={30} color="$neutral2" self="center" />
+				)}
+				<XStack width="100%" justify="space-between" items="center">
+					<YStack gap="$2xs">
+						<Text variant="subHeading1">{recipient.name}</Text>
+						<Text color="$neutral2">
+							{recipient.name.startsWith("0x")
+								? "External Address"
+								: shortenAddress(recipient.address, 5)}
+						</Text>
+					</YStack>
+					<AccountIcon size={46} address={recipient.address} />
+				</XStack>
+				{isLoading ? null : (
+					<YStack gap="$md">
+						<Separator />
+						<YStack gap="$xs">
+							<XStack justify="space-between">
+								<Text>Fee:</Text>
+								<Text variant="subHeading2">Ksh 12.00</Text>
+							</XStack>
+						</YStack>
+					</YStack>
+				)}
+			</YStack>
+			<YStack b="$3xl" gap="$md" position="absolute" width="100%">
+				{!isLoading && (
+					<Button
+						size="lg"
+						variant="branded"
+						emphasis="tertiary"
+						width="85%"
+						onPress={onViewReciept}
+					>
+						View reciept
+					</Button>
+				)}
+				<Button
+					size="lg"
+					variant="branded"
+					loading={isLoading}
+					width="85%"
+					onPress={onPressDone}
+				>
+					{isLoading ? "Sending..." : "Done"}
+				</Button>
+			</YStack>
+		</Stack>
 	);
 };
