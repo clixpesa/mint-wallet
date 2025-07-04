@@ -35,7 +35,7 @@ const SettingsGroup = styled(YGroup, {
 const SettingsTitle = styled(Text, {
 	ml: "$md",
 	color: "$neutral2",
-	variant: "subHeading1",
+	variant: "subHeading2",
 });
 
 export const Settings = withStaticProperties(SettingsFrame, {

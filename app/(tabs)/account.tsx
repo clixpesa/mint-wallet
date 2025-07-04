@@ -14,12 +14,12 @@ import {
 
 import {
 	BookOpen,
+	Cloud,
 	Coins,
 	Contrast,
 	Edit,
 	FileListLock,
 	Fingerprint,
-	GoogleDrive,
 	HelpCenter,
 	LikeSquare,
 	Lock,
@@ -74,7 +74,7 @@ export default function AccountScreen() {
 								}
 								size={65}
 								showBorder={true}
-								borderColor="$accent2Hovered"
+								borderColor="$tealVibrant"
 							/>
 						</TouchableArea>
 						<YStack gap="$xs" items="flex-end">
@@ -134,9 +134,7 @@ export default function AccountScreen() {
 							</Settings.Item>
 							<Settings.Item icon={FileListLock}>Recovery phrase</Settings.Item>
 
-							<Settings.Item icon={GoogleDrive}>
-								Google Drive backup
-							</Settings.Item>
+							<Settings.Item icon={Cloud}>Google Drive backup</Settings.Item>
 						</Settings.Group>
 						<Settings.Title>Support</Settings.Title>
 						<Settings.Group>
