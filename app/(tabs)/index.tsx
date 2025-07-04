@@ -1,3 +1,4 @@
+import { getAvailableOverdraft } from "@/features/contracts/overdraft";
 import {
 	HomeCard,
 	HomeHeader,
@@ -5,10 +6,9 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
-import { getTokensByChainId } from "@/features/wallet";
+import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
-
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
@@ -18,7 +18,7 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
-
+	const { defaultChainId } = useEnabledChains();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
 
 	const onRefresh = () => {
@@ -27,13 +27,20 @@ export default function HomeScreen() {
 	};
 
 	const handleTestFns = async () => {
-		const contracts = getTokensByChainId(44787);
-		console.log(contracts);
+		try {
+			const contracts = await getAvailableOverdraft({
+				chainId: 44787,
+				address: "0x590392F06AC76c82F49C01219CF121A553Aa2e58",
+			});
+			console.log(contracts);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	useEffect(() => {
-		if (user.mainAddress) fetchBalances(user.mainAddress);
-	}, [user, fetchBalances]);
+		if (user.mainAddress) fetchBalances(user.mainAddress, defaultChainId);
+	}, [user, fetchBalances, defaultChainId]);
 
 	return (
 		<View flex={1} items="center" bg="$surface1">
@@ -61,6 +68,7 @@ export default function HomeScreen() {
 				<YStack gap="$sm" width="92%">
 					<TransactionsCard />
 					<ProductsCard />
+
 					<Button height="$3xl" onPress={handleTestFns}>
 						Test func
 					</Button>

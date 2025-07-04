@@ -2,6 +2,7 @@ import { AccountIcon } from "@/components/account/AccountIcon";
 import { useAppState } from "@/features/essentials/appState";
 import { Text, TouchableArea, XStack } from "@/ui";
 import { Bell, PlusCircle } from "@/ui/components/icons";
+import { router } from "expo-router";
 
 export const SpacesHeader = () => {
 	const user = useAppState((s) => s.user);
@@ -14,7 +15,7 @@ export const SpacesHeader = () => {
 			justify="space-between"
 		>
 			<XStack gap="$sm" items="center">
-				<TouchableArea>
+				<TouchableArea onPress={() => router.navigate("/(tabs)/account")}>
 					<AccountIcon
 						address={
 							user.mainAddress

@@ -1,12 +1,19 @@
 import { create } from "zustand";
+import { getAvailableOverdraft } from "../contracts/overdraft";
 import { getRate } from "./rates";
 import { fetchTokenBalances } from "./tokens/fetchBalances";
-import { type Address, type Balance, Currency, type TokenId } from "./types";
+import {
+	type Address,
+	type Balance,
+	type ChainId,
+	Currency,
+	type TokenId,
+} from "./types";
 interface WalletState {
 	currency: Currency;
 	tokenBalances: Record<TokenId, Balance>; // Record of address to Balance
 	overdraft: Balance;
-	fetchBalances: (address: Address) => Promise<void>;
+	fetchBalances: (address: Address, chainId: ChainId) => Promise<void>;
 	updateOverdraft: (amount: Balance["balanceUSD"]) => void;
 }
 
@@ -21,9 +28,19 @@ const initialWalletState = {
 
 export const useWalletState = create<WalletState>((set, get) => ({
 	...initialWalletState,
-	fetchBalances: async (address) => {
+	fetchBalances: async (address, chainId) => {
+		const currency = get().currency;
+		const { conversionRate } = getRate(currency);
 		const tokenBalances = await fetchTokenBalances(address);
-		set({ tokenBalances });
+		const availableLimit = await getAvailableOverdraft({
+			chainId,
+			address,
+		});
+		const overdraft = {
+			balance: Number(availableLimit),
+			balanceUSD: Number(availableLimit) / conversionRate,
+		};
+		set({ tokenBalances, overdraft });
 	},
 	updateOverdraft: (amount: Balance["balanceUSD"]) => {
 		const currency = get().currency;

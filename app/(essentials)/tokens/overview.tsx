@@ -57,7 +57,7 @@ export default function AssetsScreen() {
 					≈ ${totalBalanceUSD.toFixed(2)}
 				</Text>
 				<Text variant="subHeading2" color="$blueBase">
-					Availabe Overdraft: ${overdraft.toFixed(2)}
+					Availabe Overdraft: ${overdraft.balanceUSD.toFixed(2)}
 				</Text>
 			</YStack>
 			<YStack gap="$sm" mt="$lg" width="92%">

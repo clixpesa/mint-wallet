@@ -1,4 +1,14 @@
-import { type Address, type Hex, parseAbi, parseEther, parseUnits } from "viem";
+import {
+	type Address,
+	type Hex,
+	createPublicClient,
+	formatEther,
+	getContract,
+	http,
+	parseAbi,
+	parseEther,
+	parseUnits,
+} from "viem";
 import { type ChainId, getChainInfo, getTokensByChainId } from "../wallet";
 //import stableTokenAbi from "./abis/erc20.json";
 import overdraftAbi from "./abis/overdraft.json";
@@ -67,4 +77,24 @@ export async function subscribeToOverdraft(
 		console.error("Error in subscribing user:", error);
 		return txHash;
 	}
+}
+
+export async function getAvailableOverdraft({
+	chainId,
+	address,
+}: { chainId: ChainId; address: Address }) {
+	const chain = getChainInfo(chainId);
+	const overdraft = chain?.contracts.overdraft;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: overdraft.address,
+		abi: overdraftAbi,
+		client: publicClient,
+	});
+	const thisUser: any = await contract.read.getUser([address]);
+	const availableOverdraft = thisUser.availableLimit;
+	return formatEther(availableOverdraft);
 }

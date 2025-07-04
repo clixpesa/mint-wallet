@@ -1,6 +1,7 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Text, TouchableArea, XStack } from "@/ui";
 import { BarchartLine, ScanHome } from "@/ui/components/icons";
+import { router } from "expo-router";
 import { useAppState } from "../appState";
 
 export const HomeHeader = () => {
@@ -14,7 +15,7 @@ export const HomeHeader = () => {
 			justify="space-between"
 		>
 			<XStack gap="$sm" items="center">
-				<TouchableArea onPress={() => {}}>
+				<TouchableArea onPress={() => router.navigate("/(tabs)/account")}>
 					<AccountIcon
 						address={
 							user.mainAddress
