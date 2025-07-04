@@ -7067,6 +7067,7 @@ __metadata:
     eslint: "npm:^9.25.0"
     eslint-config-expo: "npm:~8.0.1"
     expo: "npm:~52.0.46"
+    expo-application: "npm:~6.0.2"
     expo-blur: "npm:~14.0.3"
     expo-build-properties: "npm:~0.13.3"
     expo-clipboard: "npm:~7.0.1"
@@ -7091,7 +7092,7 @@ __metadata:
     react-i18next: "npm:^15.5.2"
     react-native: "npm:0.76.9"
     react-native-bottom-tabs: "npm:^0.9.1"
-    react-native-fast-image: "npm:8.6.3"
+    react-native-fast-image: "npm:^8.6.3"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-get-random-values: "npm:~1.11.0"
     react-native-mmkv: "npm:^3.2.0"
@@ -8470,6 +8471,15 @@ __metadata:
     signal-exit: "npm:^3.0.3"
     strip-final-newline: "npm:^2.0.0"
   checksum: 10/8ada91f2d70f7dff702c861c2c64f21dfdc1525628f3c0454fd6f02fce65f7b958616cbd2b99ca7fa4d474e461a3d363824e91b3eb881705231abbf387470597
+  languageName: node
+  linkType: hard
+
+"expo-application@npm:~6.0.2":
+  version: 6.0.2
+  resolution: "expo-application@npm:6.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/10160e71c1ee2a3726df626477b8ad1fd572a5ef82a911c0a107ac74d26af718f9d2652d65e451a438649632c1fa189dd40dd78437a6557de4dcfa2e3aa4cb1f
   languageName: node
   linkType: hard
 
@@ -12832,7 +12842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fast-image@npm:8.6.3":
+"react-native-fast-image@npm:^8.6.3":
   version: 8.6.3
   resolution: "react-native-fast-image@npm:8.6.3"
   peerDependencies:

@@ -119,6 +119,7 @@ export * from "./LinkHorizontalAlt";
 export * from "./LoadingPriceCurve";
 export * from "./Lock";
 export * from "./LockedDocument";
+export * from "./Logout";
 export * from "./MessageQuestion";
 export * from "./MessageText";
 export * from "./Minus";
