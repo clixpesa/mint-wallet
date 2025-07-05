@@ -1,5 +1,7 @@
-import { useAppState } from "@/features/essentials/appState";
+import { TestnetModeBanner } from "@/features/essentials";
+import { useAppState, useHasAccount } from "@/features/essentials/appState";
 import "@/features/utils/shims";
+import { WalletContextProvider } from "@/features/wallet";
 import { store } from "@/store/redux";
 import { UIProvider, useThemeColors } from "@/ui";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -54,7 +56,7 @@ function AppOuter(): React.JSX.Element | null {
 function AppInner(): React.JSX.Element {
 	const colors = useThemeColors();
 	const segments = useSegments();
-	const hasAccount = true; //useAppState((s) => s.hasAccount)
+	const hasAccount = useHasAccount();
 	const isUnlocked = true; //useAppState((s) => s.isUnlocked);
 	useEffect(() => {
 		if (!hasAccount) {
@@ -67,13 +69,16 @@ function AppInner(): React.JSX.Element {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: colors.background.val }}>
+			<TestnetModeBanner />
 			{inAuthRoute ? (
 				<Stack>
 					<Stack.Screen name="(auth)" options={{ headerShown: false }} />
 					<Stack.Screen name="+not-found" />
 				</Stack>
 			) : (
-				<Slot />
+				<WalletContextProvider>
+					<Slot />
+				</WalletContextProvider>
 			)}
 			<StatusBar style="auto" />
 		</SafeAreaView>

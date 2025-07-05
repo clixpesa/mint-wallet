@@ -1,3 +1,5 @@
+```Js
+
 import { StyleSheet } from "react-native";
 
 import { ParallaxScrollView } from "@/components/layout/ParallaxScrollView";
@@ -40,3 +42,5 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 });
+
+```

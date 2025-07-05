@@ -46,9 +46,13 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 
 .tamagui
+
+google-services.prod.json
+google-services.test.json

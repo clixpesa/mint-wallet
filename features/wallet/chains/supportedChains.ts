@@ -8,6 +8,7 @@ import {
 	mainnet,
 	sepolia,
 } from "viem/chains";
+
 import { ChainId, type ChainInfo } from "../types";
 
 export const supportedChains: Record<ChainId, ChainInfo> = {
@@ -58,6 +59,13 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 			apiUrl: "https://explorer.celo.org/api",
 		},
 		logo: require("@/ui/assets/images/network-logos/celo-logo.png"),
+		contracts: {
+			...celo.contracts,
+			overdraft: {
+				address: "0x92E4fa9646b22C2AB485d156C8E704a49424Ce24",
+				blockCreated: 35762175,
+			},
+		},
 	},
 	[ChainId.Alfajores]: {
 		...celoAlfajores,
@@ -70,6 +78,13 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 			apiUrl: "https://explorer.alfajores.celo.org/api",
 		},
 		logo: require("@/ui/assets/images/network-logos/celo-logo.png"),
+		contracts: {
+			...celoAlfajores.contracts,
+			overdraft: {
+				address: "0xaB6334966F6380F5736c7923De8Ef89b5E84d017",
+				blockCreated: 46642535,
+			},
+		},
 	},
 	[ChainId.AvalancheFuji]: {
 		...avalancheFuji,

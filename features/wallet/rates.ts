@@ -29,6 +29,6 @@ export const rates = {
 
 export const getRate = (
 	currency: Currency,
-): { symbol: string; conversionRate: number } | undefined => {
+): { symbol: string; conversionRate: number } => {
 	return rates[currency];
 };

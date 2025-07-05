@@ -1,3 +1,4 @@
+```Js
 import { useAppState } from "@/features/essentials/appState";
 import { ExtrasHeader } from "@/features/extras";
 import { LinearGradient, Text, View } from "@/ui";
@@ -17,3 +18,4 @@ export default function ExtrasScreen() {
 		</View>
 	);
 }
+```

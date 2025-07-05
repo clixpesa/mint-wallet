@@ -122,30 +122,49 @@ export default function RecipientScreen() {
 						</Text>
 					</Stack>
 				) : recipients[0] ? (
-					<XStack
-						items="center"
-						px="$sm"
-						gap="$sm"
-						bg="$surface1"
-						rounded="$2xl"
-						py="$md"
-					>
-						<AccountIcon size={42} address={recipients[0].address} />
-						<YStack gap="$2xs">
-							<Text variant="subHeading2">
-								{recipients[0].name
-									? recipients[0].name
-									: shortenAddress(recipients[0].address, 5)}
-							</Text>
-							<Text variant="body3" color="$neutral2">
-								{recipients[0].name
-									? recipients[0].phone
+					<TouchableArea
+						onPress={() =>
+							router.navigate({
+								pathname: "/(transactions)/transfer/send",
+								params: {
+									name: recipients[0].name
+										? recipients[0].name
+										: shortenAddress(recipients[0].address, 5),
+									address: recipients[0].address,
+									phone: recipients[0].name
 										? recipients[0].phone
-										: shortenAddress(recipients[0].address, 6)
-									: "External account"}
-							</Text>
-						</YStack>
-					</XStack>
+											? recipients[0].phone
+											: shortenAddress(recipients[0].address, 6)
+										: "External account",
+								},
+							})
+						}
+					>
+						<XStack
+							items="center"
+							px="$sm"
+							gap="$sm"
+							bg="$surface1"
+							rounded="$2xl"
+							py="$md"
+						>
+							<AccountIcon size={42} address={recipients[0].address} />
+							<YStack gap="$2xs">
+								<Text variant="subHeading2">
+									{recipients[0].name
+										? recipients[0].name
+										: shortenAddress(recipients[0].address, 5)}
+								</Text>
+								<Text variant="body3" color="$neutral2">
+									{recipients[0].name
+										? recipients[0].phone
+											? recipients[0].phone
+											: shortenAddress(recipients[0].address, 6)
+										: "External account"}
+								</Text>
+							</YStack>
+						</XStack>
+					</TouchableArea>
 				) : null}
 				<YStack
 					bg="$surface1"

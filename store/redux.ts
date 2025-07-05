@@ -1,12 +1,12 @@
 import {
-  combineReducers,
-  configureStore,
-  createListenerMiddleware,
-  createSlice
+	combineReducers,
+	configureStore,
+	createListenerMiddleware,
+	createSlice,
 } from "@reduxjs/toolkit";
 
+import { blockscoutApi } from "@/features/wallet/transactions/blockscout";
 import { storeEffects } from "./effects";
-
 
 const listenerMiddleware = createListenerMiddleware();
 
@@ -18,7 +18,7 @@ const reduxSlice = createSlice({
 
 const rootReducer = combineReducers({
 	redux: reduxSlice.reducer,
-	//[blockscoutApi.reducerPath]: blockscoutApi.reducer,
+	[blockscoutApi.reducerPath]: blockscoutApi.reducer,
 });
 
 export const store = configureStore({
@@ -26,12 +26,12 @@ export const store = configureStore({
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().prepend(
 			listenerMiddleware.middleware,
-			//blockscoutApi.middleware,
+			blockscoutApi.middleware,
 		),
 });
 
-export type ReduxState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type ReduxState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 const listeners = [storeEffects]; // essentialListeners walletListeners //storageListeners
 listeners.forEach((listener) => listener(listenerMiddleware.startListening));

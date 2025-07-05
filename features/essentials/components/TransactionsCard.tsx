@@ -1,4 +1,8 @@
 import { TransactionItem } from "@/components/lists/TransactionItem";
+import { getTokenById } from "@/features/wallet";
+import { useEnabledTokens } from "@/features/wallet/hooks";
+import { useGetAllTokenTxsQuery } from "@/features/wallet/transactions/blockscout";
+import { getAllTokenTxs } from "@/features/wallet/transactions/transactions";
 import {
 	Stack,
 	Text,
@@ -8,16 +12,39 @@ import {
 	YStack,
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
-import { useEffect, useState } from "react";
+import { memo, useMemo } from "react";
+import { useAppState } from "../appState";
 
-export const TransactionsCard = () => {
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const transactions = [{ key: "0x0001" }, { key: "0x0002" }];
-	useEffect(() => {
-		setTimeout(() => {
-			setIsLoading(false);
-		}, 2000);
-	}, []);
+const MemoizedTransactionItem = memo(TransactionItem);
+
+export const TransactionsCard = memo(() => {
+	const tokens = useEnabledTokens();
+	const mainAddress = useAppState((s) => s.user.mainAddress);
+
+	const {
+		data,
+		error,
+		isLoading: txLoading,
+	} = useGetAllTokenTxsQuery({
+		address: mainAddress,
+		tokens: tokens,
+		// Consider adding refetchOnMountOrArgChange: false if appropriate
+	});
+
+	// Memoize transactions to prevent recalculations
+	const transactions = useMemo(
+		() => getAllTokenTxs(data?.transactions, mainAddress),
+		[data?.transactions, mainAddress],
+	);
+
+	// Memoize the first two transactions
+	const displayedTransactions = useMemo(
+		() => transactions.slice(0, 2),
+		[transactions],
+	);
+
+	const isLoading = txLoading || !data;
+
 	return (
 		<YStack
 			bg="$surface1"
@@ -30,51 +57,61 @@ export const TransactionsCard = () => {
 		>
 			{isLoading ? (
 				<TransactionLoader opacity={1} withAmounts />
-			) : transactions.length > 0 ? (
-				transactions.map((item) => (
-					<TransactionItem
-						key={item.key}
-						txInfo={{
-							title: "Recieved KELI",
-							date: "Sun, 15 Jun 2025",
-						}}
-						tokenInfo={{
-							name: "KES Lira",
-							symbol: "KELI",
-							logoUrl: require("@/ui/assets/images/token-logos/keli-logo.png"),
-							chainId: 43114,
-						}}
-						amount={{
-							actual: 10,
-							inUSD: 0.077,
-						}}
-					/>
-				))
+			) : displayedTransactions.length ? (
+				displayedTransactions.map((item) => {
+					const token = getTokenById(item.tokenId);
+					return item ? (
+						<MemoizedTransactionItem
+							key={`${item.id}_${item.tokenId}`}
+							txInfo={{
+								title: item.title,
+								date: item.date,
+							}}
+							tokenInfo={{
+								name: token.name,
+								symbol: token.symbol,
+								logoUrl: token.logo,
+								chainId: token.chainId,
+							}}
+							amount={{
+								actual: item.amount,
+								inUSD: item.amountUSD,
+							}}
+						/>
+					) : null;
+				})
 			) : (
-				<XStack items="center" gap="$sm">
-					<Stack
-						bg="$neutral3"
-						height={48}
-						rounded="$full"
-						width={48}
-						items="center"
-						justify="center"
-					>
-						<NoTransactions size={32} color="$surface1" />
-					</Stack>
-					<Text variant="subHeading1" color="$neutral2">
-						{" "}
-						No transactions yet
-					</Text>
-				</XStack>
+				<NoTransactionsView />
 			)}
-			{!isLoading && transactions.length > 0 && (
-				<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
-					<Text variant="subHeading2" color="$neutral2">
-						See all
-					</Text>
-				</TouchableArea>
-			)}
+
+			{!isLoading && transactions.length > 0 && <SeeAllButton />}
 		</YStack>
 	);
-};
+});
+
+// Extracted components to prevent recreation on parent render
+const NoTransactionsView = memo(() => (
+	<XStack items="center" gap="$sm">
+		<Stack
+			bg="$neutral3"
+			height={48}
+			rounded="$full"
+			width={48}
+			items="center"
+			justify="center"
+		>
+			<NoTransactions size={32} color="$surface1" />
+		</Stack>
+		<Text variant="subHeading1" color="$neutral2">
+			No transactions yet
+		</Text>
+	</XStack>
+));
+
+const SeeAllButton = memo(() => (
+	<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
+		<Text variant="subHeading2" color="$neutral2">
+			See all
+		</Text>
+	</TouchableArea>
+));
