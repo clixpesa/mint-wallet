@@ -3,6 +3,7 @@ import { getTokenById } from "@/features/wallet";
 import { useEnabledTokens } from "@/features/wallet/hooks";
 import { useGetAllTokenTxsQuery } from "@/features/wallet/transactions/blockscout";
 import { getAllTokenTxs } from "@/features/wallet/transactions/transactions";
+import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Stack,
 	Text,
@@ -20,7 +21,7 @@ const MemoizedTransactionItem = memo(TransactionItem);
 export const TransactionsCard = memo(() => {
 	const tokens = useEnabledTokens();
 	const mainAddress = useAppState((s) => s.user.mainAddress);
-
+	const currency = useWalletState((s) => s.currency);
 	const {
 		data,
 		error,
@@ -77,6 +78,7 @@ export const TransactionsCard = memo(() => {
 								actual: item.amount,
 								inUSD: item.amountUSD,
 							}}
+							currency={currency}
 						/>
 					) : null;
 				})

@@ -31,7 +31,7 @@ export const HomeHeader = () => {
 					fontSize="$lg"
 					color="$neutral1"
 				>
-					Home
+					Clixpesa
 				</Text>
 			</XStack>
 			<XStack gap="$sm" px="$sm" items="center">
