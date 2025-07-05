@@ -58,7 +58,7 @@ export default function AccountScreen() {
 			>
 				<HeaderBackButton />
 				<Text variant="subHeading1" fontWeight="$md" color="$neutral1">
-					My Account
+					Account
 				</Text>
 				<TouchableArea rounded="$full" px="$sm" onPress={() => {}} />
 			</XStack>
@@ -72,7 +72,7 @@ export default function AccountScreen() {
 										? user.mainAddress
 										: "0x765de816845861e75a25fca122bb6898b8b1282a"
 								}
-								size={65}
+								size={60}
 								showBorder={true}
 								borderColor="$tealVibrant"
 							/>

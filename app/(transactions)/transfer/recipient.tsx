@@ -56,7 +56,7 @@ export default function RecipientScreen() {
 	useEffect(() => {
 		setTimeout(() => {
 			setIsLoading(false);
-		}, 2000);
+		}, 50);
 	}, []);
 
 	return (
@@ -110,11 +110,11 @@ export default function RecipientScreen() {
 					) : null}
 				</XStack>
 				{loading || searchTerm !== searchText ? (
-					<Stack px="$sm" bg="$surface1" rounded="$2xl">
+					<Stack px="$sm" bg="$surface1" rounded="$lg">
 						<Loader.SearchResult />
 					</Stack>
 				) : !recipients.length && searchText.length ? (
-					<Stack items="center" px="$sm" py="$md" bg="$surface1" rounded="$2xl">
+					<Stack items="center" px="$sm" py="$md" bg="$surface1" rounded="$lg">
 						<Text variant="buttonLabel2">No results found</Text>
 						<Text color="$neutral3" text="center" variant="body2">
 							The recipient you searched does not exist or is spelled
@@ -145,7 +145,7 @@ export default function RecipientScreen() {
 							px="$sm"
 							gap="$sm"
 							bg="$surface1"
-							rounded="$2xl"
+							rounded="$lg"
 							py="$md"
 						>
 							<AccountIcon size={42} address={recipients[0].address} />

@@ -48,11 +48,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
-type HeaderParams = {
-	address: Address;
-	name: string;
-};
-
 export default function SendScreen() {
 	const params: HeaderParams = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
@@ -322,24 +317,51 @@ export default function SendScreen() {
 	);
 }
 
+type HeaderParams = {
+	address: Address;
+	name: string;
+};
+
 const Header = ({ address, name }: HeaderParams) => {
 	return (
-		<XStack
-			width="100%"
-			items="center"
-			py="$xs"
-			px="$sm"
-			justify="space-between"
-		>
-			<XStack gap="$sm" items="center">
+		<XStack width="100%" py="$xs" px="$sm" justify="space-between" mt="$xs">
+			<XStack gap="$sm">
 				<HeaderBackButton />
-				<Text variant="subHeading1" fontWeight="$md" color="$neutral1">
-					Send to {name}
+				<Text
+					variant="subHeading1"
+					fontWeight="$md"
+					color="$neutral1"
+					mt="$3xs"
+				>
+					Send to
 				</Text>
 			</XStack>
-			<TouchableArea rounded="$full" px="$sm">
-				<AccountIcon size={34} address={address} />
-			</TouchableArea>
+			<XStack gap="$sm" items="center">
+				<YStack gap="$2xs">
+					<Text
+						variant="subHeading1"
+						fontWeight="$md"
+						color="$neutral1"
+						text="right"
+						mt="$3xs"
+					>
+						{name}
+					</Text>
+					<Text color="$neutral2" text="right">
+						{name.startsWith("0x")
+							? "External account"
+							: shortenAddress(address, 5)}
+					</Text>
+				</YStack>
+				<TouchableArea rounded="$full" pr="$sm" mt="$3xs">
+					<AccountIcon
+						size={42}
+						address={address}
+						showBorder={true}
+						borderColor="$tealPastel"
+					/>
+				</TouchableArea>
+			</XStack>
 		</XStack>
 	);
 };
@@ -375,8 +397,6 @@ const ReviewContent = ({
 	const isOverdraftLimit = tokenInfo.symbol.includes("USD")
 		? tokenInfo.balanceUSD + overdraft.balanceUSD - amount < 0
 		: tokenInfo.balance + overdraft.balance - amount < 0;
-
-	console.log(isOverdraftLimit);
 
 	return (
 		<>
@@ -652,7 +672,7 @@ const SendContent = ({
 				) : (
 					<ArrowDown size={30} color="$neutral2" self="center" />
 				)}
-				<XStack width="100%" justify="space-between" items="center">
+				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack gap="$2xs">
 						<Text variant="subHeading1">{recipient.name}</Text>
 						<Text color="$neutral2">
@@ -661,7 +681,11 @@ const SendContent = ({
 								: shortenAddress(recipient.address, 5)}
 						</Text>
 					</YStack>
-					<AccountIcon size={46} address={recipient.address} />
+					<AccountIconWChainLogo
+						size={46}
+						address={recipient.address}
+						chainId={tokenInfo.chainId}
+					/>
 				</XStack>
 				{isLoading ? null : (
 					<YStack gap="$md">
@@ -669,7 +693,16 @@ const SendContent = ({
 						<YStack gap="$xs">
 							<XStack justify="space-between">
 								<Text>Fee:</Text>
-								<Text variant="subHeading2">Ksh 12.00</Text>
+								<XStack gap="$xs">
+									<Text
+										variant="subHeading2"
+										textDecorationLine="line-through"
+										color="$orangeBase"
+									>
+										Ksh 12.00
+									</Text>
+									<Text variant="subHeading2">0.00</Text>
+								</XStack>
 							</XStack>
 						</YStack>
 					</YStack>
