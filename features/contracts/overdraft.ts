@@ -3,14 +3,21 @@ import {
 	type Hex,
 	createPublicClient,
 	formatEther,
+	formatUnits,
 	getContract,
 	http,
 	parseAbi,
 	parseEther,
 	parseUnits,
 } from "viem";
-import { type ChainId, getChainInfo, getTokensByChainId } from "../wallet";
-//import stableTokenAbi from "./abis/erc20.json";
+import {
+	type ChainId,
+	type TokenId,
+	getChainInfo,
+	getTokenById,
+	getTokensByChainId,
+} from "../wallet";
+import stableTokenAbi from "./abis/erc20.json";
 import overdraftAbi from "./abis/overdraft.json";
 
 type SubscribeUserParams = {
@@ -26,15 +33,15 @@ type SubscribeUserParams = {
 type OverdraftParams = {
 	account: any;
 	userAddress: Address;
-	token: Address;
+	tokenId: TokenId;
 	amount: string;
 };
 
 type TransferWithOverdraftParams = {
 	account: any;
-	from: Address;
+	//from: Address;
 	to: Address;
-	token: Address;
+	tokenId: TokenId;
 	amount: string;
 };
 
@@ -84,7 +91,7 @@ export async function getAvailableOverdraft({
 	address,
 }: { chainId: ChainId; address: Address }) {
 	const chain = getChainInfo(chainId);
-	const overdraft = chain?.contracts.overdraft;
+	const overdraft = chain.contracts.overdraft;
 	const publicClient = createPublicClient({
 		chain,
 		transport: http(chain.rpcUrls.default.http[0]),
@@ -94,7 +101,81 @@ export async function getAvailableOverdraft({
 		abi: overdraftAbi,
 		client: publicClient,
 	});
-	const thisUser: any = await contract.read.getUser([address]);
+	const thisUser = await contract.read.getUser([address]);
 	const availableOverdraft = thisUser.availableLimit;
 	return formatEther(availableOverdraft);
+}
+
+export async function useOverdraft(params: OverdraftParams): Promise<Hex> {
+	const token = getTokenById(params.tokenId);
+	const chain = getChainInfo(token.chainId);
+	const overdraft = chain?.contracts.overdraft;
+	const txHash = await params.account.writeContract({
+		address: overdraft.address,
+		abi: overdraftAbi,
+		functionName: "useOverdraft",
+		args: [
+			params.userAddress,
+			token.address,
+			parseUnits(params.amount, token.decimals),
+		],
+	});
+	return txHash;
+}
+
+export async function repayOverdraft(params: OverdraftParams): Promise<Hex> {
+	const token = getTokenById(params.tokenId);
+	const chain = getChainInfo(token.chainId);
+	const overdraft = chain?.contracts.overdraft;
+	const txHash = await params.account.writeContract({
+		address: overdraft.address,
+		abi: overdraftAbi,
+		functionName: "repayOverdraft",
+		args: [
+			params.userAddress,
+			token.address,
+			parseUnits(params.amount, token.decimals),
+		],
+	});
+	return txHash;
+}
+
+export async function transferTokenWithOverdraft(
+	params: TransferWithOverdraftParams,
+) {
+	let txHash = "0x";
+	const token = getTokenById(params.tokenId);
+	const chain = getChainInfo(token.chainId);
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const tokenContract = getContract({
+		address: token.address,
+		abi: stableTokenAbi,
+		client: {
+			public: publicClient,
+			wallet: params.account,
+		},
+	});
+	const balance = (await tokenContract.read.balanceOf([
+		params.account.account.address,
+	])) as bigint;
+	const deficit = parseUnits(params.amount, token.decimals) - balance;
+	try {
+		await useOverdraft({
+			account: params.account,
+			userAddress: params.account.account.address,
+			tokenId: params.tokenId,
+			amount: formatUnits(deficit, token.decimals),
+		});
+	} catch (error) {
+		console.log("Overdraft Request Failed", error);
+	} finally {
+		txHash = await tokenContract.write.transfer([
+			params.to,
+			parseUnits(params.amount, token.decimals),
+		]);
+	}
+	return txHash;
 }

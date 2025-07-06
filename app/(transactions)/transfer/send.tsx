@@ -4,6 +4,7 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
+import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
 import { transferFunds } from "@/features/contracts/tokens";
 import {
 	type Balance,
@@ -121,6 +122,14 @@ export default function SendScreen() {
 			setIsTxLoading(false);
 		} else {
 			console.log("Transfering with overdraft");
+			const txHash = await transferTokenWithOverdraft({
+				account: mainAccount,
+				to: params.address as Address,
+				tokenId: `${tokenInfo.symbol}_${tokenInfo.chainId}`,
+				amount: actualAmount,
+			});
+			setTxHash(txHash);
+			setIsTxLoading(false);
 		}
 	};
 
@@ -178,7 +187,8 @@ export default function SendScreen() {
 						<XStack gap="$2xs" items="center">
 							<Text variant="subHeading1">
 								{amount
-									? tokenInfo.symbol.includes("SH")
+									? tokenInfo.symbol.includes("SH") ||
+										tokenInfo.symbol.includes("KES")
 										? amount
 										: (Number(amount) / conversionRate).toFixed(3)
 									: "0.00"}{" "}

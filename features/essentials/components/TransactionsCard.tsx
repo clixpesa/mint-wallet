@@ -13,6 +13,7 @@ import {
 	YStack,
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
+import { router } from "expo-router";
 import { memo, useMemo } from "react";
 import { useAppState } from "../appState";
 
@@ -111,7 +112,13 @@ const NoTransactionsView = memo(() => (
 ));
 
 const SeeAllButton = memo(() => (
-	<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
+	<TouchableArea
+		self="center"
+		px="$3xl"
+		hitSlop={8}
+		pt="$2xs"
+		onPress={() => router.navigate("/transfer/history")}
+	>
 		<Text variant="subHeading2" color="$neutral2">
 			See all
 		</Text>

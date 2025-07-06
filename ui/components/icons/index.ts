@@ -159,6 +159,7 @@ export * from "./QuestionInCircleFilled";
 export { QuestionInCircleFilled } from "./QuestionInCircleFilled";
 export * from "./ReceiptText";
 export * from "./ReceiveAlt";
+export * from "./Refresh";
 export * from "./RightArrow";
 export * from "./RoscaFill";
 export * from "./RotatableChevron";

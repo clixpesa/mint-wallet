@@ -40,9 +40,10 @@ export const fetchTokenBalances = async (
 			});
 			const rawBal = await contract.read.balanceOf([address]);
 			const balance = rawBal ? Number(formatUnits(rawBal, token.decimals)) : 0;
-			const balanceUSD = token.symbol.startsWith("Kx")
-				? balance / rates.KES.conversionRate
-				: balance * 1; // Assuming token.priceUSD is available
+			const balanceUSD =
+				token.symbol.startsWith("Kx") || token.symbol.includes("KES")
+					? balance / rates.KES.conversionRate
+					: balance * 1; // Assuming token.priceUSD is available
 			balances[tokenId] = {
 				balance: balance,
 				balanceUSD: balanceUSD,

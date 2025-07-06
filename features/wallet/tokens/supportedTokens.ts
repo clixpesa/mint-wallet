@@ -192,7 +192,7 @@ export const supportedTokens: Record<string, Token> = {
 	[`cKES_${ChainId.Alfajores}`]: {
 		chainId: ChainId.Alfajores,
 		address: "0x1E0433C1769271ECcF4CFF9FDdD515eefE6CdF92",
-		name: "Celo Kenyan Shilling",
+		name: "Celo KE Shilling",
 		symbol: "cKES",
 		decimals: 18,
 		logo: require("@/ui/assets/images/token-logos/ckes-logo.png"),

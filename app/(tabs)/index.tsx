@@ -1,4 +1,4 @@
-import { getAvailableOverdraft } from "@/features/contracts/overdraft";
+import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
 import {
 	HomeCard,
 	HomeHeader,
@@ -6,18 +6,21 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
+import { useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
+import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
 	const { defaultChainId } = useEnabledChains();
+	const { mainAccount } = useWalletContext();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
 
 	const onRefresh = () => {
@@ -27,9 +30,11 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const contracts = await getAvailableOverdraft({
-				chainId: 44787,
-				address: "0x590392F06AC76c82F49C01219CF121A553Aa2e58",
+			const contracts = await transferTokenWithOverdraft({
+				account: mainAccount,
+				to: "0xDE2eaCEF8f819fD532F2986378e5495b27539b2B",
+				tokenId: "cKES_44787",
+				amount: "1",
 			});
 			console.log(contracts);
 		} catch (error) {
@@ -68,9 +73,9 @@ export default function HomeScreen() {
 					<TransactionsCard />
 					<ProductsCard />
 
-					{/*<Button height="$3xl" onPress={handleTestFns}>
+					<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>*/}
+					</Button>
 				</YStack>
 			</ScrollView>
 		</View>
