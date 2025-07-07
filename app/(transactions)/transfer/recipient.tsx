@@ -22,7 +22,7 @@ export default function RecipientScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const { recipients, searchTerm, loading } = useRecipientSearch(searchText);
 	const recentRecipients = [
-		{
+		/*{
 			key: "0x0001",
 			name: null,
 			address: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
@@ -42,7 +42,7 @@ export default function RecipientScreen() {
 			address: "0x8E912eE99bfaECAe8364Ba6604612FfDfE46afd2",
 			phone: null,
 			txs: 3,
-		},
+		},*/
 	];
 
 	const handleTextChange = (text: string) => {
