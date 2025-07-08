@@ -16,7 +16,8 @@ export function HomeActions(): JSX.Element {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const onPressDeposit = useCallback(() => {
-		router.push("/(transactions)/ramps/deposit");
+		//router.push("/(transactions)/ramps/deposit");
+		router.push("/(transactions)/ramps/receive");
 	}, []);
 	const onPressSend = useCallback(() => {
 		router.push("/(transactions)/transfer/recipient");

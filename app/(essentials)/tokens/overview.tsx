@@ -17,10 +17,14 @@ export default function AssetsScreen() {
 	const balInCurreny = totalBalanceUSD * conversionRate;
 	const balSplit = balInCurreny.toFixed(2).split(".");
 	const defaultShilling = tokens.find(
-		(item) => item.symbol.includes("SH") && item.chainId === defaultChainId,
+		(item) =>
+			(item.symbol.endsWith("SH") || item.symbol.endsWith("KES")) &&
+			item.chainId === defaultChainId,
 	);
 	const shillingsWithBal = tokens.filter(
-		(token) => token.symbol.endsWith("SH") && token.balance > 0,
+		(token) =>
+			(token.symbol.endsWith("SH") || token.symbol.endsWith("KES")) &&
+			token.balance > 0,
 	);
 	const defaultDollar = tokens.find(
 		(item) => item.symbol.includes("USD") && item.chainId === defaultChainId,

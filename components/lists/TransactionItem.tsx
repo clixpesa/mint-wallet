@@ -1,7 +1,7 @@
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { Text, TouchableArea, XStack, YStack } from "@/ui";
 import { getRate } from "../../features/wallet/rates";
-import { type ChainId, Currency } from "../../features/wallet/types";
+import type { ChainId, Currency } from "../../features/wallet/types";
 
 export type TxItemParams = {
 	tokenInfo: {
@@ -20,6 +20,7 @@ export type TxItemParams = {
 		credited?: boolean;
 	};
 	hideNetworkLogo?: boolean;
+	currency: Currency;
 };
 
 export function TransactionItem({
@@ -27,8 +28,9 @@ export function TransactionItem({
 	tokenInfo,
 	amount,
 	hideNetworkLogo,
+	currency,
 }: TxItemParams): JSX.Element {
-	const rate = getRate(Currency.KES);
+	const rate = getRate(currency);
 	const eqvAmount = rate?.conversionRate
 		? amount.inUSD * rate.conversionRate
 		: 0;
@@ -51,10 +53,10 @@ export function TransactionItem({
 				</XStack>
 				<YStack px="$2xs" gap="$2xs">
 					<Text variant="subHeading2" text="right">
-						{amount.actual.toFixed(2)}
+						{`${txInfo.title.includes("Rece") ? "+" : "-"}${amount.actual.toFixed(2)}`}
 					</Text>
 					<Text variant="body3" color="$neutral2" text="right">
-						~{`${rate?.symbol} ${eqvAmount.toFixed(2)}`}
+						~{`${eqvAmount.toFixed(2)} ${currency}`}
 					</Text>
 				</YStack>
 			</XStack>

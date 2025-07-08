@@ -34,9 +34,10 @@ export function getAllTokenTxs(
 			from: tx.from,
 			fee: formatUnits(tx.gasUsed.toString(), Number(tx.tokenDecimal)),
 			amount: Number(amount),
-			amountUSD: tx.tokenSymbol.includes("SH")
-				? Number(amount) / rates.KES.conversionRate
-				: Number(amount),
+			amountUSD:
+				tx.tokenSymbol.includes("SH") || tx.tokenSymbol.includes("KES")
+					? Number(amount) / rates.KES.conversionRate
+					: Number(amount),
 			timestamp: txDate.getTime(),
 		};
 	});

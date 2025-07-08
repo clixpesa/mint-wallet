@@ -3,6 +3,7 @@ import { getTokenById } from "@/features/wallet";
 import { useEnabledTokens } from "@/features/wallet/hooks";
 import { useGetAllTokenTxsQuery } from "@/features/wallet/transactions/blockscout";
 import { getAllTokenTxs } from "@/features/wallet/transactions/transactions";
+import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Stack,
 	Text,
@@ -12,6 +13,7 @@ import {
 	YStack,
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
+import { router } from "expo-router";
 import { memo, useMemo } from "react";
 import { useAppState } from "../appState";
 
@@ -20,7 +22,7 @@ const MemoizedTransactionItem = memo(TransactionItem);
 export const TransactionsCard = memo(() => {
 	const tokens = useEnabledTokens();
 	const mainAddress = useAppState((s) => s.user.mainAddress);
-
+	const currency = useWalletState((s) => s.currency);
 	const {
 		data,
 		error,
@@ -77,6 +79,7 @@ export const TransactionsCard = memo(() => {
 								actual: item.amount,
 								inUSD: item.amountUSD,
 							}}
+							currency={currency}
 						/>
 					) : null;
 				})
@@ -109,7 +112,13 @@ const NoTransactionsView = memo(() => (
 ));
 
 const SeeAllButton = memo(() => (
-	<TouchableArea self="center" px="$3xl" hitSlop={8} pt="$2xs">
+	<TouchableArea
+		self="center"
+		px="$3xl"
+		hitSlop={8}
+		pt="$2xs"
+		onPress={() => router.navigate("/transfer/history")}
+	>
 		<Text variant="subHeading2" color="$neutral2">
 			See all
 		</Text>
