@@ -34,7 +34,7 @@ export interface AppState {
 const initialAppState = {
 	hasAccount: false,
 	isUnlocked: false,
-	testnetEnabled: false, // Default to false, can be set later
+	testnetEnabled: true, // Default to false, can be set later
 	user: {
 		uid: "",
 		tag: "",

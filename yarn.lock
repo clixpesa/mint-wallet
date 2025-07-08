@@ -1981,14 +1981,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/vector-icons@npm:^14.0.0, @expo/vector-icons@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "@expo/vector-icons@npm:14.1.0"
-  peerDependencies:
-    expo-font: "*"
-    react: "*"
-    react-native: "*"
-  checksum: 10/5b80a684042672e40f311a921fca7acc964fdddb1edd2c2c22253f5b9097e9fe441626ffa50c98ffc2622a3f1a9b5315a8a73796348d3b03108b4da2600384bc
+"@expo/vector-icons@npm:~14.0.4":
+  version: 14.0.4
+  resolution: "@expo/vector-icons@npm:14.0.4"
+  dependencies:
+    prop-types: "npm:^15.8.1"
+  checksum: 10/bb807830dd886cb439e90bbaf5afd5e9ea538486d3bd0cc240210a230c53e7d858b460d05836875ae0ef3958bc591c21afedb5f58086be4aeeb362d08665c809
   languageName: node
   linkType: hard
 
@@ -7040,7 +7038,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@biomejs/biome": "npm:^1.9.4"
     "@bottom-tabs/react-navigation": "npm:^0.9.1"
-    "@expo/vector-icons": "npm:^14.1.0"
+    "@expo/vector-icons": "npm:~14.0.4"
     "@gorhom/bottom-sheet": "npm:^5.1.5"
     "@react-native-firebase/app": "npm:^22.2.1"
     "@react-native-firebase/auth": "npm:^22.2.1"
@@ -7066,7 +7064,7 @@ __metadata:
     babel-plugin-module-resolver: "npm:^5.0.2"
     eslint: "npm:^9.25.0"
     eslint-config-expo: "npm:~8.0.1"
-    expo: "npm:~52.0.46"
+    expo: "npm:~52.0.47"
     expo-application: "npm:~6.0.2"
     expo-blur: "npm:~14.0.3"
     expo-build-properties: "npm:~0.13.3"
@@ -8836,9 +8834,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:~52.0.46":
-  version: 52.0.46
-  resolution: "expo@npm:52.0.46"
+"expo@npm:~52.0.47":
+  version: 52.0.47
+  resolution: "expo@npm:52.0.47"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
     "@expo/cli": "npm:0.22.26"
@@ -8846,7 +8844,7 @@ __metadata:
     "@expo/config-plugins": "npm:~9.0.17"
     "@expo/fingerprint": "npm:0.11.11"
     "@expo/metro-config": "npm:0.19.12"
-    "@expo/vector-icons": "npm:^14.0.0"
+    "@expo/vector-icons": "npm:~14.0.4"
     babel-preset-expo: "npm:~12.0.11"
     expo-asset: "npm:~11.0.5"
     expo-constants: "npm:~17.0.8"
@@ -8875,7 +8873,7 @@ __metadata:
     expo: bin/cli
     expo-modules-autolinking: bin/autolinking
     fingerprint: bin/fingerprint
-  checksum: 10/1a1d737b44605f0ab683e07890d97360ed78132ae3a4febdd89ab977c51458a0e56f7851eb30332d97d1afaec032d1f8dada5c6248d6033fe6cdc48063ca6cb1
+  checksum: 10/b5f24bf60e2938eaea0a9bfd53c76979a9a0fe165ecd4d3d12846c28bc5c7b2bfe69c09586a67e0c2a31e760265f7762458ad842b47cf19d36069a2a730daedf
   languageName: node
   linkType: hard
 

@@ -2,6 +2,7 @@
   "expo": {
     "name": "Clixpesa",
     "slug": "clixpesa-mint",
+    "owner": "clixpesa",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./ui/assets/images/icon.png",
@@ -50,19 +51,36 @@
         }
       ],
       "expo-secure-store",
-      ["react-native-bottom-tabs", {
-        "theme": "material3"
-      }],
-      ["expo-build-properties", {
-        "ios":{
-          "useFrameworks": "static"
+      [
+        "react-native-bottom-tabs",
+        {
+          "theme": "material3"
         }
-      }],
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/auth"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b6c6e91a-96d7-47ea-97be-9f396c1f0710"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b6c6e91a-96d7-47ea-97be-9f396c1f0710"
     }
   }
 }
