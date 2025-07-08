@@ -1,10 +1,7 @@
 import { ParallaxScrollView } from "@/components/layout/ParallaxScrollView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { SpacesHeader, SpacesTabs } from "@/features/spaces";
-import { Text } from "@/ui";
+import { SpacesCard, SpacesHeader, SpacesTabs } from "@/features/spaces";
 import { useState } from "react";
 //import { useNavigationState } from "@react-navigation/native";
-import { StyleSheet } from "react-native";
 
 export default function SpacesScreen() {
 	//const index = useNavigationState((s) => s.routes[s.index].state?.index) || 0
@@ -12,9 +9,14 @@ export default function SpacesScreen() {
 	return (
 		<ParallaxScrollView
 			header={<SpacesHeader />}
-			headerContent={
-				//<SpacesCard index={index}/>
-				<>
+			headerContent={<SpacesCard index={index} />}
+		>
+			<SpacesTabs onTabSelect={({ index }) => setIndex(index)} />
+		</ParallaxScrollView>
+	);
+}
+
+/*<>
 					<IconSymbol
 						size={310}
 						color="#d4d4d4"
@@ -31,13 +33,8 @@ export default function SpacesScreen() {
 						Coming Soon
 					</Text>
 				</>
-			}
-		>
-			<SpacesTabs onTabSelect={({ index }) => setIndex(index)} />
-		</ParallaxScrollView>
-	);
-}
-
+				
+		
 const styles = StyleSheet.create({
 	headerImage: {
 		color: "#d4d4d4",
@@ -50,3 +47,4 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 });
+*/

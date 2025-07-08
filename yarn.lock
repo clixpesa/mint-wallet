@@ -3225,6 +3225,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/datetimepicker@npm:8.2.0":
+  version: 8.2.0
+  resolution: "@react-native-community/datetimepicker@npm:8.2.0"
+  dependencies:
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    expo: ">=50.0.0"
+    react: "*"
+    react-native: "*"
+    react-native-windows: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+    react-native-windows:
+      optional: true
+  checksum: 10/57b51a9423d3ba49029e2d9905db040f7091285c51578eef5273baf3dd2e22bde6d1a17962a8dc5e0ac588dccff0ab36c9774f9da76363fca458ec42d30c4d66
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/app@npm:^22.2.1":
   version: 22.2.1
   resolution: "@react-native-firebase/app@npm:22.2.1"
@@ -7040,6 +7059,7 @@ __metadata:
     "@bottom-tabs/react-navigation": "npm:^0.9.1"
     "@expo/vector-icons": "npm:~14.0.4"
     "@gorhom/bottom-sheet": "npm:^5.1.5"
+    "@react-native-community/datetimepicker": "npm:8.2.0"
     "@react-native-firebase/app": "npm:^22.2.1"
     "@react-native-firebase/auth": "npm:^22.2.1"
     "@react-native-firebase/functions": "npm:^22.2.1"
