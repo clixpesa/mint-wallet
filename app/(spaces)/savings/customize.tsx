@@ -30,7 +30,7 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 
-export default function SetGoal() {
+export default function Customize() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const { symbol, conversionRate } = getRate(currency);
@@ -38,13 +38,13 @@ export default function SetGoal() {
 	const { defaultChainId } = useEnabledChains();
 	const tokens = getTokensByChainId(defaultChainId);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-	const [amount, setAmount] = useState<string>();
-	const [useCurrency, setUseCurrency] = useState<boolean>(true);
+	const [amount, setAmount] = useState<string>(params.amount.toString());
+	const [useCurrency, setUseCurrency] = useState<boolean>(false);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const [isSending, setIsSending] = useState<boolean>(false);
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(false);
+	const [name, setName] = useState<string>(params.name as string);
 	const [date, setDate] = useState<Date>(new Date(Date.now() + 7776000000));
-
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
 		bottomSheetModalRef.current?.present();
@@ -89,9 +89,21 @@ export default function SetGoal() {
 	};
 
 	return (
-		<Screen title="Set your goal">
-			<YStack gap="$xs" width="92%" mt="$5xl" items="center">
-				<XStack items="center">
+		<Screen>
+			<Input
+				height="$5xl"
+				fontSize={28}
+				width="75%"
+				value={name}
+				self="center"
+				text="center"
+				onChangeText={(text) => setName(text)}
+				autoCorrect={false}
+			/>
+			<YStack gap="$xs" width="92%" items="center">
+				<Separator borderWidth={1} px="$4xl" width="78%" />
+
+				<XStack items="center" mt="$xl">
 					{useCurrency ? (
 						<Text
 							fontSize={fonts.heading2.fontSize - 10}
@@ -110,7 +122,6 @@ export default function SetGoal() {
 						maxW="75%"
 						keyboardType="number-pad"
 						placeholder="0"
-						bg="$surface1"
 						color="$neutral1"
 						height={60}
 						onPress={() => inputRef.current?.focus()}

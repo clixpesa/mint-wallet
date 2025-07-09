@@ -130,8 +130,10 @@ export function SavingsLanding() {
 							</XStack>
 							<YStack gap="$vs">
 								<XStack justify="space-between">
-									<Text>${item.amount.saved.toFixed(2)}</Text>
-									<Text color="$neutral2">
+									<Text variant="body3" fontWeight="$md">
+										${item.amount.saved.toFixed(2)}
+									</Text>
+									<Text color="$neutral2" variant="body3">
 										Target: ${item.amount.target.toFixed(2)}
 									</Text>
 								</XStack>
