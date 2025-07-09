@@ -1,4 +1,5 @@
 import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
+import { useAppState } from "@/features/essentials/appState";
 import { LinearGradient, View } from "@/ui";
 import type { PropsWithChildren, ReactElement } from "react";
 import { StyleSheet } from "react-native";
@@ -19,10 +20,12 @@ type Props = PropsWithChildren<{
 
 export function ParallaxScrollView({ children, header, headerContent }: Props) {
 	const scrollRef = useAnimatedRef<Animated.ScrollView>();
+	const isTestnet = useAppState((s) => s.testnetEnabled);
 	const scrollOffset = useScrollViewOffset(scrollRef);
 	const bottom = useBottomTabOverflow();
 	const { height: safeHeight } = useSafeAreaFrame();
-	const minContentHeight = safeHeight - HEADER_HEIGHT + bottom + 135;
+	const adjust = bottom + (isTestnet ? 135 : 178);
+	const minContentHeight = safeHeight - HEADER_HEIGHT + adjust;
 	const headerAnimatedStyle = useAnimatedStyle(() => {
 		return {
 			transform: [

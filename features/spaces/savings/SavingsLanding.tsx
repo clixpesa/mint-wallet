@@ -106,7 +106,7 @@ export function SavingsLanding() {
 				</>
 			) : (
 				<YStack gap="$vs" width="92%">
-					{spaces.slice(0, 1).map((item) => (
+					{spaces.map((item) => (
 						<YStack
 							borderWidth={1}
 							borderBottomWidth={3}
