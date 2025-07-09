@@ -1,20 +1,46 @@
+import { AccountIcon } from "@/components/account/AccountIcon";
 import { Button, Spacer, Stack, Text, View, XStack, YStack } from "@/ui";
 import { MoneyFill, SafeFill } from "@/ui/components/icons";
-import { Link, router } from "expo-router";
-import { Spaces as SpacesList } from "../components/Spaces";
+import { router } from "expo-router";
+import { Progress } from "tamagui";
 
 export function SavingsLanding() {
 	interface Space {
 		id: number;
 		name: string;
-		amount: number;
+		deadline: number;
+		amount: {
+			saved: number;
+			target: number;
+			earned: number;
+		};
 	}
 
 	const spaces: Space[] = [
-		{ id: 1, name: "Dream Vacation", amount: 12500.0 },
-		{ id: 2, name: "Emergency Fund", amount: 25000.0 },
-		{ id: 3, name: "New MacBook Pro", amount: 45000.0 },
-		{ id: 4, name: "Home Savings", amount: 150000.0 },
+		{
+			id: 1,
+			name: "Dream Vacation",
+			deadline: 1752073111,
+			amount: { saved: 1500, target: 25000, earned: 100 },
+		},
+		{
+			id: 2,
+			name: "Emergency Fund",
+			deadline: 1752073111,
+			amount: { saved: 1500, target: 25000, earned: 100 },
+		},
+		{
+			id: 3,
+			name: "New MacBook Pro",
+			deadline: 1752073111,
+			amount: { saved: 1500, target: 25000, earned: 100 },
+		},
+		{
+			id: 4,
+			name: "Home Savings",
+			deadline: 1752073111,
+			amount: { saved: 1500, target: 25000, earned: 100 },
+		},
 	];
 	return (
 		<View flex={1} items="center" bg="$surface1" py="$3xl">
@@ -79,34 +105,46 @@ export function SavingsLanding() {
 					</Button>
 				</>
 			) : (
-				<SpacesList>
-					<SpacesList.Items>
-						<SpacesList.Group>
-							{spaces.map((space) => (
-								<Link
-									href={{
-										pathname: "/(spaces)/savings/[spaceId]",
-										params: {
-											spaceId: space.id,
-											name: space.name,
-											amount: space.amount,
-										},
-									}}
-									push
-									asChild
-									key={space.id}
-								>
-									<SpacesList.Item
-										key={space.id}
-										rightLabel={`Kshs ${space.amount.toLocaleString()}`}
-									>
-										{space.name}
-									</SpacesList.Item>
-								</Link>
-							))}
-						</SpacesList.Group>
-					</SpacesList.Items>
-				</SpacesList>
+				<YStack gap="$vs" width="92%">
+					{spaces.slice(0, 1).map((item) => (
+						<YStack
+							borderWidth={1}
+							borderBottomWidth={3}
+							borderColor="$surface3"
+							p="$md"
+							rounded="$lg"
+							gap="$vs"
+							key={item.id}
+						>
+							<XStack items="center" gap="$lg">
+								<AccountIcon
+									size={42}
+									address="0x765DE816845861e75A25fCA122bb6898B8B1282e"
+								/>
+								<YStack gap="$2xs">
+									<Text variant="subHeading2">{item.name}</Text>
+									<Text variant="body3" color="$neutral2">
+										Weekly saving: $500
+									</Text>
+								</YStack>
+							</XStack>
+							<YStack gap="$vs">
+								<XStack justify="space-between">
+									<Text>${item.amount.saved.toFixed(2)}</Text>
+									<Text color="$neutral2">
+										Target: ${item.amount.target.toFixed(2)}
+									</Text>
+								</XStack>
+								<Progress value={60} height="$xs" bg="$tealThemed">
+									<Progress.Indicator
+										bg="$tealBase"
+										animation="80ms-ease-in-out"
+									/>
+								</Progress>
+							</YStack>
+						</YStack>
+					))}
+				</YStack>
 			)}
 		</View>
 	);
