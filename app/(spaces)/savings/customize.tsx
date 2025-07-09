@@ -26,7 +26,10 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import {
+	DateTimePickerAndroid,
+	type DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 
@@ -62,7 +65,10 @@ export default function Customize() {
 		[],
 	);
 
-	const onChange = (selectedDate) => {
+	const onChange = (
+		event: DateTimePickerEvent,
+		selectedDate: Date | undefined,
+	) => {
 		const currentDate = selectedDate || date;
 		setDate(currentDate);
 	};
