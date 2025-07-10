@@ -1,5 +1,14 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
-import { Button, Spacer, Stack, Text, View, XStack, YStack } from "@/ui";
+import {
+	Button,
+	Spacer,
+	Stack,
+	Text,
+	TouchableArea,
+	View,
+	XStack,
+	YStack,
+} from "@/ui";
 import { MoneyFill, SafeFill } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { Progress } from "tamagui";
@@ -107,44 +116,55 @@ export function SavingsLanding() {
 			) : (
 				<YStack gap="$vs" width="92%">
 					{spaces.map((item) => (
-						<YStack
-							borderWidth={1}
-							borderBottomWidth={3}
-							borderColor="$surface3"
-							p="$md"
-							rounded="$lg"
-							gap="$vs"
+						<TouchableArea
 							key={item.id}
+							onPress={() =>
+								router.navigate({
+									pathname: "/(spaces)/savings/[spaceId]",
+									params: {
+										spaceId: item.id,
+									},
+								})
+							}
 						>
-							<XStack items="center" gap="$lg">
-								<AccountIcon
-									size={42}
-									address="0x765DE816845861e75A25fCA122bb6898B8B1282e"
-								/>
-								<YStack gap="$2xs">
-									<Text variant="subHeading2">{item.name}</Text>
-									<Text variant="body3" color="$neutral2">
-										Weekly saving: $500
-									</Text>
-								</YStack>
-							</XStack>
-							<YStack gap="$vs">
-								<XStack justify="space-between">
-									<Text variant="body3" fontWeight="$md">
-										${item.amount.saved.toFixed(2)}
-									</Text>
-									<Text color="$neutral2" variant="body3">
-										Target: ${item.amount.target.toFixed(2)}
-									</Text>
-								</XStack>
-								<Progress value={60} height="$xs" bg="$tealThemed">
-									<Progress.Indicator
-										bg="$tealBase"
-										animation="80ms-ease-in-out"
+							<YStack
+								borderWidth={1}
+								borderBottomWidth={3}
+								borderColor="$surface3"
+								p="$md"
+								rounded="$lg"
+								gap="$vs"
+							>
+								<XStack items="center" gap="$lg">
+									<AccountIcon
+										size={42}
+										address="0x765DE816845861e75A25fCA122bb6898B8B1282e"
 									/>
-								</Progress>
+									<YStack gap="$2xs">
+										<Text variant="subHeading2">{item.name}</Text>
+										<Text variant="body3" color="$neutral2">
+											Weekly saving: $500
+										</Text>
+									</YStack>
+								</XStack>
+								<YStack gap="$vs">
+									<XStack justify="space-between">
+										<Text variant="body3" fontWeight="$md">
+											${item.amount.saved.toFixed(2)}
+										</Text>
+										<Text color="$neutral2" variant="body3">
+											Target: ${item.amount.target.toFixed(2)}
+										</Text>
+									</XStack>
+									<Progress value={60} height="$xs" bg="$tealThemed">
+										<Progress.Indicator
+											bg="$tealBase"
+											animation="80ms-ease-in-out"
+										/>
+									</Progress>
+								</YStack>
 							</YStack>
-						</YStack>
+						</TouchableArea>
 					))}
 				</YStack>
 			)}

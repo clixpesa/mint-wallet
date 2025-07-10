@@ -272,7 +272,14 @@ export default function Customize() {
 								size="lg"
 								variant="branded"
 								width="85%"
-								onPress={() => {}}
+								onPress={() =>
+									router.navigate({
+										pathname: "/(spaces)/savings/[spaceId]",
+										params: {
+											spaceId: 1,
+										},
+									})
+								}
 							>
 								Done
 							</Button>
