@@ -4,16 +4,15 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
-import { transferFunds } from "@/features/contracts/tokens";
+import { withdrawSavings } from "@/features/contracts/goal-savings";
 import {
 	type Balance,
-	ChainId,
+	type ChainId,
 	type TokenWithBalance,
 	getRate,
 	useWalletContext,
 } from "@/features/wallet";
-import { useEnabledTokens } from "@/features/wallet/hooks";
+import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -30,7 +29,6 @@ import {
 } from "@/ui";
 import {
 	AlertCircle,
-	ArrowDown,
 	ArrowUpDown,
 	CheckmarkCircle,
 	RotatableChevron,
@@ -49,12 +47,17 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
-export default function SendScreen() {
+export default function FundSpaceScreen() {
 	const params: HeaderParams = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
 	const { symbol, conversionRate } = getRate(currency);
-	const tokens = useEnabledTokens();
+	const { defaultChainId } = useEnabledChains();
+	const allTokens = useEnabledTokens();
+	const tokens = allTokens.filter(
+		(token) =>
+			token.symbol.includes("USDC") && token.chainId === defaultChainId,
+	);
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
@@ -90,44 +93,28 @@ export default function SendScreen() {
 		[],
 	);
 
-	useEffect(() => {
-		if (
-			Number(actualAmount) > tokenInfo.balance &&
-			tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo)
-		) {
-			setIsOverdraft(true);
-		} else {
-			setIsOverdraft(false);
-		}
-	}, [actualAmount, tokenInfo]);
+	/*useEffect(() => {
+    if (
+      Number(actualAmount) > tokenInfo.balance &&
+      tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo)
+    ) {
+      setIsOverdraft(true);
+    } else {
+      setIsOverdraft(false);
+    }
+  }, [actualAmount, tokenInfo]);*/
 
 	const onConfirmSend = async () => {
 		setIsSending(true);
 		setIsTxLoading(true);
-		/*console.log(mainAccount?.chain);
-		const actualAmount = amount
-			? useCurrency && tokenInfo.symbol.includes("USD")
-				? (Number(amount) / conversionRate).toFixed(6)
-				: amount
-			: "0.00";*/
 		if (!isOverdraft && mainAccount && amount) {
-			console.log("tranfering tokens");
-			const txHash = await transferFunds({
+			const txHash = await withdrawSavings({
 				account: mainAccount,
-				recipient: params.address as Address,
+				spaceId: params.id as string,
 				token: tokenInfo,
 				amount: actualAmount,
 			});
-			setTxHash(txHash);
-			setIsTxLoading(false);
-		} else {
-			console.log("Transfering with overdraft");
-			const txHash = await transferTokenWithOverdraft({
-				account: mainAccount,
-				to: params.address as Address,
-				tokenId: `${tokenInfo.symbol}_${tokenInfo.chainId}`,
-				amount: actualAmount,
-			});
+			console.log(txHash, params.id);
 			setTxHash(txHash);
 			setIsTxLoading(false);
 		}
@@ -156,9 +143,9 @@ export default function SendScreen() {
 						fontSize={fonts.heading2.fontSize + 10}
 						fontWeight="800"
 						autoFocus
-						bg="$transparent"
 						cursorColor="$surface3"
 						maxW="75%"
+						bg="$transparent"
 						keyboardType="number-pad"
 						placeholder="0"
 						color={
@@ -218,8 +205,8 @@ export default function SendScreen() {
 					rounded="$full"
 					mt="$lg"
 					onPress={() => {
-						setIsReview(false);
-						onOpenModal();
+						//setIsReview(false);
+						//onOpenModal();
 					}}
 				>
 					<XStack items="center" gap="$sm">
@@ -238,11 +225,11 @@ export default function SendScreen() {
 						<RotatableChevron direction="down" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
-				{tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
-					<Text color={isOverdraft ? "$blueBase" : "$neutral1"}>
-						Jazisha: Ksh{overdraft.balance.toFixed(2)}
-					</Text>
-				) : null}
+				{/*tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
+          <Text color={isOverdraft ? "$blueBase" : "$neutral1"}>
+            Jazisha: Ksh{overdraft.balance.toFixed(2)}
+          </Text>
+        ) : null*/}
 			</YStack>
 			<Spacer />
 			<Button
@@ -289,7 +276,7 @@ export default function SendScreen() {
 								}}
 								recipient={params}
 								isLoading={isTxLoading}
-								onPressDone={() => router.navigate("/")}
+								onPressDone={() => router.back()}
 								onViewReciept={() => {}}
 							/>
 						) : (
@@ -331,6 +318,7 @@ export default function SendScreen() {
 type HeaderParams = {
 	address: Address;
 	name: string;
+	id?: string | number;
 };
 
 const Header = ({ address, name }: HeaderParams) => {
@@ -344,7 +332,7 @@ const Header = ({ address, name }: HeaderParams) => {
 					color="$neutral1"
 					mt="$3xs"
 				>
-					Send to
+					From
 				</Text>
 			</XStack>
 			<XStack gap="$sm" items="center">
@@ -412,7 +400,7 @@ const ReviewContent = ({
 	return (
 		<>
 			<YStack gap="$md" mt="$lg" width="85%">
-				<Text>You're sending {isOverdraft ? "with Jazisha" : null}</Text>
+				<Text>You're withdrawing {isOverdraft ? "with Jazisha" : null}</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
 						<Text
@@ -449,7 +437,8 @@ const ReviewContent = ({
 						size={42}
 					/>
 				</XStack>
-				<ArrowDown size={30} color="$neutral2" />
+				{/*<ArrowDown size={30} color="$neutral2" />*/}
+				<Text variant="subHeading2">from</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack gap="$2xs">
 						<Text variant="subHeading1">{recipient.name}</Text>
@@ -504,9 +493,9 @@ const ReviewContent = ({
 				size="lg"
 				variant="branded"
 				/*bg="$blueBase"
-				pressStyle={{
-					bg: "$blueVibrant",
-				}}*/
+        pressStyle={{
+          bg: "$blueVibrant",
+        }}*/
 				b="$3xl"
 				isDisabled={isOverdraftLimit}
 				loading={isLoading}
@@ -514,7 +503,7 @@ const ReviewContent = ({
 				width="85%"
 				onPress={onConfirmSend}
 			>
-				Confirm send
+				Confirm withdrawal
 			</Button>
 		</>
 	);
@@ -648,11 +637,11 @@ const SendContent = ({
 				) : (
 					<YStack gap="$md">
 						<CheckmarkCircle color="$statusSuccess" size={80} self="center" />
-						<Text text="center">Your transfer was successfull!</Text>
+						<Text text="center">Your withdrawal was successfull!</Text>
 					</YStack>
 				)}
 				<Text text="center" variant="subHeading1">
-					{isLoading ? "You're sending..." : "You sent"}
+					{isLoading ? "You're withdrawing..." : "You withdrew"}
 				</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
@@ -681,7 +670,8 @@ const SendContent = ({
 						/>
 					</Stack>
 				) : (
-					<ArrowDown size={30} color="$neutral2" self="center" />
+					/*<ArrowDown size={30} color="$neutral2" self="center" />*/
+					<Text variant="subHeading2">from</Text>
 				)}
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack gap="$2xs">
@@ -738,7 +728,7 @@ const SendContent = ({
 					width="85%"
 					onPress={onPressDone}
 				>
-					{isLoading ? "Sending..." : "Done"}
+					{isLoading ? "Withdrawing..." : "Done"}
 				</Button>
 			</YStack>
 		</Stack>

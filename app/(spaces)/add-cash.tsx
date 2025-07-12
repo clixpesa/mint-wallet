@@ -4,16 +4,15 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
-import { transferFunds } from "@/features/contracts/tokens";
+import { depositSavings } from "@/features/contracts/goal-savings";
 import {
 	type Balance,
-	ChainId,
+	type ChainId,
 	type TokenWithBalance,
 	getRate,
 	useWalletContext,
 } from "@/features/wallet";
-import { useEnabledTokens } from "@/features/wallet/hooks";
+import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -49,12 +48,17 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
-export default function SendScreen() {
+export default function FundSpaceScreen() {
 	const params: HeaderParams = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
+
 	const { symbol, conversionRate } = getRate(currency);
-	const tokens = useEnabledTokens();
+	const { defaultChainId } = useEnabledChains();
+	const allTokens = useEnabledTokens();
+	const tokens = allTokens.filter(
+		(token) => token.symbol.includes("USD") && token.chainId === defaultChainId,
+	);
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
@@ -90,7 +94,7 @@ export default function SendScreen() {
 		[],
 	);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		if (
 			Number(actualAmount) > tokenInfo.balance &&
 			tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo)
@@ -99,35 +103,19 @@ export default function SendScreen() {
 		} else {
 			setIsOverdraft(false);
 		}
-	}, [actualAmount, tokenInfo]);
+	}, [actualAmount, tokenInfo]);*/
 
 	const onConfirmSend = async () => {
 		setIsSending(true);
 		setIsTxLoading(true);
-		/*console.log(mainAccount?.chain);
-		const actualAmount = amount
-			? useCurrency && tokenInfo.symbol.includes("USD")
-				? (Number(amount) / conversionRate).toFixed(6)
-				: amount
-			: "0.00";*/
 		if (!isOverdraft && mainAccount && amount) {
-			console.log("tranfering tokens");
-			const txHash = await transferFunds({
+			const txHash = await depositSavings({
 				account: mainAccount,
-				recipient: params.address as Address,
+				spaceId: params.id as string,
 				token: tokenInfo,
 				amount: actualAmount,
 			});
-			setTxHash(txHash);
-			setIsTxLoading(false);
-		} else {
-			console.log("Transfering with overdraft");
-			const txHash = await transferTokenWithOverdraft({
-				account: mainAccount,
-				to: params.address as Address,
-				tokenId: `${tokenInfo.symbol}_${tokenInfo.chainId}`,
-				amount: actualAmount,
-			});
+			console.log(txHash, params.id);
 			setTxHash(txHash);
 			setIsTxLoading(false);
 		}
@@ -238,11 +226,11 @@ export default function SendScreen() {
 						<RotatableChevron direction="down" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
-				{tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
+				{/*tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
 					<Text color={isOverdraft ? "$blueBase" : "$neutral1"}>
 						Jazisha: Ksh{overdraft.balance.toFixed(2)}
 					</Text>
-				) : null}
+				) : null*/}
 			</YStack>
 			<Spacer />
 			<Button
@@ -289,7 +277,7 @@ export default function SendScreen() {
 								}}
 								recipient={params}
 								isLoading={isTxLoading}
-								onPressDone={() => router.navigate("/")}
+								onPressDone={() => router.back()}
 								onViewReciept={() => {}}
 							/>
 						) : (
@@ -331,6 +319,7 @@ export default function SendScreen() {
 type HeaderParams = {
 	address: Address;
 	name: string;
+	id?: string | number;
 };
 
 const Header = ({ address, name }: HeaderParams) => {
@@ -344,7 +333,7 @@ const Header = ({ address, name }: HeaderParams) => {
 					color="$neutral1"
 					mt="$3xs"
 				>
-					Send to
+					Fund
 				</Text>
 			</XStack>
 			<XStack gap="$sm" items="center">
@@ -412,7 +401,7 @@ const ReviewContent = ({
 	return (
 		<>
 			<YStack gap="$md" mt="$lg" width="85%">
-				<Text>You're sending {isOverdraft ? "with Jazisha" : null}</Text>
+				<Text>You're adding {isOverdraft ? "with Jazisha" : null}</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
 						<Text
@@ -504,9 +493,9 @@ const ReviewContent = ({
 				size="lg"
 				variant="branded"
 				/*bg="$blueBase"
-				pressStyle={{
-					bg: "$blueVibrant",
-				}}*/
+        pressStyle={{
+          bg: "$blueVibrant",
+        }}*/
 				b="$3xl"
 				isDisabled={isOverdraftLimit}
 				loading={isLoading}
@@ -652,7 +641,7 @@ const SendContent = ({
 					</YStack>
 				)}
 				<Text text="center" variant="subHeading1">
-					{isLoading ? "You're sending..." : "You sent"}
+					{isLoading ? "You're adding..." : "You added"}
 				</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
