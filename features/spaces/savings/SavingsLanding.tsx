@@ -46,7 +46,6 @@ export function SavingsLanding() {
 			{isLoading ? (
 				<YStack
 					borderWidth={1}
-					borderBottomWidth={3}
 					borderColor="$surface3"
 					p="$md"
 					rounded="$lg"
@@ -62,8 +61,8 @@ export function SavingsLanding() {
 								Target: $0.00
 							</Text>
 						</XStack>
-						<Progress value={60} height="$xs" bg="$surface1">
-							<Progress.Indicator bg="$surface2" animation="80ms-ease-in-out" />
+						<Progress value={60} height="$xs" bg="$surface2">
+							<Progress.Indicator bg="$surface3" animation="80ms-ease-in-out" />
 						</Progress>
 					</YStack>
 				</YStack>
@@ -117,7 +116,7 @@ export function SavingsLanding() {
 							</Stack>
 						</XStack>
 					</YStack>
-					<Spacer height="20%" />
+					<Spacer height="10%" />
 					<Button
 						variant="branded"
 						size="lg"
@@ -157,7 +156,11 @@ export function SavingsLanding() {
 									<YStack gap="$2xs">
 										<Text variant="subHeading2">{item.name}</Text>
 										<Text variant="body3" color="$neutral2">
-											Weekly saving: $500
+											Weekly saving: $
+											{(
+												(item.targetAmount - item.amount) /
+												((item.targetDate - Date.now().valueOf()) / 604800000)
+											).toFixed(2)}
 										</Text>
 									</YStack>
 								</XStack>

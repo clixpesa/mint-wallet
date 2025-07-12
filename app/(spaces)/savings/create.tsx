@@ -68,6 +68,8 @@ export default function Create() {
 					gap="$xs"
 					mt="$md"
 					justify="center"
+					self="center"
+					width="92%"
 				>
 					{spaceNames.map((name) => (
 						<Chip
@@ -92,9 +94,10 @@ export default function Create() {
 					b="$4xl"
 					onPress={() =>
 						router.navigate({
-							pathname: "/(spaces)/savings/set-goal",
+							pathname: "/(spaces)/savings/customize",
 							params: {
 								name,
+								amount: 0,
 							},
 						})
 					}

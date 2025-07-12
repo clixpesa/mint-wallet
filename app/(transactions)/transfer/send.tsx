@@ -156,6 +156,7 @@ export default function SendScreen() {
 						fontSize={fonts.heading2.fontSize + 10}
 						fontWeight="800"
 						autoFocus
+						bg="$transparent"
 						cursorColor="$surface3"
 						maxW="75%"
 						keyboardType="number-pad"

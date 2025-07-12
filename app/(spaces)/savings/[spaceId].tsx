@@ -182,6 +182,16 @@ export default function SpaceHome() {
 					size="lg"
 					width={spaceInfo.amount > 0 ? (isTarget ? "72%" : "48%") : "25%"}
 					icon={<ReceiveAlt size={24} />}
+					onPress={() =>
+						router.navigate({
+							pathname: "/(spaces)/cash-out",
+							params: {
+								address: chain.contracts?.goalSavings.address,
+								name: spaceInfo.name,
+								id: spaceInfo.spaceId,
+							},
+						})
+					}
 				>
 					{spaceInfo.amount > 0 ? "Cash Out" : null}
 				</Button>

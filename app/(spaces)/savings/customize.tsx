@@ -1,5 +1,4 @@
 import { Screen } from "@/components/layout/Screen";
-import { TokenLogo } from "@/components/logos/TokenLogo";
 import { createGoalSavings } from "@/features/contracts/goal-savings";
 import {
 	getRate,
@@ -23,7 +22,6 @@ import {
 	ArrowUpDown,
 	CalendarEvent,
 	CheckmarkCircle,
-	RotatableChevron,
 } from "@/ui/components/icons";
 import { fonts } from "@/ui/theme/fonts";
 import {
@@ -41,13 +39,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Customize() {
 	const params = useLocalSearchParams();
+	const initialAmount =
+		Number(params.amount) > 0 ? params.amount.toString() : "";
 	const currency = useWalletState((s) => s.currency);
 	const { symbol, conversionRate } = getRate(currency);
 	const inputRef = useRef<Input>(null);
 	const { defaultChainId } = useEnabledChains();
 	const tokens = getTokensByChainId(defaultChainId);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-	const [amount, setAmount] = useState<string>(params.amount.toString());
+	const [amount, setAmount] = useState<string>(initialAmount);
 	const [useCurrency, setUseCurrency] = useState<boolean>(false);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const [isSending, setIsSending] = useState<boolean>(false);
@@ -55,6 +55,8 @@ export default function Customize() {
 	const [name, setName] = useState<string>(params.name as string);
 	const [date, setDate] = useState<Date>(new Date(Date.now() + 7776000000));
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
+	const [showButton, setShowButton] = useState<boolean>(true);
+
 	const [txReciept, setTxReciept] = useState<{
 		txHash: string;
 		spaceId: string | undefined;
@@ -129,7 +131,7 @@ export default function Customize() {
 	}, [defaultChainId, updateCurrentChainId]);
 
 	return (
-		<Screen>
+		<Screen title={Number(params.amount) > 0 ? "Customize" : "Add a goal"}>
 			<Input
 				height="$5xl"
 				fontSize={28}
@@ -157,6 +159,7 @@ export default function Customize() {
 						ref={inputRef}
 						fontSize={fonts.heading2.fontSize}
 						fontWeight="800"
+						bg="$transparent"
 						autoFocus
 						cursorColor="$surface3"
 						maxW="75%"
@@ -164,6 +167,8 @@ export default function Customize() {
 						placeholder="0"
 						color="$neutral1"
 						height={60}
+						onFocus={() => setShowButton(false)}
+						onBlur={() => setShowButton(true)}
 						onPress={() => inputRef.current?.focus()}
 						value={amount}
 						onChangeText={(text) => setAmount(text)}
@@ -174,7 +179,7 @@ export default function Customize() {
 							fontWeight="800"
 							lineHeight={52}
 						>
-							{tokenInfo.symbol}
+							USD {/*tokenInfo.symbol*/}
 						</Text>
 					)}
 				</XStack>
@@ -188,7 +193,7 @@ export default function Customize() {
 										? amount
 										: (Number(amount) / conversionRate).toFixed(3)
 									: "0.00"}{" "}
-								{tokenInfo.symbol}
+								USD {/*tokenInfo.symbol*/}
 							</Text>
 							<ArrowUpDown size={20} color="$neutral1" />
 						</XStack>
@@ -206,7 +211,7 @@ export default function Customize() {
 						</XStack>
 					)}
 				</TouchableArea>
-				<TouchableArea
+				{/*<TouchableArea
 					p="$xs"
 					pr="$sm"
 					bg="$surface3"
@@ -227,7 +232,7 @@ export default function Customize() {
 						<Text variant="subHeading2">{tokenInfo.symbol}</Text>
 						<RotatableChevron direction="down" color="$neutral1" ml={-10} />
 					</XStack>
-				</TouchableArea>
+				</TouchableArea>*/}
 				<XStack items="center" my="$md" px="$4xl">
 					<Separator borderWidth={1} />
 					<Text variant="body2" mx="$sm">
@@ -260,18 +265,20 @@ export default function Customize() {
 				</TouchableArea>
 			</YStack>
 			<Spacer />
-			<Button
-				variant="branded"
-				size="lg"
-				b="$3xl"
-				position="absolute"
-				loading={isTxLoading}
-				width="85%"
-				isDisabled={!amount && !date}
-				onPress={onPressCreate}
-			>
-				{isSending ? "Done" : "Create"}
-			</Button>
+			{showButton && (
+				<Button
+					variant="branded"
+					size="lg"
+					b="$3xl"
+					position="absolute"
+					loading={isTxLoading}
+					width="85%"
+					isDisabled={!amount && !date}
+					onPress={onPressCreate}
+				>
+					{isSending ? "Done" : "Create"}
+				</Button>
+			)}
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
 				snapPoints={["50%"]}

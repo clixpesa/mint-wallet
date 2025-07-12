@@ -34,6 +34,13 @@ type GoalSavingDepositParams = {
 	token: Token;
 };
 
+type GoalSavingWithdrawParams = {
+	account: any;
+	spaceId: string;
+	amount: string;
+	token: Token;
+};
+
 export type SpaceInfo = {
 	spaceId: string;
 	name: string;
@@ -166,4 +173,24 @@ export async function getSavings({
 	};
 	//console.log("User Savings:", userSavings.length);
 	return userSavings;
+}
+
+export async function withdrawSavings(
+	params: GoalSavingWithdrawParams,
+): Promise<Hex> {
+	const chain = getChainInfo(params.token.chainId);
+	const savings = chain?.contracts.goalSavings;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: savings?.address,
+			abi: goalSavingsAbi,
+			functionName: "withdraw",
+			args: [params.spaceId, parseEther(params.amount)],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error withdrawing savings:", error);
+		return txHash;
+	}
 }
