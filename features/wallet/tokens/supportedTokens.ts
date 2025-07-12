@@ -131,7 +131,7 @@ export const supportedTokens: Record<string, Token> = {
 		name: "Celo Dollar",
 		symbol: "cUSD",
 		decimals: 18,
-		logo: require("@/ui/assets/images/token-logos/usdc-logo.png"),
+		logo: require("@/ui/assets/images/token-logos/cusd-logo.png"),
 		isNative: false,
 	},
 	[`USDC_${ChainId.Celo}`]: {
@@ -168,7 +168,7 @@ export const supportedTokens: Record<string, Token> = {
 		name: "Celo Dollar",
 		symbol: "cUSD",
 		decimals: 18,
-		logo: require("@/ui/assets/images/token-logos/usdc-logo.png"),
+		logo: require("@/ui/assets/images/token-logos/cusd-logo.png"),
 		isNative: false,
 	},
 	[`USDC_${ChainId.Alfajores}`]: {

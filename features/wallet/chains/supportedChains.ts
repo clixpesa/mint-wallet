@@ -65,6 +65,10 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 				address: "0x92E4fa9646b22C2AB485d156C8E704a49424Ce24",
 				blockCreated: 35762175,
 			},
+			goalSavings: {
+				address: "0x1234567890abcdef1234567890abcdef12345678",
+				blockCreated: 35762176,
+			},
 		},
 	},
 	[ChainId.Alfajores]: {
@@ -83,6 +87,10 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 			overdraft: {
 				address: "0xaB6334966F6380F5736c7923De8Ef89b5E84d017",
 				blockCreated: 46642535,
+			},
+			goalSavings: {
+				address: "0xA8bd226aD6E2714D816adECB6C3D7C4CF884285d",
+				blockCreated: 51359990,
 			},
 		},
 	},

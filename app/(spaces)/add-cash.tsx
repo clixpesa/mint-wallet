@@ -4,16 +4,15 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
-import { transferFunds } from "@/features/contracts/tokens";
+import { depositSavings } from "@/features/contracts/goal-savings";
 import {
 	type Balance,
-	ChainId,
+	type ChainId,
 	type TokenWithBalance,
 	getRate,
 	useWalletContext,
 } from "@/features/wallet";
-import { useEnabledTokens } from "@/features/wallet/hooks";
+import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -53,8 +52,13 @@ export default function FundSpaceScreen() {
 	const params: HeaderParams = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
+
 	const { symbol, conversionRate } = getRate(currency);
-	const tokens = useEnabledTokens();
+	const { defaultChainId } = useEnabledChains();
+	const allTokens = useEnabledTokens();
+	const tokens = allTokens.filter(
+		(token) => token.symbol.includes("USD") && token.chainId === defaultChainId,
+	);
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
@@ -90,7 +94,7 @@ export default function FundSpaceScreen() {
 		[],
 	);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		if (
 			Number(actualAmount) > tokenInfo.balance &&
 			tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo)
@@ -99,35 +103,19 @@ export default function FundSpaceScreen() {
 		} else {
 			setIsOverdraft(false);
 		}
-	}, [actualAmount, tokenInfo]);
+	}, [actualAmount, tokenInfo]);*/
 
 	const onConfirmSend = async () => {
 		setIsSending(true);
 		setIsTxLoading(true);
-		/*console.log(mainAccount?.chain);
-    const actualAmount = amount
-      ? useCurrency && tokenInfo.symbol.includes("USD")
-        ? (Number(amount) / conversionRate).toFixed(6)
-        : amount
-      : "0.00";*/
 		if (!isOverdraft && mainAccount && amount) {
-			console.log("tranfering tokens");
-			const txHash = await transferFunds({
+			const txHash = await depositSavings({
 				account: mainAccount,
-				recipient: params.address as Address,
+				spaceId: params.id as string,
 				token: tokenInfo,
 				amount: actualAmount,
 			});
-			setTxHash(txHash);
-			setIsTxLoading(false);
-		} else {
-			console.log("Transfering with overdraft");
-			const txHash = await transferTokenWithOverdraft({
-				account: mainAccount,
-				to: params.address as Address,
-				tokenId: `${tokenInfo.symbol}_${tokenInfo.chainId}`,
-				amount: actualAmount,
-			});
+			console.log(txHash, params.id);
 			setTxHash(txHash);
 			setIsTxLoading(false);
 		}
@@ -237,11 +225,11 @@ export default function FundSpaceScreen() {
 						<RotatableChevron direction="down" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
-				{tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
+				{/*tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
 					<Text color={isOverdraft ? "$blueBase" : "$neutral1"}>
 						Jazisha: Ksh{overdraft.balance.toFixed(2)}
 					</Text>
-				) : null}
+				) : null*/}
 			</YStack>
 			<Spacer />
 			<Button
@@ -288,14 +276,7 @@ export default function FundSpaceScreen() {
 								}}
 								recipient={params}
 								isLoading={isTxLoading}
-								onPressDone={() =>
-									router.replace({
-										pathname: "/(spaces)/savings/[spaceId]",
-										params: {
-											spaceId: params.id,
-										},
-									})
-								}
+								onPressDone={() => router.back()}
 								onViewReciept={() => {}}
 							/>
 						) : (

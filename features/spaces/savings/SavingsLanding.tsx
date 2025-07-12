@@ -1,5 +1,12 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import {
+	type SpaceInfo,
+	getGoalSavings,
+} from "@/features/contracts/goal-savings";
+import { useAppState } from "@/features/essentials/appState";
+import { useEnabledChains } from "@/features/wallet/hooks";
+import {
+	ActivityLoader,
 	Button,
 	Spacer,
 	Stack,
@@ -11,49 +18,56 @@ import {
 } from "@/ui";
 import { MoneyFill, SafeFill } from "@/ui/components/icons";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Progress } from "tamagui";
+import type { Address } from "viem";
 
 export function SavingsLanding() {
-	interface Space {
-		id: number;
-		name: string;
-		deadline: number;
-		amount: {
-			saved: number;
-			target: number;
-			earned: number;
-		};
-	}
+	const user = useAppState((s) => s.user);
+	const { defaultChainId } = useEnabledChains();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [spaces, setSpaces] = useState<SpaceInfo[]>([]);
 
-	const spaces: Space[] = [
-		{
-			id: 1,
-			name: "Dream Vacation",
-			deadline: 1752073111,
-			amount: { saved: 1500, target: 25000, earned: 100 },
-		},
-		{
-			id: 2,
-			name: "Emergency Fund",
-			deadline: 1752073111,
-			amount: { saved: 1500, target: 25000, earned: 100 },
-		},
-		{
-			id: 3,
-			name: "New MacBook Pro",
-			deadline: 1752073111,
-			amount: { saved: 1500, target: 25000, earned: 100 },
-		},
-		{
-			id: 4,
-			name: "Home Savings",
-			deadline: 1752073111,
-			amount: { saved: 1500, target: 25000, earned: 100 },
-		},
-	];
+	useEffect(() => {
+		setIsLoading(true);
+		const getSpaces = async () => {
+			const savings = await getGoalSavings({
+				chainId: defaultChainId,
+				address: user.mainAddress as Address,
+			});
+			if (savings.length) setSpaces(savings);
+			setIsLoading(false);
+		};
+		getSpaces();
+	}, [defaultChainId, user.mainAddress]);
+
 	return (
 		<View flex={1} items="center" bg="$surface1" py="$3xl">
-			{spaces.length === 0 ? (
+			{isLoading ? (
+				<YStack
+					borderWidth={1}
+					borderBottomWidth={3}
+					borderColor="$surface3"
+					p="$md"
+					rounded="$lg"
+					width="92%"
+				>
+					<ActivityLoader opacity={0.8} />
+					<YStack gap="$vs">
+						<XStack justify="space-between">
+							<Text variant="body3" fontWeight="$md" color="$surface2">
+								$0.00
+							</Text>
+							<Text color="$surface2" variant="body3">
+								Target: $0.00
+							</Text>
+						</XStack>
+						<Progress value={60} height="$xs" bg="$surface1">
+							<Progress.Indicator bg="$surface2" animation="80ms-ease-in-out" />
+						</Progress>
+					</YStack>
+				</YStack>
+			) : spaces.length === 0 && !isLoading ? (
 				<>
 					<YStack
 						width="92%"
@@ -117,12 +131,12 @@ export function SavingsLanding() {
 				<YStack gap="$vs" width="92%">
 					{spaces.map((item) => (
 						<TouchableArea
-							key={item.id}
+							key={item.spaceId}
 							onPress={() =>
 								router.navigate({
 									pathname: "/(spaces)/savings/[spaceId]",
 									params: {
-										spaceId: item.id,
+										...item,
 									},
 								})
 							}
@@ -150,13 +164,19 @@ export function SavingsLanding() {
 								<YStack gap="$vs">
 									<XStack justify="space-between">
 										<Text variant="body3" fontWeight="$md">
-											${item.amount.saved.toFixed(2)}
+											${item.amount.toFixed(2)}
 										</Text>
 										<Text color="$neutral2" variant="body3">
-											Target: ${item.amount.target.toFixed(2)}
+											Target: ${item.targetAmount.toFixed(2)}
 										</Text>
 									</XStack>
-									<Progress value={60} height="$xs" bg="$tealThemed">
+									<Progress
+										value={Number(
+											((item.amount / item.targetAmount) * 100).toFixed(0),
+										)}
+										height="$xs"
+										bg="$tealThemed"
+									>
 										<Progress.Indicator
 											bg="$tealBase"
 											animation="80ms-ease-in-out"

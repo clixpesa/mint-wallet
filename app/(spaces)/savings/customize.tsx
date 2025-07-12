@@ -1,6 +1,12 @@
 import { Screen } from "@/components/layout/Screen";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { getRate, getTokensByChainId } from "@/features/wallet";
+import { createGoalSavings } from "@/features/contracts/goal-savings";
+import {
+	getRate,
+	getTokensByChainId,
+	useWalletContext,
+} from "@/features/wallet";
+
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
@@ -31,7 +37,7 @@ import {
 	type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Customize() {
 	const params = useLocalSearchParams();
@@ -48,10 +54,23 @@ export default function Customize() {
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(false);
 	const [name, setName] = useState<string>(params.name as string);
 	const [date, setDate] = useState<Date>(new Date(Date.now() + 7776000000));
+	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
+	const [txReciept, setTxReciept] = useState<{
+		txHash: string;
+		spaceId: string | undefined;
+	}>();
+
+	const actualAmount = amount
+		? useCurrency && tokenInfo.symbol.includes("USD")
+			? (Number(amount) / conversionRate).toFixed(6)
+			: amount
+		: "0.00";
+
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
 		bottomSheetModalRef.current?.present();
 	}, []);
+
 	const renderBackdrop = useCallback(
 		(props: BottomSheetBackdropProps) => (
 			<BottomSheetBackdrop
@@ -87,12 +106,27 @@ export default function Customize() {
 		inputRef.current?.blur();
 		if (isSending) router.navigate("/(tabs)/spaces");
 		setIsTxLoading(true);
-		setTimeout(() => {
-			setIsTxLoading(false);
+		if (mainAccount && amount) {
+			const reciept = await createGoalSavings({
+				account: mainAccount,
+				chainId: defaultChainId,
+				name: name,
+				targetAmount: actualAmount,
+				targetDate: date.valueOf(),
+			});
+			setTxReciept({
+				txHash: reciept.txHash,
+				spaceId: reciept.spaceId,
+			});
 			setIsSending(true);
+			setIsTxLoading(false);
 			onOpenModal();
-		}, 2000);
+		}
 	};
+
+	useEffect(() => {
+		updateCurrentChainId(defaultChainId);
+	}, [defaultChainId, updateCurrentChainId]);
 
 	return (
 		<Screen>
@@ -272,11 +306,15 @@ export default function Customize() {
 								size="lg"
 								variant="branded"
 								width="85%"
+								isDisabled={!txReciept?.spaceId}
 								onPress={() =>
 									router.navigate({
 										pathname: "/(spaces)/savings/[spaceId]",
 										params: {
-											spaceId: 1,
+											name,
+											spaceId: txReciept.spaceId,
+											targetAmount: Number(actualAmount),
+											targetDate: date.valueOf(),
 										},
 									})
 								}
