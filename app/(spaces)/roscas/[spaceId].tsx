@@ -16,10 +16,10 @@ import {
 	YStack,
 } from "@/ui";
 import {
+	Hamburger,
 	ReceiveAlt,
 	RotatableChevron,
 	SendAction,
-	Settings,
 } from "@/ui/components/icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -136,50 +136,13 @@ export default function SpaceHome() {
 						</YStack>
 					</YStack>
 					<IconButton
-						icon={<Settings size={24} color="$accent1" />}
+						icon={<Hamburger size={24} color="$accent1" />}
 						size="md"
 						variant="branded"
 						emphasis="secondary"
 					/>
 				</XStack>
-				{isSloted && Date.now() > spaceInfo.startDate ? (
-					<YStack gap="$xs" width="92%">
-						<Text ml="$lg">Pick your slot before 28th June</Text>
-						<YStack gap="$xs" p="$sm" rounded="$md" bg="$surface1">
-							<XStack justify="space-between">
-								<YStack gap="$2xs">
-									<Text color="$neutral2" variant="body3">
-										Target payout
-									</Text>
-									<Text variant="subHeading1" color="$tealDark">
-										Ksh 10000
-									</Text>
-								</YStack>
-								<Button
-									variant="branded"
-									width="30%"
-									rounded="$full"
-									icon={<RotatableChevron direction="right" />}
-									iconPosition="after"
-								>
-									Pick
-								</Button>
-							</XStack>
-							<XStack items="center">
-								<Text mr="$sm" variant="body3">
-									Pay
-								</Text>
-								<Separator />
-							</XStack>
-							<XStack justify="space-between">
-								<Text>
-									Ksh 1000 <Text color="$neutral2">per month</Text>
-								</Text>
-								<Text>5 Free slots</Text>
-							</XStack>
-						</YStack>
-					</YStack>
-				) : (
+				{isSloted ? (
 					<YStack
 						gap="$sm"
 						width="92%"
@@ -205,6 +168,51 @@ export default function SpaceHome() {
 							})}
 							{/*<Text color="$neutral2">- 1 month to go</Text>*/}
 						</Text>
+					</YStack>
+				) : (
+					<YStack gap="$xs" width="92%">
+						<Text ml="$lg">Pick your slot before 28th June</Text>
+						<YStack gap="$xs" p="$sm" rounded="$md" bg="$surface1">
+							<XStack justify="space-between">
+								<YStack gap="$2xs">
+									<Text color="$neutral2" variant="body3">
+										Target payout
+									</Text>
+									<Text variant="subHeading1" color="$tealDark">
+										Ksh 10000
+									</Text>
+								</YStack>
+								<Button
+									variant="branded"
+									width="30%"
+									rounded="$full"
+									icon={<RotatableChevron direction="right" />}
+									iconPosition="after"
+									onPress={() =>
+										router.navigate({
+											pathname: "/(spaces)/roscas/slots",
+											params: {
+												spaceId: spaceInfo.spaceId,
+											},
+										})
+									}
+								>
+									Pick
+								</Button>
+							</XStack>
+							<XStack items="center">
+								<Text mr="$sm" variant="body3">
+									Pay
+								</Text>
+								<Separator />
+							</XStack>
+							<XStack justify="space-between">
+								<Text>
+									Ksh 1000 <Text color="$neutral2">per month</Text>
+								</Text>
+								<Text>5 Free slots</Text>
+							</XStack>
+						</YStack>
 					</YStack>
 				)}
 				{/*<TransactionsCard transactions={transactions} isLoading={isLoading} />*/}
