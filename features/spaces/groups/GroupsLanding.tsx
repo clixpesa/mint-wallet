@@ -1,3 +1,4 @@
+import type { GroupSpaceInfo } from "@/features/contracts/roscas";
 import {
 	Button,
 	Separator,
@@ -16,17 +17,6 @@ import { GroupFill, RoscaFill } from "@/ui/components/icons";
 import { isSameAddress } from "@/utilities/addresses";
 import { router } from "expo-router";
 import { useState } from "react";
-
-type GroupSpaceInfo = {
-	spaceId: string;
-	name: string;
-	admin: Address;
-	token: Address;
-	payoutAmount: number;
-	interval: number;
-	startDate: number;
-	memberCount: number;
-};
 
 export function GroupsLanding() {
 	const userAddress = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";

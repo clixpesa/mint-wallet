@@ -1,7 +1,13 @@
 import { Screen } from "@/components/layout/Screen";
+import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { getRate, getTokensByChainId } from "@/features/wallet";
-import { useEnabledChains } from "@/features/wallet/hooks";
+import { frequencyOptions } from "@/features/contracts/roscas";
+import {
+	type TokenWithBalance,
+	getRate,
+	useWalletContext,
+} from "@/features/wallet";
+import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -19,6 +25,8 @@ import {
 	Check,
 	CheckmarkCircle,
 	RotatableChevron,
+	Search,
+	X,
 } from "@/ui/components/icons";
 import { fonts } from "@/ui/theme/fonts";
 import {
@@ -40,7 +48,9 @@ export default function SetGoal() {
 	const { symbol, conversionRate } = getRate(currency);
 	const inputRef = useRef<Input>(null);
 	const { defaultChainId } = useEnabledChains();
-	const tokens = getTokensByChainId(defaultChainId);
+	//const tokens = getTokensByChainId(defaultChainId);
+	const allTokens = useEnabledTokens();
+	const tokens = allTokens.filter((token) => token.chainId === defaultChainId);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
 	const [useCurrency, setUseCurrency] = useState<boolean>(true);
@@ -57,6 +67,7 @@ export default function SetGoal() {
 	});
 	const [date, setDate] = useState<Date>(new Date(Date.now() + 604800000));
 	const [showButton, setShowButton] = useState<boolean>(true);
+	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 
 	const actualAmount = amount
 		? useCurrency && tokenInfo.symbol.includes("USD")
@@ -334,7 +345,7 @@ export default function SetGoal() {
 					) : isSelect ? (
 						<YStack mt="$md" items="center" width="92%" gap="$sm">
 							<Text>Set payment frequency</Text>
-							{frequncyOptions.map((item) => (
+							{frequencyOptions.map((item) => (
 								<TouchableArea
 									key={item.frequency}
 									width="92%"
@@ -368,7 +379,13 @@ export default function SetGoal() {
 							))}
 						</YStack>
 					) : (
-						<Text>Token List</Text>
+						<TokenList
+							tokens={tokens}
+							onPress={(token) => {
+								bottomSheetModalRef.current?.close();
+								setTokenInfo(token);
+							}}
+						/>
 					)}
 				</BottomSheetView>
 			</BottomSheetModal>
@@ -376,30 +393,77 @@ export default function SetGoal() {
 	);
 }
 
-const frequncyOptions = [
-	{
-		frequency: "Weekly",
-		desc: "Every 7 days",
-		interval: 604800,
-	},
-	{
-		frequency: "2 Weeks",
-		desc: "Every 14 days",
-		interval: 1209600,
-	},
-	{
-		frequency: "3 Weeks",
-		desc: "Every 21 days",
-		interval: 1814400,
-	},
-	{
-		frequency: "Monthly",
-		desc: "Every 28 days",
-		interval: 2419200,
-	},
-	{
-		frequency: "2 Months",
-		desc: "Every 56 days",
-		interval: 4838400,
-	},
-];
+const TokenList = ({
+	tokens,
+	onPress,
+}: {
+	tokens: TokenWithBalance[];
+	onPress: (item: TokenWithBalance) => void;
+}) => {
+	const inputRef = useRef<Input>(null);
+	const [searchText, setSearchText] = useState("");
+	return (
+		<YStack gap="$sm" mt="$xl" width="92%">
+			<XStack
+				borderWidth={2}
+				borderColor="$surface3"
+				rounded="$vl"
+				items="center"
+				px="$sm"
+				gap="$vs"
+				mb="$sm"
+			>
+				<Search size={24} color="$neutral2" />
+				<Input
+					ref={inputRef}
+					fontSize="$lg"
+					autoCapitalize="none"
+					autoCorrect={false}
+					px={1}
+					placeholder="search token"
+					height="$5xl"
+					value={searchText}
+					textContentType="none"
+					//text={searchText.length > 23 ? "right" : "left"}
+					maxW="81%"
+					multiline={false}
+					grow={1}
+					onChangeText={(text) => setSearchText(text)}
+				/>
+				{searchText.length > 3 ? (
+					<TouchableArea onPress={() => setSearchText("")} hitSlop={10}>
+						<X size={24} color="$neutral2" />
+					</TouchableArea>
+				) : null}
+			</XStack>
+			<YStack
+				bg="$surface1"
+				width="100%"
+				pt="$md"
+				pb="$xl"
+				rounded="$lg"
+				gap="$lg"
+			>
+				{tokens.map((item) => {
+					const tokenId = `${item.symbol}_${item.chainId}`;
+					return (
+						<TouchableArea key={tokenId} onPress={() => onPress(item)}>
+							<TokenItem
+								tokenInfo={{
+									name: item.name,
+									symbol: item.symbol,
+									logoUrl: item.logo,
+									chainId: item.chainId,
+								}}
+								amount={{
+									actual: item.balance,
+									inUSD: item.balanceUSD,
+								}}
+							/>
+						</TouchableArea>
+					);
+				})}
+			</YStack>
+		</YStack>
+	);
+};
