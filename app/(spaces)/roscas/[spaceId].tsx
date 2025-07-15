@@ -1,6 +1,11 @@
 import { BackButton } from "@/components/Buttons/BackButton";
-import { getSavings } from "@/features/contracts/goal-savings";
-import { getChainInfo, getRate } from "@/features/wallet";
+import {
+	frequencyOptions,
+	getRosca,
+	isUserSlotted,
+} from "@/features/contracts/roscas";
+import { useAppState } from "@/features/essentials/appState";
+import { getChainInfo, getRate, getTokensByChainId } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
@@ -21,38 +26,60 @@ import {
 	RotatableChevron,
 	SendAction,
 } from "@/ui/components/icons";
+import { isSameAddress } from "@/utilities/addresses";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Progress } from "tamagui";
+import type { Address } from "viem";
 
 export default function SpaceHome() {
 	const params = useLocalSearchParams();
+	const user = useAppState((s) => s.user);
 	const currency = useWalletState((s) => s.currency);
 	const { defaultChainId } = useEnabledChains();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { symbol, conversionRate } = getRate(currency);
 	const chain = getChainInfo(defaultChainId);
-	const [isSloted, setIsSlotted] = useState<boolean>(false);
+	const [userSlotted, setIsSlotted] = useState<{
+		isSlotted: boolean;
+		freeSlots: number;
+	}>({
+		isSlotted: true,
+		freeSlots: 0,
+	});
 
 	const [spaceInfo, setSpaceInfo] = useState({
 		spaceId: params.spaceId as string,
 		name: params.name as string,
+		admin: "0x",
 		startDate: Number(params.startDate),
-		targetAmount: Number(params.targetAmount),
 		memberCount: Number(params.memberCount),
 		interval: Number(params.interval),
+		token: "0x",
+		totalBalance: 0,
+		yield: 0,
+		loan: 0,
+		payoutAmount: Number(params.payoutAmount),
 	});
 
 	const [slotInfo, setSlotInfo] = useState({
 		amount: 0,
 		deadline: Date.now(),
-		targetAmount: spaceInfo.targetAmount / spaceInfo.memberCount,
+		targetAmount: spaceInfo.payoutAmount / spaceInfo.memberCount,
 		yield: 0,
 	});
+
+	const tokens = getTokensByChainId(defaultChainId);
+	const spaceToken = tokens.find((token) =>
+		isSameAddress(token.address, spaceInfo.token),
+	);
+
 	const isTarget = slotInfo.amount === slotInfo.targetAmount;
 	const date: Date = new Date(slotInfo.deadline);
-	const balInCurreny = slotInfo.amount * conversionRate;
+	const rate = spaceToken?.symbol.includes("USD") ? conversionRate : 1;
+	const balInCurreny = spaceInfo.totalBalance * rate;
 	const balSplit = balInCurreny.toFixed(2).split(".");
+
 	const progress = Number(
 		((slotInfo.amount / slotInfo.targetAmount) * 100).toFixed(0),
 	);
@@ -61,17 +88,23 @@ export default function SpaceHome() {
 	useEffect(() => {
 		setIsLoading(true);
 		const getSpace = async () => {
-			const savings = await getSavings({
+			const savings = await getRosca({
 				chainId: defaultChainId,
 				spaceId: spaceInfo.spaceId,
 			});
-			if (savings)
-				//setSpaceInfo(savings);
-				setIsLoading(false);
+			const userSlotted = await isUserSlotted({
+				chainId: defaultChainId,
+				spaceId: spaceInfo.spaceId,
+				userAddress: user.mainAddress as Address,
+			});
+			if (savings) setSpaceInfo(savings);
+
+			setIsSlotted(userSlotted);
+			setIsLoading(false);
 		};
 		setIsLoading(false);
-		//getSpace();
-	}, [defaultChainId, spaceInfo.spaceId]);
+		getSpace();
+	}, [defaultChainId, spaceInfo.spaceId, user]);
 
 	return (
 		<View flex={1} bg="$surface1" items="center">
@@ -98,8 +131,10 @@ export default function SpaceHome() {
 							onPressBack={() => router.replace("/(tabs)/spaces")}
 						/>
 					</Stack>
-					<YStack gap="$md">
-						<Text variant="subHeading1">{spaceInfo.name}</Text>
+					<YStack gap="$xl">
+						<Text variant="subHeading1" fontSize={24}>
+							{spaceInfo.name}
+						</Text>
 						<YStack gap="$xs">
 							<Text
 								variant="heading3"
@@ -119,7 +154,10 @@ export default function SpaceHome() {
 							</Text>
 							<XStack items="center" gap="$2xs">
 								<Text variant="subHeading2" color="$neutral2">
-									≈ ${(slotInfo.amount - slotInfo.yield).toFixed(2)}
+									≈ $
+									{((spaceInfo.totalBalance - spaceInfo.yield) / rate).toFixed(
+										2,
+									)}
 								</Text>
 								<TouchableArea
 									bg="$tealThemed"
@@ -129,7 +167,7 @@ export default function SpaceHome() {
 									onPress={() => {}}
 								>
 									<Text variant="subHeading2" color="$neutral1">
-										+{slotInfo.yield.toFixed(2)}
+										+{(spaceInfo.yield / rate).toFixed(2)}
 									</Text>
 								</TouchableArea>
 							</XStack>
@@ -142,7 +180,7 @@ export default function SpaceHome() {
 						emphasis="secondary"
 					/>
 				</XStack>
-				{isSloted ? (
+				{userSlotted.isSlotted ? (
 					<YStack
 						gap="$sm"
 						width="92%"
@@ -171,7 +209,14 @@ export default function SpaceHome() {
 					</YStack>
 				) : (
 					<YStack gap="$xs" width="92%">
-						<Text ml="$lg">Pick your slot before 28th June</Text>
+						<Text ml="$lg">
+							Pick your slot before{" "}
+							{date.toLocaleDateString("en-US", {
+								weekday: "short",
+								day: "numeric",
+								month: "short",
+							})}
+						</Text>
 						<YStack gap="$xs" p="$sm" rounded="$md" bg="$surface1">
 							<XStack justify="space-between">
 								<YStack gap="$2xs">
@@ -179,7 +224,7 @@ export default function SpaceHome() {
 										Target payout
 									</Text>
 									<Text variant="subHeading1" color="$tealDark">
-										Ksh 10000
+										{symbol} {(spaceInfo.payoutAmount * rate).toFixed(2)}
 									</Text>
 								</YStack>
 								<Button
@@ -208,9 +253,20 @@ export default function SpaceHome() {
 							</XStack>
 							<XStack justify="space-between">
 								<Text>
-									Ksh 1000 <Text color="$neutral2">per month</Text>
+									{symbol}{" "}
+									{(
+										(spaceInfo.payoutAmount / spaceInfo.memberCount) *
+										rate
+									).toFixed(2)}{" "}
+									<Text color="$neutral2">
+										{
+											frequencyOptions.find(
+												(frq) => frq.interval === spaceInfo.interval,
+											)?.name
+										}
+									</Text>
 								</Text>
-								<Text>5 Free slots</Text>
+								<Text>{userSlotted.freeSlots} Free slots</Text>
 							</XStack>
 						</YStack>
 					</YStack>
@@ -224,16 +280,23 @@ export default function SpaceHome() {
 					size="lg"
 					width={slotInfo.amount > 0 ? (isTarget ? "25%" : "48%") : "72%"}
 					icon={<SendAction size={24} />}
-					onPress={() =>
-						router.navigate({
+					onPress={async () => {
+						/*router.navigate({
 							pathname: "/(spaces)/add-cash",
 							params: {
 								address: chain.contracts?.goalSavings.address,
 								name: spaceInfo.name,
 								id: spaceInfo.spaceId,
 							},
-						})
-					}
+						})*/
+						console.log("Requesting");
+						const responce = await isUserSlotted({
+							chainId: defaultChainId,
+							spaceId: "0x5f951f49f67f43ee",
+							userAddress: "0x590392F06AC76c82F49C01219CF121A553Aa2e58",
+						});
+						console.log(responce);
+					}}
 				>
 					{isTarget ? null : "Add Cash"}
 				</Button>

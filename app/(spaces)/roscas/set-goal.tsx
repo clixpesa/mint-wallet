@@ -1,7 +1,7 @@
 import { Screen } from "@/components/layout/Screen";
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
-import { frequencyOptions } from "@/features/contracts/roscas";
+import { createRosca, frequencyOptions } from "@/features/contracts/roscas";
 import {
 	type TokenWithBalance,
 	getRate,
@@ -65,7 +65,14 @@ export default function SetGoal() {
 		name: "Monthly",
 		interval: 2419200,
 	});
-	const [date, setDate] = useState<Date>(new Date(Date.now() + 604800000));
+	const [txReciept, setTxReciept] = useState<{
+		txHash: string;
+		spaceId: string | undefined;
+	}>();
+
+	const [date, setDate] = useState<Date>(
+		new Date(Date.now() + frequency.interval * 1000),
+	);
 	const [showButton, setShowButton] = useState<boolean>(true);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 
@@ -114,11 +121,26 @@ export default function SetGoal() {
 		inputRef.current?.blur();
 		if (isSending) router.navigate("/(tabs)/spaces");
 		setIsTxLoading(true);
-		setTimeout(() => {
-			setIsTxLoading(false);
+
+		if (mainAccount && amount) {
+			const reciept = await createRosca({
+				account: mainAccount,
+				name: params.name as string,
+				tokenId: `${tokenInfo.symbol}_${tokenInfo.chainId}`,
+				payoutAmount: actualAmount,
+				interval: frequency.interval,
+				memberCount: Number(params.members),
+				startDate: Number((date.valueOf() / 1000).toFixed(0)),
+			});
+			//console.log(reciept);
+			setTxReciept({
+				txHash: reciept.txHash,
+				spaceId: reciept.spaceId,
+			});
 			setIsSending(true);
+			setIsTxLoading(false);
 			onOpenModal();
-		}, 2000);
+		}
 	};
 
 	return (
@@ -158,7 +180,7 @@ export default function SetGoal() {
 							fontWeight="800"
 							lineHeight={52}
 						>
-							USD{/*tokenInfo.symbol*/}
+							{tokenInfo.symbol}
 						</Text>
 					)}
 				</XStack>
@@ -172,7 +194,7 @@ export default function SetGoal() {
 										? amount
 										: (Number(amount) / conversionRate).toFixed(3)
 									: "0.00"}{" "}
-								USD{/*tokenInfo.symbol*/}
+								{tokenInfo.symbol}
 							</Text>
 							<ArrowUpDown size={20} color="$neutral1" />
 						</XStack>
@@ -221,9 +243,14 @@ export default function SetGoal() {
 					</XStack>
 					<XStack items="center" px="$lg" justify="space-between">
 						<Text variant="body1">
-							Ksh{" "}
+							{symbol}{" "}
 							<Text variant="body1" fontWeight="$md">
-								{(Number(amount) | 0) / Number(params.members)}
+								{(
+									(useCurrency
+										? Number(amount) | 0
+										: (Number(amount) * conversionRate) | 0) /
+									Number(params.members)
+								).toFixed(2)}
 							</Text>{" "}
 							every:
 						</Text>
@@ -329,10 +356,11 @@ export default function SetGoal() {
 									router.navigate({
 										pathname: "/(spaces)/roscas/[spaceId]",
 										params: {
+											spaceId: txReciept?.spaceId,
+											admin: mainAccount?.account?.address,
 											name: params.name,
-											spaceId: 1,
-											targetAmount: actualAmount,
-											startDate: date.valueOf(),
+											payoutAmount: actualAmount,
+											startDate: date.valueOf() / 1000,
 											memberCount: params.members,
 											interval: frequency.interval,
 										},

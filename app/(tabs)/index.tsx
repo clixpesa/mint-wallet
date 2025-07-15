@@ -1,4 +1,4 @@
-import { getSavings } from "@/features/contracts/goal-savings";
+import { getRosca } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -30,9 +30,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getSavings({
+			const reciept = await getRosca({
 				chainId: defaultChainId,
-				spaceId: "0xbf1048f666ee1387",
+				spaceId: "0x5f951f49f67f43ee",
 			});
 			console.log(reciept);
 		} catch (error) {
