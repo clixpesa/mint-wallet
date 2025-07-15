@@ -81,6 +81,16 @@ export const SpacesCard = ({ index }: { index: number }) => {
 									p="$sm"
 									gap="$vs"
 									rounded="$md"
+									onPress={() => {
+										const { target, ...rest } = item;
+										router.navigate({
+											pathname: "/(spaces)/roscas/overview",
+											params: {
+												...rest,
+												...target,
+											},
+										});
+									}}
 								>
 									<XStack>
 										<UniversalImage
@@ -190,18 +200,20 @@ const PopularGroups = [
 			currency: "USD",
 		},
 		endDate: "Feb 7, 2026",
+		type: "challenge",
 	},
 	{
 		id: "0x1002",
 		name: "Superstars",
 		ownerAddress: "0x765DE816845861e75B25fCA122bb6899B8B1282a",
 		ownerIcon: "",
-		members: 39,
+		members: 26,
 		target: {
 			amount: 100000,
 			currency: "KES",
 		},
 		endDate: "Oct 31, 2025",
+		type: "rosca",
 	},
 	{
 		id: "0x1003",
@@ -210,10 +222,11 @@ const PopularGroups = [
 		ownerIcon: require("@/ui/assets/images/popular-icons/user-96.png"),
 		members: 27,
 		target: {
-			amount: 100000,
+			amount: 5000,
 			currency: "USD",
 		},
 		endDate: "June 31, 2026",
+		type: "challenge",
 	},
 	{
 		id: "0x1004",
@@ -226,6 +239,7 @@ const PopularGroups = [
 			currency: "KES",
 		},
 		endDate: "Dec 31, 2026",
+		type: "rosca",
 	},
 	{
 		id: "0x1005",
@@ -238,6 +252,7 @@ const PopularGroups = [
 			currency: "USD",
 		},
 		endDate: "June 31, 2026",
+		type: "challenge",
 	},
 	{
 		id: "0x0006",
@@ -246,9 +261,10 @@ const PopularGroups = [
 		ownerIcon: "",
 		members: 15,
 		target: {
-			amount: 100000,
+			amount: 10000,
 			currency: "USD",
 		},
 		endDate: "Dec 31, 2026",
+		type: "rosca",
 	},
 ];
