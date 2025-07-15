@@ -24,7 +24,6 @@ import { useLocalSearchParams } from "expo-router";
 export default function GroupOverview() {
 	const params = useLocalSearchParams();
 	const iconSize = 42;
-	console.log(params);
 	return (
 		<Screen>
 			<YStack items="center" gap="$md" width="92%">

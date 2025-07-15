@@ -236,7 +236,7 @@ export default function SetGoal() {
 				<XStack items="center" my="$md" px="$lg">
 					<Separator borderWidth={1} />
 					<Text variant="body1" mx="$sm">
-						Starting on
+						1st payout on
 					</Text>
 					<Separator borderWidth={1} />
 				</XStack>
