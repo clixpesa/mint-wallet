@@ -1,4 +1,4 @@
-import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
+import { BackButton } from "@/components/Buttons/BackButton";
 import {
 	Button,
 	IconButton,
@@ -41,7 +41,7 @@ export default function Create() {
 					py="$xl"
 				>
 					<Stack position="absolute" t="$lg" l="$lg">
-						<HeaderBackButton />
+						<BackButton onPressBack={() => router.navigate("/(tabs)/spaces")} />
 					</Stack>
 					<Text variant="subHeading1">Create a New Space</Text>
 					<IconButton

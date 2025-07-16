@@ -1,4 +1,4 @@
-import { getActiveRoscaSlots } from "@/features/contracts/roscas";
+import { getRoscaMembers } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getActiveRoscaSlots({
+			const reciept = await getRoscaMembers({
 				chainId: defaultChainId,
 				spaceId: "0x5f951f49f67f43ee",
 			});

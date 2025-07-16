@@ -420,3 +420,30 @@ export async function withdrawRoscaSlot(
 		return txHash;
 	}
 }
+
+export async function getRoscaMembers({
+	chainId,
+	spaceId,
+}: {
+	chainId: ChainId;
+	spaceId: string;
+}): Promise<Address[]> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: roscaContrant?.address,
+		abi: roscasAbi,
+		client: publicClient,
+	});
+	try {
+		const members: Address[] = await contract.read.getRoscaMembers([spaceId]);
+		return members;
+	} catch (error) {
+		console.error("Error fetching rosca members:", error);
+		return [];
+	}
+}

@@ -4,8 +4,9 @@ import { Text, TouchableArea, XStack } from "@/ui";
 import { Bell, PlusCircle } from "@/ui/components/icons";
 import { router } from "expo-router";
 
-export const SpacesHeader = () => {
+export const SpacesHeader = (index: number) => {
 	const user = useAppState((s) => s.user);
+	console.log(index.index);
 	return (
 		<XStack
 			width="100%"
@@ -38,7 +39,14 @@ export const SpacesHeader = () => {
 				<TouchableArea rounded="$full">
 					<Bell color="$neutral3" size={30} />
 				</TouchableArea>
-				<TouchableArea rounded="$full">
+				<TouchableArea
+					rounded="$full"
+					onPress={() => {
+						index.index === 0
+							? router.navigate("/(spaces)/savings/create")
+							: router.navigate("/(spaces)/roscas/create");
+					}}
+				>
 					<PlusCircle color="$neutral3" size={32} />
 				</TouchableArea>
 			</XStack>

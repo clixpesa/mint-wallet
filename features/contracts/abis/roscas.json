@@ -744,6 +744,25 @@
 				"type": "bytes8"
 			}
 		],
+		"name": "getRoscaMembers",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes8",
+				"name": "roscaId",
+				"type": "bytes8"
+			}
+		],
 		"name": "getRoscaSlots",
 		"outputs": [
 			{

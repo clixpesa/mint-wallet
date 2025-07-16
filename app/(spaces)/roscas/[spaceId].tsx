@@ -25,19 +25,28 @@ import {
 	YStack,
 } from "@/ui";
 import {
+	Hamburger,
+	Participants,
 	ReceiveAlt,
 	RoscaFill,
 	RotatableChevron,
 	SendAction,
 } from "@/ui/components/icons";
 import { isSameAddress, shortenAddress } from "@/utilities/addresses";
+import {
+	BottomSheetBackdrop,
+	type BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Progress } from "tamagui";
 import type { Address } from "viem";
 
 export default function SpaceHome() {
 	const params = useLocalSearchParams();
+	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const user = useAppState((s) => s.user);
 	const currency = useWalletState((s) => s.currency);
 	const { defaultChainId } = useEnabledChains();
@@ -84,7 +93,6 @@ export default function SpaceHome() {
 	const isMySlot = slotsInfo[0].owner
 		? isSameAddress(slotsInfo[0].owner, user.mainAddress)
 		: false;
-	console.log(isMySlot);
 	const isTarget = slotsInfo[0].amount === slotsInfo[0].payoutAmount;
 	const rate = spaceToken?.symbol.includes("USD") ? conversionRate : 1;
 	const balInCurreny = spaceInfo.totalBalance * rate;
@@ -121,6 +129,21 @@ export default function SpaceHome() {
 		getSpace();
 	}, [defaultChainId, spaceInfo.spaceId, user]);
 
+	const onOpenModal = useCallback(() => {
+		bottomSheetModalRef.current?.present();
+	}, []);
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				style={[props.style]}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.4}
+			/>
+		),
+		[],
+	);
 	return (
 		<View flex={1} bg="$surface1" items="center">
 			<LinearGradient
@@ -189,18 +212,11 @@ export default function SpaceHome() {
 						</YStack>
 					</YStack>
 					<IconButton
-						icon={<RoscaFill size={24} color="$accent1" />}
+						icon={<Hamburger size={24} color="$accent1" />}
 						size="md"
 						variant="branded"
 						emphasis="secondary"
-						onPress={() =>
-							router.navigate({
-								pathname: "/(spaces)/roscas/slots",
-								params: {
-									...spaceInfo,
-								},
-							})
-						}
+						onPress={() => onOpenModal()}
 					/>
 				</XStack>
 				{!userSlotted.isSlotted ? (
@@ -410,6 +426,63 @@ export default function SpaceHome() {
 					{slotsInfo[0].amount > 0 && isMySlot ? "Cash Out" : null}
 				</Button>
 			</XStack>
+			<BottomSheetModal
+				ref={bottomSheetModalRef}
+				snapPoints={["30%"]}
+				backdropComponent={renderBackdrop}
+			>
+				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
+					<YStack gap="$sm" width="90%" mt="$3xl">
+						<TouchableArea
+							onPress={() => {
+								router.navigate({
+									pathname: "/(spaces)/roscas/info",
+									params: {
+										...spaceInfo,
+									},
+								});
+							}}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Participants size={32} color="$neutral2" />
+									<YStack>
+										<Text>Group Info</Text>
+										<Text variant="body3" color="$neutral2">
+											Check out other group members
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
+						<TouchableArea
+							onPress={() => {
+								router.navigate({
+									pathname: "/(spaces)/roscas/slots",
+									params: {
+										...spaceInfo,
+									},
+								});
+							}}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<RoscaFill size={32} color="$neutral2" />
+									<YStack>
+										<Text>Manage Slots</Text>
+										<Text variant="body3" color="$neutral2">
+											Select or change your slot
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+					</YStack>
+				</BottomSheetView>
+			</BottomSheetModal>
 		</View>
 	);
 }
