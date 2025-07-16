@@ -1,4 +1,12 @@
-import type { GroupSpaceInfo } from "@/features/contracts/roscas";
+import {
+	type GroupSpaceInfo,
+	frequencyOptions,
+	getUserRoscas,
+} from "@/features/contracts/roscas";
+import { useAppState } from "@/features/essentials/appState";
+import { getRate, getTokensByChainId } from "@/features/wallet";
+import { useEnabledChains } from "@/features/wallet/hooks";
+import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
 	Separator,
@@ -16,34 +24,31 @@ import {
 import { GroupFill, RoscaFill } from "@/ui/components/icons";
 import { isSameAddress } from "@/utilities/addresses";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Address } from "viem";
 
 export function GroupsLanding() {
-	const userAddress = "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2";
+	const user = useAppState((s) => s.user);
+	const { defaultChainId } = useEnabledChains();
+	const currency = useWalletState((s) => s.currency);
+	const { symbol, conversionRate } = getRate(currency);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [spaces, setSpaces] = useState<GroupSpaceInfo[]>([
-		/*{
-			spaceId: "0x12342",
-			name: "Dream Chasers",
-			admin: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
-			token: "0x874069fa1eb16d44d622f2e0ca25eea172369bc1",
-			payoutAmount: 10000,
-			interval: 604800,
-			startDate: 1752575188,
-			memberCount: 15,
-		},
-		{
-			spaceId: "0x12345",
-			name: "Superstars",
-			admin: "0x5c6B0f7Bf3E7ce046039Bd8FABdfD3f9F5021678",
-			token: "0x874069fa1eb16d44d622f2e0ca25eea172369bc1",
-			payoutAmount: 100000,
-			interval: 604800,
-			startDate: 1752575188,
-			memberCount: 15,
-		},*/
-	]);
+	const [spaces, setSpaces] = useState<GroupSpaceInfo[]>([]);
+	const tokens = getTokensByChainId(defaultChainId);
 	const iconSize = 42;
+
+	useEffect(() => {
+		setIsLoading(true);
+		const getSpaces = async () => {
+			const savings = await getUserRoscas({
+				chainId: defaultChainId,
+				address: user.mainAddress as Address,
+			});
+			if (savings.length) setSpaces(savings);
+			setIsLoading(false);
+		};
+		getSpaces();
+	}, [defaultChainId, user.mainAddress]);
 
 	return (
 		<View flex={1} items="center" bg="$surface1" py="$3xl">
@@ -117,61 +122,55 @@ export function GroupsLanding() {
 				</>
 			) : (
 				<YStack gap="$xs" width="92%">
-					{spaces.map((item) => (
-						<TouchableArea
-							key={item.spaceId}
-							onPress={() =>
-								router.navigate({
-									pathname: "/(spaces)/roscas/[spaceId]",
-									params: {
-										...item,
-									},
-								})
-							}
-						>
-							<YStack
-								gap="$xs"
-								borderWidth={1}
-								borderBottomWidth={3}
-								borderColor="$surface3"
-								p="$md"
-								rounded="$md"
-								bg="$surface1"
+					{spaces.map((item) => {
+						const spaceToken = tokens.find((token) =>
+							isSameAddress(token.address, item.token),
+						);
+						const isUSD = spaceToken?.symbol.includes("USD");
+						const endTime = item.startDate + item.interval * item.memberCount;
+						const date: Date = new Date(endTime * 1000);
+						return (
+							<TouchableArea
 								key={item.spaceId}
+								onPress={() =>
+									router.navigate({
+										pathname: "/(spaces)/roscas/[spaceId]",
+										params: {
+											...item,
+										},
+									})
+								}
 							>
-								<XStack justify="space-between" items="center">
-									<YStack gap="$2xs">
-										<Text variant="subHeading2">{item.name}</Text>
-										<Text variant="body3">
-											Ksh 1000{" "}
-											<Text color="$neutral2" variant="body3">
-												Monthly
+								<YStack
+									gap="$xs"
+									borderWidth={1}
+									borderBottomWidth={3}
+									borderColor="$surface3"
+									p="$md"
+									rounded="$md"
+									bg="$surface1"
+									key={item.spaceId}
+								>
+									<XStack justify="space-between" items="center">
+										<YStack gap="$2xs">
+											<Text variant="subHeading2">{item.name}</Text>
+											<Text variant="body3">
+												{isUSD ? "$" : symbol}
+												{(item.payoutAmount / item.memberCount).toFixed(2)}{" "}
+												<Text color="$neutral2" variant="body3">
+													{
+														frequencyOptions.find(
+															(frq) => frq.interval === item.interval,
+														)?.name
+													}
+												</Text>
 											</Text>
-										</Text>
-									</YStack>
-									<XStack>
-										<UniversalImage
-											style={{ image: { borderRadius: iconSize } }}
-											fallback={<Unicon address={item.admin} size={iconSize} />}
-											size={{
-												width: iconSize,
-												height: iconSize,
-												resizeMode: UniversalImageResizeMode.Cover,
-											}}
-											uri={""}
-										/>
-										<Stack ml={-10}>
+										</YStack>
+										<XStack>
 											<UniversalImage
 												style={{ image: { borderRadius: iconSize } }}
 												fallback={
-													<Unicon
-														address={
-															isSameAddress(userAddress, item.admin)
-																? "0x765DE816845861e75B25fCA122bb6899B8B1282a"
-																: userAddress
-														}
-														size={iconSize}
-													/>
+													<Unicon address={item.admin} size={iconSize} />
 												}
 												size={{
 													width: iconSize,
@@ -180,31 +179,59 @@ export function GroupsLanding() {
 												}}
 												uri={""}
 											/>
-										</Stack>
-										<YStack ml={2}>
-											<Text>+{item.memberCount - 2}</Text>
-											<Text variant="body3">others</Text>
-										</YStack>
+											<Stack ml={-10}>
+												<UniversalImage
+													style={{ image: { borderRadius: iconSize } }}
+													fallback={
+														<Unicon
+															address={
+																isSameAddress(user.mainAddress, item.admin)
+																	? "0x765DE816845861e75B25fCA122bb6899B8B1282a"
+																	: (user.mainAddress as Address)
+															}
+															size={iconSize}
+														/>
+													}
+													size={{
+														width: iconSize,
+														height: iconSize,
+														resizeMode: UniversalImageResizeMode.Cover,
+													}}
+													uri={""}
+												/>
+											</Stack>
+											<YStack ml={2}>
+												<Text>+{item.memberCount - 2}</Text>
+												<Text variant="body3">others</Text>
+											</YStack>
+										</XStack>
 									</XStack>
-								</XStack>
-								<XStack items="center" mt="$2xs">
-									<Text mr="$sm" variant="body3">
-										Payout
-									</Text>
-									<Separator />
-								</XStack>
-								<XStack justify="space-between" items="center">
-									<Text variant="subHeading1">Ksh {item.payoutAmount}</Text>
-									<Text variant="body3">
-										<Text color="$neutral2" variant="body3">
-											Ends:
-										</Text>{" "}
-										Feb 7, 2026
-									</Text>
-								</XStack>
-							</YStack>
-						</TouchableArea>
-					))}
+									<XStack items="center" mt="$2xs">
+										<Text mr="$sm" variant="body3">
+											Payout
+										</Text>
+										<Separator />
+									</XStack>
+									<XStack justify="space-between" items="center">
+										<Text variant="subHeading1">
+											{isUSD ? "$" : symbol}
+											{item.payoutAmount.toFixed(2)}
+										</Text>
+										<Text variant="body3">
+											<Text color="$neutral2" variant="body3">
+												Ends:
+											</Text>{" "}
+											{date.toLocaleDateString("en-US", {
+												day: "numeric",
+												month: "short",
+												year: "numeric",
+											})}
+										</Text>
+									</XStack>
+								</YStack>
+							</TouchableArea>
+						);
+					})}
 				</YStack>
 			)}
 		</View>

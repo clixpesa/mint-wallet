@@ -162,7 +162,7 @@ export async function getSavings({
 		abi: goalSavingsAbi,
 		client: publicClient,
 	});
-	const saving = await contract.read.getSavingsById([spaceId]);
+	const saving: any = await contract.read.getSavingsById([spaceId]);
 	const userSavings = {
 		spaceId: saving.id,
 		name: saving.name,
@@ -170,7 +170,7 @@ export async function getSavings({
 		targetDate: Number(saving.deadline),
 		yield: Number(formatUnits(saving.yield, 18)),
 		amount: Number(formatUnits(saving.amount, 18)),
-	};
+	} as SpaceInfo;
 	//console.log("User Savings:", userSavings.length);
 	return userSavings;
 }

@@ -202,3 +202,35 @@ export async function isUserSlotted({
 		freeSlots: freeSlots.length,
 	};
 }
+
+export async function getUserRoscas({
+	chainId,
+	address,
+}: { chainId: ChainId; address: Address }): Promise<RoscaInfo[]> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: roscaContrant?.address,
+		abi: roscasAbi,
+		client: publicClient,
+	});
+	const rawRoscas: any[] = await contract.read.getUserRoscas([address]);
+	const userRoscas: RoscaInfo[] = rawRoscas.map((rosca) => ({
+		spaceId: rosca.id,
+		name: rosca.name,
+		admin: rosca.admin,
+		token: rosca.token,
+		totalBalance: Number(formatUnits(rosca.totalBalance, 18)),
+		yield: Number(formatUnits(rosca.yield, 18)),
+		loan: Number(formatUnits(rosca.loan, 18)),
+		payoutAmount: Number(formatUnits(rosca.slotInfo.payoutAmount, 18)),
+		interval: Number(rosca.slotInfo.interaval),
+		startDate: Number(rosca.slotInfo.startDate),
+		memberCount: Number(rosca.slotInfo.memberCount),
+	}));
+	return userRoscas;
+}

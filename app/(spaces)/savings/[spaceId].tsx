@@ -84,8 +84,10 @@ export default function SpaceHome() {
 							onPressBack={() => router.replace("/(tabs)/spaces")}
 						/>
 					</Stack>
-					<YStack gap="$md">
-						<Text variant="subHeading1">{spaceInfo.name}</Text>
+					<YStack gap="$xl">
+						<Text variant="subHeading1" fontSize={24}>
+							{spaceInfo.name}
+						</Text>
 						<YStack gap="$xs">
 							<Text
 								variant="heading3"
