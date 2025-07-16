@@ -13,6 +13,7 @@ import {
 } from "viem";
 import {
 	type ChainId,
+	type Token,
 	type TokenId,
 	getChainInfo,
 	getTokenById,
@@ -35,6 +36,15 @@ export type RoscaInfo = GroupSpaceInfo & {
 	totalBalance: number;
 	yield: number;
 	loan: number;
+};
+
+export type RoscaSlot = {
+	slotId: number;
+	amount: number; // Amount in smallest unit (e.g., wei for ETH)
+	payoutAmount: number; // Amount in smallest unit (e.g., wei for ETH)
+	payoutDate: string; // Date in "MM/DD/YYYY" format
+	owner: Address | null;
+	paidOut: boolean; // Indicates if the slot has been paid out
 };
 
 export const frequencyOptions = [
@@ -233,4 +243,180 @@ export async function getUserRoscas({
 		memberCount: Number(rosca.slotInfo.memberCount),
 	}));
 	return userRoscas;
+}
+
+export async function getRoscaSlots({
+	chainId,
+	spaceId,
+}: { chainId: ChainId; spaceId: string }): Promise<RoscaSlot[]> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: roscaContrant?.address,
+		abi: roscasAbi,
+		client: publicClient,
+	});
+	try {
+		const slots: any[] = await contract.read.getRoscaSlots([spaceId]);
+		return slots.map((slot) => ({
+			slotId: slot.id,
+			amount: Number(formatUnits(slot.amount, 18)),
+			payoutAmount: Number(formatUnits(slot.payoutAmount, 18)),
+			payoutDate: new Date(Number(slot.payoutDate) * 1000).toLocaleDateString(
+				"en-US",
+				{
+					day: "numeric",
+					month: "short",
+				},
+			),
+			owner: isSameAddress(slot.owner, zeroAddress) ? null : slot.owner,
+			paidOut: slot.paidOut,
+		}));
+	} catch (error) {
+		console.error("Error fetching rosca slots:", error);
+		return [];
+	}
+}
+
+type RoscaSelectParams = {
+	account: any;
+	chainId: ChainId;
+	spaceId: string;
+	slotId: number;
+};
+
+export async function selectRoscaSlot(params: RoscaSelectParams): Promise<Hex> {
+	const chain = getChainInfo(params.chainId);
+	const roscaContrant = chain.contracts.roscas;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "selectSlot",
+			args: [params.spaceId, params.slotId],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error selecting rosca slot:", error);
+		return txHash;
+	}
+}
+
+export async function changeRoscaSlot(params: RoscaSelectParams): Promise<Hex> {
+	const chain = getChainInfo(params.chainId);
+	const roscaContrant = chain.contracts.roscas;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "changeSlot",
+			args: [params.spaceId, params.slotId],
+		});
+		console.log(txHash, params.spaceId, params.slotId);
+		return txHash;
+	} catch (error) {
+		console.error("Error changing rosca slot:", error);
+		return txHash;
+	}
+}
+
+export async function getActiveRoscaSlots({
+	chainId,
+	spaceId,
+}: {
+	chainId: ChainId;
+	spaceId: string;
+}): Promise<RoscaSlot[]> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: roscaContrant?.address,
+		abi: roscasAbi,
+		client: publicClient,
+	});
+	try {
+		const activeSlot: any[] = await contract.read.activeSlot([spaceId]);
+		const defaultedSlot: any[] = await contract.read.defaultedSlot([spaceId]);
+		return [activeSlot, defaultedSlot].map((slot) => ({
+			slotId: slot[0],
+			amount: Number(formatUnits(slot[1], 18)),
+			payoutAmount: Number(formatUnits(slot[2], 18)),
+			payoutDate: new Date(Number(slot[3]) * 1000).toLocaleDateString("en-US", {
+				weekday: "short",
+				day: "numeric",
+				month: "short",
+			}),
+			owner: isSameAddress(slot[4], zeroAddress) ? null : slot[4],
+			paidOut: slot[5],
+		}));
+	} catch (error) {
+		console.error("Error fetching active rosca slots:", error);
+		return [];
+	}
+}
+
+type SlotDepositParams = {
+	account: any;
+	spaceId: string;
+	amount: string;
+	isDefaulted: boolean;
+	token: Token;
+};
+
+export async function fundRoscaSlot(params: SlotDepositParams): Promise<Hex> {
+	const chain = getChainInfo(params.token.chainId);
+	const roscaContrant = chain.contracts.roscas;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "fundSlot",
+			args: [
+				params.spaceId,
+				parseUnits(params.amount, params.token.decimals),
+				params.isDefaulted,
+			],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error funding rosca slot:", error);
+		return txHash;
+	}
+}
+
+type SlotWithdralParams = {
+	account: any;
+	spaceId: string;
+	chainId: ChainId;
+};
+
+export async function withdrawRoscaSlot(
+	params: SlotWithdralParams,
+): Promise<Hex> {
+	const chain = getChainInfo(params.chainId);
+	const roscaContrant = chain.contracts.roscas;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "withdrawSlot",
+			args: [params.spaceId],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error withdrawing rosca slot:", error);
+		return txHash;
+	}
 }

@@ -127,7 +127,8 @@ export function GroupsLanding() {
 							isSameAddress(token.address, item.token),
 						);
 						const isUSD = spaceToken?.symbol.includes("USD");
-						const endTime = item.startDate + item.interval * item.memberCount;
+						const endTime =
+							item.startDate + item.interval * (item.memberCount - 1);
 						const date: Date = new Date(endTime * 1000);
 						return (
 							<TouchableArea

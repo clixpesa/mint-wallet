@@ -1,10 +1,14 @@
 import { BackButton } from "@/components/Buttons/BackButton";
+import { AccountIcon } from "@/components/account/AccountIcon";
 import {
+	type RoscaSlot,
 	frequencyOptions,
+	getActiveRoscaSlots,
 	getRosca,
 	isUserSlotted,
 } from "@/features/contracts/roscas";
 import { useAppState } from "@/features/essentials/appState";
+import { TransactionsCard } from "@/features/spaces/components/TransactionsCard";
 import { getChainInfo, getRate, getTokensByChainId } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
@@ -21,12 +25,12 @@ import {
 	YStack,
 } from "@/ui";
 import {
-	Hamburger,
 	ReceiveAlt,
+	RoscaFill,
 	RotatableChevron,
 	SendAction,
 } from "@/ui/components/icons";
-import { isSameAddress } from "@/utilities/addresses";
+import { isSameAddress, shortenAddress } from "@/utilities/addresses";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Progress } from "tamagui";
@@ -62,33 +66,39 @@ export default function SpaceHome() {
 		payoutAmount: Number(params.payoutAmount),
 	});
 
-	const [slotInfo, setSlotInfo] = useState({
-		amount: 0,
-		deadline: Date.now(),
-		targetAmount: spaceInfo.payoutAmount / spaceInfo.memberCount,
-		yield: 0,
-	});
+	const [slotsInfo, setSlotsInfo] = useState<RoscaSlot[]>([
+		{
+			slotId: 0,
+			amount: 0,
+			payoutAmount: 0,
+			payoutDate: "",
+			owner: null,
+			paidOut: false,
+		},
+	]);
 
 	const tokens = getTokensByChainId(defaultChainId);
 	const spaceToken = tokens.find((token) =>
 		isSameAddress(token.address, spaceInfo.token),
 	);
-
-	const isTarget = slotInfo.amount === slotInfo.targetAmount;
-	const date: Date = new Date(slotInfo.deadline);
+	const isMySlot = slotsInfo[0].owner
+		? isSameAddress(slotsInfo[0].owner, user.mainAddress)
+		: false;
+	console.log(isMySlot);
+	const isTarget = slotsInfo[0].amount === slotsInfo[0].payoutAmount;
 	const rate = spaceToken?.symbol.includes("USD") ? conversionRate : 1;
 	const balInCurreny = spaceInfo.totalBalance * rate;
 	const balSplit = balInCurreny.toFixed(2).split(".");
 
 	const progress = Number(
-		((slotInfo.amount / slotInfo.targetAmount) * 100).toFixed(0),
+		((slotsInfo[0].amount / slotsInfo[0].payoutAmount) * 100).toFixed(0),
 	);
-	const transactions = [];
+	const transactions: any[] = [];
 
 	useEffect(() => {
 		setIsLoading(true);
 		const getSpace = async () => {
-			const savings = await getRosca({
+			const rosca = await getRosca({
 				chainId: defaultChainId,
 				spaceId: spaceInfo.spaceId,
 			});
@@ -97,8 +107,13 @@ export default function SpaceHome() {
 				spaceId: spaceInfo.spaceId,
 				userAddress: user.mainAddress as Address,
 			});
-			if (savings) setSpaceInfo(savings);
+			const activeSlots = await getActiveRoscaSlots({
+				chainId: defaultChainId,
+				spaceId: spaceInfo.spaceId,
+			});
+			if (rosca) setSpaceInfo(rosca);
 
+			setSlotsInfo(activeSlots);
 			setIsSlotted(userSlotted);
 			setIsLoading(false);
 		};
@@ -174,40 +189,21 @@ export default function SpaceHome() {
 						</YStack>
 					</YStack>
 					<IconButton
-						icon={<Hamburger size={24} color="$accent1" />}
+						icon={<RoscaFill size={24} color="$accent1" />}
 						size="md"
 						variant="branded"
 						emphasis="secondary"
+						onPress={() =>
+							router.navigate({
+								pathname: "/(spaces)/roscas/slots",
+								params: {
+									...spaceInfo,
+								},
+							})
+						}
 					/>
 				</XStack>
-				{userSlotted.isSlotted ? (
-					<YStack
-						gap="$sm"
-						width="92%"
-						px="$sm"
-						pt="$md"
-						pb="$xl"
-						rounded="$lg"
-						bg="$surface1"
-					>
-						<XStack justify="space-between">
-							<Text fontWeight="$md">Saved ${slotInfo.amount.toFixed(2)}</Text>
-							<Text>Target: ${slotInfo.targetAmount.toFixed(2)}</Text>
-						</XStack>
-						<Progress value={progress} height="$xs" bg="$tealThemed">
-							<Progress.Indicator bg="$tealBase" animation="80ms-ease-in-out" />
-						</Progress>
-						<Text>
-							{date.toLocaleDateString("en-US", {
-								weekday: "short",
-								day: "numeric",
-								month: "short",
-								year: "numeric",
-							})}
-							{/*<Text color="$neutral2">- 1 month to go</Text>*/}
-						</Text>
-					</YStack>
-				) : (
+				{!userSlotted.isSlotted ? (
 					<YStack gap="$xs" width="92%">
 						<Text ml="$lg">
 							Pick your slot before{" "}
@@ -231,18 +227,19 @@ export default function SpaceHome() {
 									variant="branded"
 									width="30%"
 									rounded="$full"
+									size="sm"
 									icon={<RotatableChevron direction="right" />}
 									iconPosition="after"
 									onPress={() =>
 										router.navigate({
 											pathname: "/(spaces)/roscas/slots",
 											params: {
-												spaceId: spaceInfo.spaceId,
+												...spaceInfo,
 											},
 										})
 									}
 								>
-									Pick
+									Pick slot
 								</Button>
 							</XStack>
 							<XStack items="center">
@@ -270,54 +267,147 @@ export default function SpaceHome() {
 							</XStack>
 						</YStack>
 					</YStack>
-				)}
-				{/*<TransactionsCard transactions={transactions} isLoading={isLoading} />*/}
+				) : null}
+				{slotsInfo.map((slot, index) => {
+					return slot.slotId > 0 ? (
+						<YStack
+							gap="$sm"
+							width="92%"
+							px="$sm"
+							py="$md"
+							rounded="$lg"
+							bg="$surface1"
+							key={slot.slotId}
+						>
+							<XStack justify="space-between">
+								<YStack>
+									<Text
+										fontWeight="$md"
+										color={index === 1 ? "$orangeVibrant" : "$neutral1"}
+									>
+										Slot No.{slot.slotId}
+										{index === 1 ? " (In default!)" : null}
+									</Text>
+									<Text variant="body3">
+										{slot.owner
+											? shortenAddress(slot.owner as Address, 6)
+											: "Unclaimed"}
+									</Text>
+								</YStack>
+								{slot.owner ? (
+									<AccountIcon address={slot.owner} size={42} />
+								) : (
+									<Button
+										variant="branded"
+										width="30%"
+										rounded="$full"
+										size="sm"
+										icon={<RotatableChevron direction="right" />}
+										iconPosition="after"
+										onPress={() =>
+											router.navigate({
+												pathname: "/(spaces)/roscas/slots",
+												params: {
+													...spaceInfo,
+												},
+											})
+										}
+									>
+										Claim
+									</Button>
+								)}
+							</XStack>
+							<XStack items="center" mt="$2xs">
+								<Text mr="$sm" variant="body3">
+									Paid
+								</Text>
+								<Progress
+									value={progress}
+									height="$xs"
+									bg="$tealThemed"
+									width="87%"
+								>
+									<Progress.Indicator
+										bg="$tealBase"
+										animation="80ms-ease-in-out"
+									/>
+								</Progress>
+							</XStack>
+							<XStack justify="space-between" items="center">
+								<Text fontWeight="$md">
+									{symbol}
+									{(slot.amount * rate).toFixed(2)}
+								</Text>
+								<Text variant="body3">
+									<Text color="$neutral2" variant="body3">
+										Due:
+									</Text>{" "}
+									{slot.payoutDate}
+								</Text>
+							</XStack>
+						</YStack>
+					) : null;
+				})}
+
+				<TransactionsCard transactions={transactions} isLoading={isLoading} />
 			</YStack>
 			<XStack justify="space-between" position="absolute" b="$3xl" width="92%">
 				<Button
 					variant="branded"
-					emphasis={slotInfo.amount > 0 ? "secondary" : "primary"}
+					emphasis={
+						slotsInfo[0].amount > 0 && isMySlot ? "secondary" : "primary"
+					}
 					size="lg"
-					width={slotInfo.amount > 0 ? (isTarget ? "25%" : "48%") : "72%"}
+					width={
+						slotsInfo[0].amount > 0 && isMySlot
+							? isTarget
+								? "25%"
+								: "48%"
+							: "72%"
+					}
 					icon={<SendAction size={24} />}
 					onPress={async () => {
-						/*router.navigate({
+						router.navigate({
 							pathname: "/(spaces)/add-cash",
 							params: {
-								address: chain.contracts?.goalSavings.address,
+								address: chain.contracts?.roscas.address,
 								name: spaceInfo.name,
 								id: spaceInfo.spaceId,
+								origin: "rosca",
+								token: spaceToken?.symbol,
 							},
-						})*/
-						console.log("Requesting");
-						const responce = await isUserSlotted({
-							chainId: defaultChainId,
-							spaceId: "0x5f951f49f67f43ee",
-							userAddress: "0x590392F06AC76c82F49C01219CF121A553Aa2e58",
 						});
-						console.log(responce);
 					}}
 				>
-					{isTarget ? null : "Add Cash"}
+					{isTarget && isMySlot ? null : "Fund Slot"}
 				</Button>
 				<Button
 					variant="branded"
-					emphasis={isTarget ? "primary" : "secondary"}
+					emphasis={isTarget && isMySlot ? "primary" : "secondary"}
 					size="lg"
-					width={slotInfo.amount > 0 ? (isTarget ? "72%" : "48%") : "25%"}
+					isDisabled={!isMySlot}
+					width={
+						slotsInfo[0].amount > 0 && isMySlot
+							? isTarget
+								? "72%"
+								: "48%"
+							: "25%"
+					}
 					icon={<ReceiveAlt size={24} />}
 					onPress={() =>
 						router.navigate({
 							pathname: "/(spaces)/cash-out",
 							params: {
-								address: chain.contracts?.goalSavings.address,
+								address: chain.contracts?.roscas.address,
 								name: spaceInfo.name,
 								id: spaceInfo.spaceId,
+								orign: "rosca",
+								token: spaceToken?.symbol,
 							},
 						})
 					}
 				>
-					{slotInfo.amount > 0 ? "Cash Out" : null}
+					{slotsInfo[0].amount > 0 && isMySlot ? "Cash Out" : null}
 				</Button>
 			</XStack>
 		</View>

@@ -5,6 +5,7 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { depositSavings } from "@/features/contracts/goal-savings";
+import { fundRoscaSlot } from "@/features/contracts/roscas";
 import {
 	type Balance,
 	type ChainId,
@@ -49,16 +50,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
 export default function FundSpaceScreen() {
-	const params: HeaderParams = useLocalSearchParams();
+	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
-
 	const { symbol, conversionRate } = getRate(currency);
 	const { defaultChainId } = useEnabledChains();
-	const allTokens = useEnabledTokens();
-	const tokens = allTokens.filter(
-		(token) => token.symbol.includes("USD") && token.chainId === defaultChainId,
-	);
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
@@ -67,9 +63,18 @@ export default function FundSpaceScreen() {
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(true);
 	const [isSending, setIsSending] = useState<boolean>(false);
-	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
+
+	let filter = "USD";
+	if (params.token) filter = params.token.includes("USD") ? "USD" : "KES";
+
+	const allTokens = useEnabledTokens();
+	const tokens = allTokens.filter(
+		(token) =>
+			token.symbol.includes(filter) && token.chainId === defaultChainId,
+	);
+	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 
 	const actualAmount = amount
 		? useCurrency && tokenInfo.symbol.includes("USD")
@@ -109,14 +114,26 @@ export default function FundSpaceScreen() {
 		setIsSending(true);
 		setIsTxLoading(true);
 		if (!isOverdraft && mainAccount && amount) {
-			const txHash = await depositSavings({
-				account: mainAccount,
-				spaceId: params.id as string,
-				token: tokenInfo,
-				amount: actualAmount,
-			});
-			console.log(txHash, params.id);
-			setTxHash(txHash);
+			if (params.origin === "rosca") {
+				const txHash = await fundRoscaSlot({
+					account: mainAccount,
+					spaceId: params.id as string,
+					token: tokenInfo,
+					amount: actualAmount,
+					isDefaulted: false,
+				});
+				console.log(txHash, params.id);
+				setTxHash(txHash);
+			} else {
+				const txHash = await depositSavings({
+					account: mainAccount,
+					spaceId: params.id as string,
+					token: tokenInfo,
+					amount: actualAmount,
+				});
+				console.log(txHash, params.id);
+				setTxHash(txHash);
+			}
 			setIsTxLoading(false);
 		}
 	};

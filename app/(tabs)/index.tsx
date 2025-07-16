@@ -1,4 +1,4 @@
-import { getUserRoscas } from "@/features/contracts/roscas";
+import { getActiveRoscaSlots } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 import { Button } from "tamagui";
-import type { Address } from "viem";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -31,9 +30,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getUserRoscas({
+			const reciept = await getActiveRoscaSlots({
 				chainId: defaultChainId,
-				address: user.mainAddress as Address,
+				spaceId: "0x5f951f49f67f43ee",
 			});
 			console.log(reciept);
 		} catch (error) {
