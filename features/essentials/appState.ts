@@ -88,7 +88,7 @@ export const useHasAccount = () => {
 		const subscriber = onAuthStateChanged(getAuth(), async (user) => {
 			//if (user) await appStorage.setItem("user", user.toJSON());
 			const thisUser = useAppState.getState().user;
-			console.log("Auth state changed:", user);
+			//console.log("Auth state changed:", user);
 			useAppState.getState().setHasAccount(!!user);
 			if (user) {
 				const { uid, displayName, email, phoneNumber } = user;

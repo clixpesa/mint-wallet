@@ -1,7 +1,6 @@
 import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLogo";
-
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
@@ -10,6 +9,7 @@ import {
 	type Balance,
 	ChainId,
 	type TokenWithBalance,
+	getChainInfo,
 	getRate,
 	useWalletContext,
 } from "@/features/wallet";
@@ -46,6 +46,7 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
@@ -66,6 +67,8 @@ export default function SendScreen() {
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
+
+	const chain = getChainInfo(tokenInfo.chainId);
 
 	const actualAmount = amount
 		? useCurrency && tokenInfo.symbol.includes("USD")
@@ -290,7 +293,11 @@ export default function SendScreen() {
 								recipient={params}
 								isLoading={isTxLoading}
 								onPressDone={() => router.navigate("/")}
-								onViewReciept={() => {}}
+								onViewReciept={() =>
+									openBrowserAsync(
+										`${chain.blockExplorers?.default.url}/tx/${txHash}`,
+									)
+								}
 							/>
 						) : (
 							<ReviewContent

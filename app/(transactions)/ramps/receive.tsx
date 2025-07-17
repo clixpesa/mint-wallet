@@ -57,6 +57,7 @@ export default function ReciveScreen() {
 	useEffect(() => {
 		const getClixtag = async () => {
 			const user = getAuth().currentUser;
+			await user?.getIdToken(true);
 			const clixtag = await user
 				?.getIdTokenResult()
 				.then((tokenResult) => tokenResult.claims.tag);

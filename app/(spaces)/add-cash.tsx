@@ -10,6 +10,7 @@ import {
 	type Balance,
 	type ChainId,
 	type TokenWithBalance,
+	getChainInfo,
 	getRate,
 	useWalletContext,
 } from "@/features/wallet";
@@ -46,6 +47,7 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
@@ -75,6 +77,7 @@ export default function FundSpaceScreen() {
 			token.symbol.includes(filter) && token.chainId === defaultChainId,
 	);
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
+	const chain = getChainInfo(tokenInfo.chainId);
 
 	const actualAmount = amount
 		? useCurrency && tokenInfo.symbol.includes("USD")
@@ -295,7 +298,11 @@ export default function FundSpaceScreen() {
 								recipient={params}
 								isLoading={isTxLoading}
 								onPressDone={() => router.back()}
-								onViewReciept={() => {}}
+								onViewReciept={() =>
+									openBrowserAsync(
+										`${chain.blockExplorers?.default.url}/tx/${txHash}`,
+									)
+								}
 							/>
 						) : (
 							<ReviewContent

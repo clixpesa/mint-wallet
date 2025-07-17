@@ -43,10 +43,12 @@ export default function AccountScreen() {
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
 	const [clixtag, setClixtag] = useState<string>();
+	console.log(clixtag);
 
 	useEffect(() => {
 		const getClixtag = async () => {
 			const user = getAuth().currentUser;
+			await user?.getIdToken(true);
 			const clixtag = await user
 				?.getIdTokenResult()
 				.then((tokenResult) => tokenResult.claims.tag);
