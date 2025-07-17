@@ -26,6 +26,7 @@ export type OnboardingContext = {
 	sendPhoneOTP: (phoneNumber: string) => Promise<void>;
 	sendEmailOTP: (email: string) => Promise<void>;
 	storeMnemonic: (keyParams: string) => Promise<void>;
+	createClixtag: (userName: string) => Promise<string | null>;
 	getSignedInUser: () => FirebaseAuthTypes.User | null;
 	resetOnboardingContextData: () => void;
 };
@@ -36,6 +37,7 @@ const initialOnboardingContext: OnboardingContext = {
 	sendPhoneOTP: async () => undefined,
 	sendEmailOTP: async () => undefined,
 	storeMnemonic: async () => undefined,
+	createClixtag: async () => null,
 	getSignedInUser: () => null,
 	resetOnboardingContextData: () => undefined,
 };
@@ -150,6 +152,14 @@ export function OnboardingContextProvider({
 		await appStorage.setItem(userId, mnemonicData);
 	};
 
+	const createClixtag = async (userName: string): Promise<string | any> => {
+		console.log(signedInUser?.uid);
+		const instance = httpsCallable(getFunctions(), "createAndStoreTag");
+		const tag = (await instance({ userId: signedInUser?.uid, tag: userName }))
+			.data;
+		return tag;
+	};
+
 	const resetOnboardingContextData = (): void => {
 		setSignedInUser(null);
 		setVerificationId(null);
@@ -163,6 +173,7 @@ export function OnboardingContextProvider({
 				sendEmailOTP,
 				signInWithOTP,
 				storeMnemonic,
+				createClixtag,
 				getSignedInUser,
 				resetOnboardingContextData,
 			}}

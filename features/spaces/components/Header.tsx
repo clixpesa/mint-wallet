@@ -6,7 +6,6 @@ import { router } from "expo-router";
 
 export const SpacesHeader = (index: number) => {
 	const user = useAppState((s) => s.user);
-	console.log(index.index);
 	return (
 		<XStack
 			width="100%"

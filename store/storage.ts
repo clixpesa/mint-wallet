@@ -56,7 +56,7 @@ export const appStorage = {
 	},
 
 	setItem: async <T>(key: string, value: T): Promise<void> => {
-		console.log("Setting item in appStorage", key, value);
+		//console.log("Setting item in appStorage", key, value);
 		const enValue = await appStorage._encrypt(key, JSON.stringify(value));
 		storage.set(key, enValue);
 	},

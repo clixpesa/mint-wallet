@@ -30,9 +30,11 @@ import {
 } from "@/ui/components/icons";
 import { shortenAddress } from "@/utilities/addresses";
 import { redirect } from "@/utilities/links/redirect";
+import { getAuth } from "@react-native-firebase/auth";
 import * as Application from "expo-application";
 import { usePathname } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 export default function AccountScreen() {
@@ -40,6 +42,18 @@ export default function AccountScreen() {
 	const pathname = usePathname();
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
+	const [clixtag, setClixtag] = useState<string>();
+
+	useEffect(() => {
+		const getClixtag = async () => {
+			const user = getAuth().currentUser;
+			const clixtag = await user
+				?.getIdTokenResult()
+				.then((tokenResult) => tokenResult.claims.tag);
+			setClixtag(clixtag);
+		};
+		getClixtag();
+	}, []);
 
 	return (
 		<View flex={1} bg="$surface1">
@@ -109,7 +123,7 @@ export default function AccountScreen() {
 						</YStack>
 					</XStack>
 					<YStack gap="$2xs">
-						<Text variant="subHeading1">{user.tag}.clix.eth</Text>
+						<Text variant="subHeading1">{clixtag}.clix.eth</Text>
 						<Text color="$neutral2">{user.phoneNumber || user.email}</Text>
 					</YStack>
 				</YStack>
