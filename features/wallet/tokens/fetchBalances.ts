@@ -1,3 +1,4 @@
+import { useAppState } from "@/features/essentials/appState";
 import { createPublicClient, formatUnits, getContract, http } from "viem";
 import { getChainInfo, getEnabledChains } from "../chains/utils";
 import { rates } from "../rates";
@@ -6,10 +7,10 @@ import { getEnabledTokens, getTokenId } from "./utils";
 
 export const fetchTokenBalances = async (
 	address: Address,
-	isTestnet = true,
 ): Promise<Record<TokenId, Balance>> => {
 	console.log(`Fetching balances for address: ${address}`);
 	const balances: Record<TokenId, Balance> = {};
+	const isTestnet = useAppState((s) => s.testnetEnabled);
 	const chainIds = getEnabledChains(isTestnet);
 	const tokens = getEnabledTokens(chainIds);
 
