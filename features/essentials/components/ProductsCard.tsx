@@ -1,5 +1,5 @@
 import { Stack, Text, TouchableArea, XStack, YStack } from "@/ui";
-import { CoinsFill, HandCoinFill } from "@/ui/components/icons";
+import { BizPurse, CoinsFill } from "@/ui/components/icons";
 import { router } from "expo-router";
 
 export const ProductsCard = () => {
@@ -54,6 +54,30 @@ export const ProductsCard = () => {
 					items="center"
 					justify="center"
 				>
+					<BizPurse size={28} color="$surface1" />
+				</Stack>
+				<YStack width="58%" gap="$2xs">
+					<Text variant="subHeading2">Biz Purse</Text>
+					<Text variant="body3" color="$neutral2">
+						Seperate your Personal and Business funds.
+					</Text>
+				</YStack>
+				<TouchableArea py="$vs" px="$md" bg="$accent2" rounded="$full">
+					<Text variant="buttonLabel2" color="$accent1">
+						Open
+					</Text>
+				</TouchableArea>
+			</XStack>
+			{/*
+				<XStack items="center" mt="$sm" justify="space-between">
+				<Stack
+					bg="$blueBase"
+					height={42}
+					rounded="$md"
+					width={42}
+					items="center"
+					justify="center"
+				>
 					<HandCoinFill size={28} color="$surface1" />
 				</Stack>
 				<YStack width="58%" gap="$2xs">
@@ -67,7 +91,7 @@ export const ProductsCard = () => {
 						Open
 					</Text>
 				</TouchableArea>
-			</XStack>
+			*/}
 		</YStack>
 	);
 };

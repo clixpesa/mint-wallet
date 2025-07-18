@@ -8,7 +8,7 @@ export default function SpacesScreen() {
 	const [index, setIndex] = useState<number>(0);
 	return (
 		<ParallaxScrollView
-			header={<SpacesHeader />}
+			header={<SpacesHeader index={index} />}
 			headerContent={<SpacesCard index={index} />}
 		>
 			<SpacesTabs onTabSelect={({ index }) => setIndex(index)} />

@@ -11,7 +11,6 @@ export interface AppState {
 	testnetEnabled?: boolean; // Optional property for testnet
 	user: {
 		uid: string;
-		tag: string;
 		name?: string; // Optional property for user full name
 		email?: string;
 		phoneNumber?: string;
@@ -23,7 +22,6 @@ export interface AppState {
 	setTestnetEnabled: (value: boolean) => void;
 	setUser: (user: {
 		uid: string;
-		tag: string;
 		name?: string;
 		email?: string;
 		phoneNumber?: string;
@@ -37,7 +35,6 @@ const initialAppState = {
 	testnetEnabled: true, // Default to false, can be set later
 	user: {
 		uid: "",
-		tag: "",
 		name: "",
 		email: undefined,
 		phoneNumber: undefined,
@@ -79,7 +76,6 @@ export const useAppState = create<AppState>()(
 export const useHasAccount = () => {
 	useEffect(() => {
 		// Try to load user from storage first
-		console.log("Checking for user");
 		/*let storedUser: FirebaseAuthTypes.User | null = null;
 		const getStoredUser = async () => {
 			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
@@ -92,13 +88,13 @@ export const useHasAccount = () => {
 		const subscriber = onAuthStateChanged(getAuth(), async (user) => {
 			//if (user) await appStorage.setItem("user", user.toJSON());
 			const thisUser = useAppState.getState().user;
+			//console.log("Auth state changed:", user);
 			useAppState.getState().setHasAccount(!!user);
 			if (user) {
 				const { uid, displayName, email, phoneNumber } = user;
 				useAppState.getState().setUser({
 					...thisUser,
 					uid,
-					tag: displayName || "",
 					name: displayName || undefined,
 					email: email || undefined,
 					phoneNumber: phoneNumber || undefined,

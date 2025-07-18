@@ -1,4 +1,5 @@
 import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
+import { useOnboardingContext } from "@/features/essentials";
 import {
 	AnimatedYStack,
 	Button,
@@ -18,14 +19,17 @@ import { Image } from "react-native";
 
 export default function UsernameScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [username, setUsername] = useState<string | undefined>(undefined);
+	const [username, setUsername] = useState<string>();
+	const { createClixtag } = useOnboardingContext();
 	const handleUsername = async () => {
 		setIsLoading(true);
 		try {
-			setTimeout(() => {
+			if (username && username?.length >= 3) {
+				const tag = await createClixtag(username.trim().toLowerCase());
+				console.log(`${tag}.clix.eth`);
 				setIsLoading(false);
 				router.replace("/");
-			}, 2000);
+			}
 		} catch (e) {
 			console.warn(e);
 		}

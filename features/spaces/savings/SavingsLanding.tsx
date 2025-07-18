@@ -52,15 +52,7 @@ export function SavingsLanding() {
 					width="92%"
 				>
 					<ActivityLoader opacity={0.8} />
-					<YStack gap="$vs">
-						<XStack justify="space-between">
-							<Text variant="body3" fontWeight="$md" color="$surface2">
-								$0.00
-							</Text>
-							<Text color="$surface2" variant="body3">
-								Target: $0.00
-							</Text>
-						</XStack>
+					<YStack gap="$vs" mt="$xs">
 						<Progress value={60} height="$xs" bg="$surface2">
 							<Progress.Indicator bg="$surface3" animation="80ms-ease-in-out" />
 						</Progress>

@@ -1,4 +1,4 @@
-import { getSavings } from "@/features/contracts/goal-savings";
+import { getRoscaMembers } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -13,7 +13,7 @@ import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
-import { Button } from "tamagui";
+//import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -30,9 +30,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getSavings({
+			const reciept = await getRoscaMembers({
 				chainId: defaultChainId,
-				spaceId: "0xbf1048f666ee1387",
+				spaceId: "0x5f951f49f67f43ee",
 			});
 			console.log(reciept);
 		} catch (error) {
@@ -71,9 +71,9 @@ export default function HomeScreen() {
 					<TransactionsCard />
 					<ProductsCard />
 
-					<Button height="$3xl" onPress={handleTestFns}>
+					{/*<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>
+					</Button>*/}
 				</YStack>
 			</ScrollView>
 		</View>

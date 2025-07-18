@@ -19,9 +19,10 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { getAuth } from "@react-native-firebase/auth";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ReciveScreen() {
 	const user = useAppState((s) => s.user);
@@ -31,7 +32,7 @@ export default function ReciveScreen() {
 		? user.mainAddress
 		: "0x765DE816845861e75A25fCA122bb6898B8B1282a";
 	const phone = user.phoneNumber || user.email;
-	const clixtag = "kachdn";
+	const [clixtag, setClixtag] = useState<string>();
 
 	const copyToClipboard = async (text: string) => {
 		await Clipboard.setStringAsync(text);
@@ -52,6 +53,18 @@ export default function ReciveScreen() {
 		),
 		[],
 	);
+
+	useEffect(() => {
+		const getClixtag = async () => {
+			const user = getAuth().currentUser;
+			await user?.getIdToken(true);
+			const clixtag = await user
+				?.getIdTokenResult()
+				.then((tokenResult) => tokenResult.claims.tag);
+			setClixtag(clixtag);
+		};
+		getClixtag();
+	}, []);
 	return (
 		<Screen
 			title="Receive"

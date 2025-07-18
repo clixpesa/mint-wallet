@@ -69,6 +69,10 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 				address: "0x1234567890abcdef1234567890abcdef12345678",
 				blockCreated: 35762176,
 			},
+			roscas: {
+				address: "0x08385c3549853f7076774BE93B494791d752Fb85",
+				blockCreated: 40895856,
+			},
 		},
 	},
 	[ChainId.Alfajores]: {
@@ -91,6 +95,10 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 			goalSavings: {
 				address: "0xA8bd226aD6E2714D816adECB6C3D7C4CF884285d",
 				blockCreated: 51359990,
+			},
+			roscas: {
+				address: "0x2A5Be2d605Ca47E77b0Be0916dce86B781DA2371",
+				blockCreated: 51581712,
 			},
 		},
 	},

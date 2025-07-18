@@ -1,4 +1,4 @@
-import { TestnetModeBanner } from "@/features/essentials";
+//import { TestnetModeBanner } from "@/features/essentials";
 import { useAppState, useHasAccount } from "@/features/essentials/appState";
 import "@/features/utils/shims";
 import { WalletContextProvider } from "@/features/wallet";
@@ -69,7 +69,7 @@ function AppInner(): React.JSX.Element {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: colors.background.val }}>
-			<TestnetModeBanner />
+			{/*<TestnetModeBanner />*/}
 			{inAuthRoute ? (
 				<Stack>
 					<Stack.Screen name="(auth)" options={{ headerShown: false }} />

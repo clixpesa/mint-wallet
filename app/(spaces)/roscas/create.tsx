@@ -2,6 +2,7 @@ import { BackButton } from "@/components/Buttons/BackButton";
 import {
 	Button,
 	IconButton,
+	Input,
 	Spacer,
 	Stack,
 	Text,
@@ -17,15 +18,16 @@ import { Button as Chip } from "tamagui";
 
 export default function Create() {
 	const [name, setName] = useState("");
+	const [members, setMembers] = useState<string>("5");
 	const [showButton, setShowButton] = useState<boolean>(true);
 
 	const spaceNames = [
 		"Holidays",
 		"Savings",
-		"Gift",
-		"Rainy day",
+		"Dream Chasers",
+		"Superstars",
 		"Education",
-		"Renovation",
+		"Tujiinue",
 	];
 
 	return (
@@ -62,6 +64,35 @@ export default function Create() {
 					onBlur={() => setShowButton(true)}
 					onChangeText={(text) => setName(text)}
 				/>
+				<XStack
+					items="center"
+					borderWidth={2}
+					borderColor="$surface3"
+					width="92%"
+					justify="space-between"
+					self="center"
+					rounded="$md"
+					px="$md"
+					py="$xs"
+				>
+					<Text fontSize="$md" fontWeight="$md" color="$neutral2">
+						No. of Participants:
+					</Text>
+					<Input
+						height="$4xl"
+						onFocus={() => setShowButton(false)}
+						onBlur={() => setShowButton(true)}
+						fontSize={26}
+						width="30%"
+						text="right"
+						bg="$transparent"
+						caretColor="$surface3"
+						keyboardType="number-pad"
+						placeholder="5"
+						value={members}
+						onChangeText={(text) => setMembers(text)}
+					/>
+				</XStack>
 				<View
 					flexDirection="row"
 					flexWrap="wrap"
@@ -94,10 +125,10 @@ export default function Create() {
 					b="$4xl"
 					onPress={() =>
 						router.navigate({
-							pathname: "/(spaces)/savings/customize",
+							pathname: "/(spaces)/roscas/set-goal",
 							params: {
 								name,
-								amount: 0,
+								members,
 							},
 						})
 					}
