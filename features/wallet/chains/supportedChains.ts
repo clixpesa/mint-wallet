@@ -66,7 +66,7 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 				blockCreated: 35762175,
 			},
 			goalSavings: {
-				address: "0x1234567890abcdef1234567890abcdef12345678",
+				address: "0xDd2c5A7e7b522e506Ca7b1D96244864849a045b7",
 				blockCreated: 35762176,
 			},
 			roscas: {

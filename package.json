@@ -91,6 +91,6 @@
     "expo-dev-client": "~5.0.20",
     "typescript": "~5.8.3"
   },
-  "private": true,
-  "packageManager": "yarn@4.9.1"
+  "private": true
+  
 }

@@ -18,8 +18,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.clixpesa.app.test",
-      "googleServicesFile": "./google-services.test.json"
+      "package": "com.clixpesa.app",
+      "googleServicesFile": "./google-services.prod.json"
     },
     "web": {
       "bundler": "metro",
