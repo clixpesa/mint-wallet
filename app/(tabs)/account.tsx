@@ -43,7 +43,6 @@ export default function AccountScreen() {
 	const dispatch = useDispatch();
 	const setIsUnlocked = useAppState((s) => s.setIsUnlocked);
 	const [clixtag, setClixtag] = useState<string>();
-	console.log(clixtag);
 
 	useEffect(() => {
 		const getClixtag = async () => {

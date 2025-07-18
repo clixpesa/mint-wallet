@@ -69,6 +69,10 @@ export const supportedChains: Record<ChainId, ChainInfo> = {
 				address: "0x1234567890abcdef1234567890abcdef12345678",
 				blockCreated: 35762176,
 			},
+			roscas: {
+				address: "0x08385c3549853f7076774BE93B494791d752Fb85",
+				blockCreated: 40895856,
+			},
 		},
 	},
 	[ChainId.Alfajores]: {

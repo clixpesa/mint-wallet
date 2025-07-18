@@ -222,12 +222,7 @@ export default function SpaceHome() {
 				{!userSlotted.isSlotted ? (
 					<YStack gap="$xs" width="92%">
 						<Text ml="$lg">
-							Pick your slot before{" "}
-							{date.toLocaleDateString("en-US", {
-								weekday: "short",
-								day: "numeric",
-								month: "short",
-							})}
+							Pick your slot before {slotsInfo[0].payoutDate}
 						</Text>
 						<YStack gap="$xs" p="$sm" rounded="$md" bg="$surface1">
 							<XStack justify="space-between">
