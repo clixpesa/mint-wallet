@@ -13,7 +13,11 @@ interface WalletState {
 	currency: Currency;
 	tokenBalances: Record<TokenId, Balance>; // Record of address to Balance
 	overdraft: Balance;
-	fetchBalances: (address: Address, chainId: ChainId) => Promise<void>;
+	fetchBalances: (
+		address: Address,
+		chainId: ChainId,
+		isTestnet: boolean,
+	) => Promise<void>;
 	updateOverdraft: (amount: Balance["balanceUSD"]) => void;
 }
 
@@ -28,10 +32,10 @@ const initialWalletState = {
 
 export const useWalletState = create<WalletState>((set, get) => ({
 	...initialWalletState,
-	fetchBalances: async (address, chainId) => {
+	fetchBalances: async (address, chainId, isTestnet) => {
 		const currency = get().currency;
 		const { conversionRate } = getRate(currency);
-		const tokenBalances = await fetchTokenBalances(address);
+		const tokenBalances = await fetchTokenBalances(address, isTestnet);
 		const availableLimit = await getAvailableOverdraft({
 			chainId,
 			address,

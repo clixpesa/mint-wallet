@@ -42,7 +42,7 @@ export const supportedTokens: Record<string, Token> = {
 	},
 	[`USDT_${ChainId.Avalanche}`]: {
 		chainId: ChainId.Avalanche,
-		address: "0x9702230A8ea53601f5cD2dc00fDbc13d4dF4A8c7",
+		address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
 		name: "Tether USD",
 		symbol: "USDT",
 		decimals: 6,
@@ -89,7 +89,7 @@ export const supportedTokens: Record<string, Token> = {
 	},
 	[`USDT_${ChainId.Base}`]: {
 		chainId: ChainId.Base,
-		address: "0x9702230A8ea53601f5cD2dc00fDbc13d4dF4A8c7",
+		address: "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
 		name: "Tether USD",
 		symbol: "USDT",
 		decimals: 6,
