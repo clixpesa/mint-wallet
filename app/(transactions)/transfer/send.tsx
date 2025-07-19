@@ -95,8 +95,9 @@ export default function SendScreen() {
 
 	useEffect(() => {
 		if (
-			Number(actualAmount) > tokenInfo.balance &&
-			tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo)
+			(Number(actualAmount) > tokenInfo.balance &&
+				tokenInfo.chainId === ChainId.Alfajores) ||
+			tokenInfo.chainId === ChainId.Celo
 		) {
 			setIsOverdraft(true);
 		} else {
@@ -205,7 +206,8 @@ export default function SendScreen() {
 							<Text variant="subHeading1">
 								~{symbol}{" "}
 								{amount
-									? tokenInfo.symbol.includes("SH")
+									? tokenInfo.symbol.includes("SH") ||
+										tokenInfo.symbol.includes("KES")
 										? amount
 										: (Number(amount) * conversionRate).toFixed(2)
 									: "0.00"}
@@ -241,7 +243,8 @@ export default function SendScreen() {
 						<RotatableChevron direction="down" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
-				{tokenInfo.chainId === (ChainId.Alfajores || ChainId.Celo) ? (
+				{tokenInfo.chainId === ChainId.Alfajores ||
+				tokenInfo.chainId === ChainId.Celo ? (
 					<Text color={isOverdraft ? "$blueBase" : "$neutral1"}>
 						Jazisha: Ksh{overdraft.balance.toFixed(2)}
 					</Text>

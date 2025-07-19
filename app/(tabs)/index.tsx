@@ -1,4 +1,5 @@
-import { getRoscaMembers } from "@/features/contracts/roscas";
+//import { Button } from "tamagui";
+import overdraftAbi from "@/features/contracts/abis/overdraft.json";
 import {
 	HomeCard,
 	HomeHeader,
@@ -14,6 +15,7 @@ import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 //import { Button } from "tamagui";
+import { decodeErrorResult } from "viem";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -31,9 +33,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getRoscaMembers({
-				chainId: defaultChainId,
-				spaceId: "0x5f951f49f67f43ee",
+			const reciept = await decodeErrorResult({
+				abi: overdraftAbi,
+				data: "0xf9fba92c",
 			});
 			console.log(reciept);
 		} catch (error) {

@@ -19,7 +19,6 @@ export function useEnabledChains(): EnabledChainsInfo {
 			...chainInfo,
 		};
 	});*/
-
 	return {
 		chains: chainIds,
 		isTestnet: Boolean(isTestnet),
