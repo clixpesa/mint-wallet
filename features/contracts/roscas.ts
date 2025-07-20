@@ -104,18 +104,6 @@ export async function createRosca(
 	});
 	let txHash = "0x" as Hex;
 	try {
-		const approvalPromises = tokens.map((token) => {
-			const approvalAmount = (Number(params.payoutAmount) * 10).toFixed(6);
-			return params.account.writeContract({
-				address: token.address,
-				abi: parseAbi([
-					"function approve(address spender, uint256 amount) public returns (bool)",
-				]),
-				functionName: "approve",
-				args: [rosca?.address, parseUnits(approvalAmount, token.decimals)],
-			});
-		});
-		//await Promise.all(approvalPromises);
 		txHash = await params.account.writeContract({
 			address: rosca?.address,
 			abi: roscasAbi,
@@ -131,6 +119,19 @@ export async function createRosca(
 				],
 			],
 		});
+		const approvalPromises = tokens.map((token) => {
+			const approvalAmount = (Number(params.payoutAmount) * 10).toFixed(6);
+			return params.account.writeContract({
+				address: token.address,
+				abi: parseAbi([
+					"function approve(address spender, uint256 amount) public returns (bool)",
+				]),
+				functionName: "approve",
+				args: [rosca?.address, parseUnits(approvalAmount, token.decimals)],
+			});
+		});
+		await Promise.all(approvalPromises);
+
 		const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
 		const logs = receipt.logs.filter((log) =>
 			isSameAddress(log.address, rosca?.address),
