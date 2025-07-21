@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Clixpesa",
+    "name": "Clixpesa Dev",
     "slug": "clixpesa-mint",
     "owner": "clixpesa",
     "version": "2.0.0",
@@ -18,8 +18,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.clixpesa.app",
-      "googleServicesFile": "./google-services.prod.json"
+      "package": "com.clixpesa.app.test",
+      "googleServicesFile": "./google-services.test.json"
     },
     
     "web": {
