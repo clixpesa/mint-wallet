@@ -115,6 +115,7 @@ export function GroupsLanding() {
 							emphasis="secondary"
 							size="lg"
 							width="100%"
+							onPress={() => router.navigate("/(spaces)/roscas/join")}
 						>
 							Join a group
 						</Button>
