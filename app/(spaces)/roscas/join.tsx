@@ -1,16 +1,27 @@
 import { Screen } from "@/components/layout/Screen";
+import type { GroupSpaceInfo } from "@/features/contracts/roscas";
+import { getRate, getTokensByChainId } from "@/features/wallet";
+import { useEnabledChains } from "@/features/wallet/hooks";
+import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Input,
 	Loader,
+	ScrollView,
 	Stack,
 	Text,
 	TouchableArea,
+	Unicon,
+	UniversalImage,
+	UniversalImageResizeMode,
+	View,
 	XStack,
 	YStack,
 } from "@/ui";
 import { Search, X } from "@/ui/components/icons";
+import { isSameAddress } from "@/utilities/addresses";
 import { useMemoCompare } from "@/utilities/react/hooks";
 import { useDebounce } from "@/utilities/time/timing";
+import { router } from "expo-router";
 import isEqual from "lodash/isEqual";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -18,7 +29,11 @@ export default function JoinGroup() {
 	const inputRef = useRef<Input>(null);
 	const [searchText, setSearchText] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const { groups, searchTerm, loading } = useGroupSearch(searchText);
+	const { defaultChainId } = useEnabledChains();
+	const tokens = getTokensByChainId(defaultChainId);
+	const currency = useWalletState((s) => s.currency);
+	const { symbol, conversionRate } = getRate(currency);
+	const { groups, searchTerm, loading } = useGroupSearch(searchText, allGroups);
 
 	const handleTextChange = (text: string) => {
 		setSearchText(text);
@@ -50,7 +65,6 @@ export default function JoinGroup() {
 					<Input
 						ref={inputRef}
 						fontSize="$lg"
-						autoFocus
 						autoCapitalize="none"
 						autoCorrect={false}
 						px={1}
@@ -89,87 +103,217 @@ export default function JoinGroup() {
 							incorrectly.
 						</Text>
 					</Stack>
-				) : groups.length ? (
-					groups.map((group) => <Text key={group.id}>{group.name}</Text>)
-				) : null}
+				) : (
+					<ScrollView showsVerticalScrollIndicator={false}>
+						<View
+							flexDirection="row"
+							flexWrap="wrap"
+							gap="$md"
+							mt="$md"
+							mb="$xl"
+							justify="space-evenly"
+							self="center"
+							width="100%"
+						>
+							{groups.length
+								? groups.map((group) => {
+										const spaceToken = tokens.find((token) =>
+											isSameAddress(token.address, group.token),
+										);
+										console.log(spaceToken?.address);
+										const isUSD = spaceToken?.symbol.includes("USD");
+										const endTime =
+											group.startDate +
+											group.interval * (group.memberCount - 1);
+										const date: Date = new Date(endTime * 1000);
+										return (
+											<YStack
+												key={group.spaceId}
+												bg="$surface1"
+												width="46%"
+												p="$sm"
+												gap="$vs"
+												rounded="$md"
+												borderWidth={1}
+												borderColor="$surface3"
+												onPress={() => {
+													const { payoutAmount, ...rest } = group;
+													router.navigate({
+														pathname: "/(spaces)/roscas/overview",
+														params: {
+															...rest,
+															target: payoutAmount,
+														},
+													});
+												}}
+											>
+												<XStack self="flex-end" px="$md">
+													<UniversalImage
+														style={{ image: { borderRadius: 42 } }}
+														fallback={
+															<Unicon address={group.admin} size={42} />
+														}
+														size={{
+															width: 42,
+															height: 42,
+															resizeMode: UniversalImageResizeMode.Cover,
+														}}
+														uri={""}
+													/>
+													<Stack
+														ml={-8}
+														rounded="$full"
+														bg="$neutral3"
+														width={42}
+														justify="center"
+														items="center"
+													>
+														<Text color="$surface1" variant="body3">
+															+{group.memberCount - 1}
+														</Text>
+													</Stack>
+												</XStack>
+												<YStack gap="$3xs">
+													<Text variant="subHeading2" color="$neutral1">
+														{group.name}
+													</Text>
+													<Text variant="body3" color="$neutral2">
+														{group.memberCount} members
+													</Text>
+												</YStack>
+												<Stack>
+													<Text variant="subHeading2" color="$accent1">
+														{isUSD ? "$" : symbol}
+														{group.payoutAmount.toFixed(0)}
+													</Text>
+													<Text variant="body4" color="$neutral2">
+														Ends on{" "}
+														{date.toLocaleDateString("en-US", {
+															day: "numeric",
+															month: "short",
+															year: "numeric",
+														})}
+													</Text>
+												</Stack>
+											</YStack>
+										);
+									})
+								: allGroups.map((group) => {
+										const spaceToken = tokens.find((token) =>
+											isSameAddress(token.address, group.token),
+										);
+										console.log(spaceToken?.address);
+										const isUSD = spaceToken?.symbol.includes("USD");
+										const endTime =
+											group.startDate +
+											group.interval * (group.memberCount - 1);
+										const date: Date = new Date(endTime * 1000);
+										return (
+											<YStack
+												key={group.spaceId}
+												bg="$surface1"
+												width="46%"
+												p="$sm"
+												gap="$vs"
+												rounded="$md"
+												borderWidth={1}
+												borderColor="$surface3"
+												onPress={() => {
+													const { payoutAmount, ...rest } = group;
+													router.navigate({
+														pathname: "/(spaces)/roscas/overview",
+														params: {
+															...rest,
+															target: payoutAmount,
+														},
+													});
+												}}
+											>
+												<XStack self="flex-end" px="$md">
+													<UniversalImage
+														style={{ image: { borderRadius: 42 } }}
+														fallback={
+															<Unicon address={group.admin} size={42} />
+														}
+														size={{
+															width: 42,
+															height: 42,
+															resizeMode: UniversalImageResizeMode.Cover,
+														}}
+														uri={""}
+													/>
+													<Stack
+														ml={-8}
+														rounded="$full"
+														bg="$neutral3"
+														width={42}
+														justify="center"
+														items="center"
+													>
+														<Text color="$surface1" variant="body3">
+															+{group.memberCount - 1}
+														</Text>
+													</Stack>
+												</XStack>
+												<YStack gap="$3xs">
+													<Text variant="subHeading2" color="$neutral1">
+														{group.name}
+													</Text>
+													<Text variant="body3" color="$neutral2">
+														{group.memberCount} members
+													</Text>
+												</YStack>
+												<Stack>
+													<Text variant="subHeading2" color="$accent1">
+														{isUSD ? "$" : symbol}
+														{group.payoutAmount.toFixed(0)}
+													</Text>
+													<Text variant="body4" color="$neutral2">
+														Ends on{" "}
+														{date.toLocaleDateString("en-US", {
+															day: "numeric",
+															month: "short",
+															year: "numeric",
+														})}
+													</Text>
+												</Stack>
+											</YStack>
+										);
+									})}
+						</View>
+					</ScrollView>
+				)}
 			</YStack>
 		</Screen>
 	);
 }
 
-export function useGroupSearch(searchTerm: string): {
-	groups: any[];
+function useGroupSearch(
+	searchTerm: string,
+	allGroups: GroupSpaceInfo[],
+): {
+	groups: GroupSpaceInfo[];
 	searchTerm: string;
 	loading: boolean;
 } {
-	const allGroups = [
-		{
-			id: "0x303gdt3248",
-			name: "Masomo",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x303gdt3245",
-			name: "Education",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x303gdt3238",
-			name: "Rennovation",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x453gdt3248",
-			name: "Savings Exs",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x304gdt3238",
-			name: "Rennovation",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x454gdt3248",
-			name: "Savings Round",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x633gdt3248",
-			name: "Dream Chasers",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-		{
-			id: "0x393gdt3248",
-			name: "Masomo",
-			address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			admin: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
-		},
-	];
 	// get recipients based on searchTerm
-	const getGroups = useCallback((): any[] => {
+	const getGroups = useCallback((): GroupSpaceInfo[] => {
 		if (!searchTerm.trim()) {
 			return [];
 		}
 
-		const groups: any[] = [];
+		const groups: GroupSpaceInfo[] = [];
 		// Mock implementation
-		const matchedGroups: any[] = allGroups.filter((group) => {
+		const matchedGroups: GroupSpaceInfo[] = allGroups.filter((group) => {
 			return (
-				group.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				group.id.toLowerCase().includes(searchTerm.toLowerCase())
+				group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				group.spaceId.toLowerCase().includes(searchTerm.toLowerCase())
 			);
 		});
 
 		groups.push(...matchedGroups);
 		return groups;
-	}, [searchTerm]);
+	}, [searchTerm, allGroups]);
 
 	const memoGroups = useMemoCompare(getGroups, isEqual);
 	const memoResult = useMemo(
@@ -185,3 +329,72 @@ export function useGroupSearch(searchTerm: string): {
 
 	return searchTerm ? debouncedResult : memoResult;
 }
+
+const allGroups = [
+	{
+		spaceId: "0x1001",
+		name: "Wahenga",
+		admin: "0x765DE816845861e75B25fCA122bb6898B8B1282a",
+		token: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+		memberCount: 100,
+		payoutAmount: 1000,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "challenge",
+	},
+	{
+		spaceId: "0x1002",
+		name: "Superstars",
+		admin: "0x765DE816845861e75B25fCA122bb6899B8B1282a",
+		token: "0x765DE816845861e75B25fCA122bb6898B8B1282a",
+		memberCount: 26,
+		payoutAmount: 100000,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "rosca",
+	},
+	{
+		spaceId: "0x1003",
+		name: "FUTURE",
+		admin: "0x765DE816845861e75c25fCA122bb6899B8B1282a",
+		token: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+		payoutAmount: 5000,
+		memberCount: 30,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "challenge",
+	},
+	{
+		spaceId: "0x1004",
+		name: "Women of Grace",
+		admin: "0x765DE816846861e75B25fCA122bb6899B8B1282a",
+		token: "0x765DE816845861e75B25fCA122bb6898B8B1282a",
+		memberCount: 12,
+		payoutAmount: 10000,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "rosca",
+	},
+	{
+		spaceId: "0x1005",
+		name: "A dollar a day",
+		admin: "0x765DE916845861e75B25fCA122bb6899B8B1282a",
+		token: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+		memberCount: 30,
+		payoutAmount: 365,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "challenge",
+	},
+	{
+		spaceId: "0x0006",
+		name: "Dream Chasers",
+		admin: "0x905DE816845861e75B25fCA122bb6899B8B1282a",
+		token: "0x765DE816845861e75B25fCA122bb6898B8B1282a",
+		memberCount: 15,
+		payoutAmount: 10000,
+		interval: 1209600,
+		startDate: 1750599852,
+		//type: "rosca",
+	},
+] as GroupSpaceInfo[];
