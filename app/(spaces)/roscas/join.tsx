@@ -1,5 +1,5 @@
 import { Screen } from "@/components/layout/Screen";
-import type { GroupSpaceInfo } from "@/features/contracts/roscas";
+import { type GroupSpaceInfo, getAllRoscas } from "@/features/contracts/roscas";
 import { getRate, getTokensByChainId } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
@@ -33,6 +33,7 @@ export default function JoinGroup() {
 	const tokens = getTokensByChainId(defaultChainId);
 	const currency = useWalletState((s) => s.currency);
 	const { symbol, conversionRate } = getRate(currency);
+	const [allGroups, setAllGroups] = useState<GroupSpaceInfo[]>([]);
 	const { groups, searchTerm, loading } = useGroupSearch(searchText, allGroups);
 
 	const handleTextChange = (text: string) => {
@@ -44,13 +45,16 @@ export default function JoinGroup() {
 		}, 50);
 	};
 	useEffect(() => {
-		setTimeout(() => {
+		setIsLoading(true);
+		const getSpaces = async () => {
+			const roscas = await getAllRoscas(defaultChainId);
+			if (roscas.length) setAllGroups([...pGroups, ...roscas]);
 			setIsLoading(false);
-		}, 50);
-	}, []);
-
+		};
+		getSpaces();
+	}, [defaultChainId]);
 	return (
-		<Screen>
+		<Screen title="Join a Group">
 			<YStack gap="$sm" width="92%">
 				<XStack
 					borderWidth={2}
@@ -59,7 +63,7 @@ export default function JoinGroup() {
 					items="center"
 					px="$sm"
 					gap="$vs"
-					mb="$sm"
+					mb="$2xs"
 				>
 					<Search size={24} color="$neutral2" />
 					<Input
@@ -99,8 +103,7 @@ export default function JoinGroup() {
 					<Stack items="center" px="$sm" py="$md" bg="$surface1" rounded="$lg">
 						<Text variant="buttonLabel2">No results found</Text>
 						<Text color="$neutral3" text="center" variant="body2">
-							The recipient you searched does not exist or is spelled
-							incorrectly.
+							The group you searched does not exist or is spelled incorrectly.
 						</Text>
 					</Stack>
 				) : (
@@ -110,7 +113,7 @@ export default function JoinGroup() {
 							flexWrap="wrap"
 							gap="$md"
 							mt="$md"
-							mb="$xl"
+							mb="35%"
 							justify="space-evenly"
 							self="center"
 							width="100%"
@@ -120,7 +123,6 @@ export default function JoinGroup() {
 										const spaceToken = tokens.find((token) =>
 											isSameAddress(token.address, group.token),
 										);
-										console.log(spaceToken?.address);
 										const isUSD = spaceToken?.symbol.includes("USD");
 										const endTime =
 											group.startDate +
@@ -137,12 +139,12 @@ export default function JoinGroup() {
 												borderWidth={1}
 												borderColor="$surface3"
 												onPress={() => {
-													const { payoutAmount, ...rest } = group;
 													router.navigate({
-														pathname: "/(spaces)/roscas/overview",
+														pathname: "/(spaces)/roscas/rosca-overview",
 														params: {
-															...rest,
-															target: payoutAmount,
+															...group,
+															type: "rosca",
+															real: group.spaceId.length > 6 ? "true" : "false",
 														},
 													});
 												}}
@@ -202,7 +204,6 @@ export default function JoinGroup() {
 										const spaceToken = tokens.find((token) =>
 											isSameAddress(token.address, group.token),
 										);
-										console.log(spaceToken?.address);
 										const isUSD = spaceToken?.symbol.includes("USD");
 										const endTime =
 											group.startDate +
@@ -219,12 +220,12 @@ export default function JoinGroup() {
 												borderWidth={1}
 												borderColor="$surface3"
 												onPress={() => {
-													const { payoutAmount, ...rest } = group;
 													router.navigate({
-														pathname: "/(spaces)/roscas/overview",
+														pathname: "/(spaces)/roscas/rosca-overview",
 														params: {
-															...rest,
-															target: payoutAmount,
+															...group,
+															type: "rosca",
+															real: group.spaceId.length > 6 ? "true" : "false",
 														},
 													});
 												}}
@@ -330,7 +331,7 @@ function useGroupSearch(
 	return searchTerm ? debouncedResult : memoResult;
 }
 
-const allGroups = [
+const pGroups = [
 	{
 		spaceId: "0x1001",
 		name: "Wahenga",

@@ -1,5 +1,5 @@
 //import { Button } from "tamagui";
-import overdraftAbi from "@/features/contracts/abis/overdraft.json";
+import { getAllRoscas } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 //import { Button } from "tamagui";
-import { decodeErrorResult } from "viem";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -33,10 +32,7 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await decodeErrorResult({
-				abi: overdraftAbi,
-				data: "0xf9fba92c",
-			});
+			const reciept = await getAllRoscas(defaultChainId);
 			console.log(reciept);
 		} catch (error) {
 			console.log(error);

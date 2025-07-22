@@ -448,3 +448,72 @@ export async function getRoscaMembers({
 		return [];
 	}
 }
+
+export async function getAllRoscas(
+	chainId: ChainId,
+): Promise<GroupSpaceInfo[]> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	const contract = getContract({
+		address: roscaContrant?.address,
+		abi: roscasAbi,
+		client: publicClient,
+	});
+	try {
+		const allRoscas: any[] = await contract.read.getAllRoscas();
+		return allRoscas.map((rosca) => ({
+			spaceId: rosca.id,
+			name: rosca.name,
+			admin: rosca.admin,
+			token: rosca.token,
+			payoutAmount: Number(formatUnits(rosca.slotInfo.payoutAmount, 18)),
+			interval: Number(rosca.slotInfo.interaval),
+			startDate: Number(rosca.slotInfo.startDate),
+			memberCount: Number(rosca.slotInfo.memberCount),
+		}));
+	} catch (error) {
+		console.error("Error fetching all roscas:", error);
+		return [];
+	}
+}
+
+export async function joinRosca({
+	chainId,
+	spaceId,
+	account,
+}: {
+	chainId: ChainId;
+	spaceId: string;
+	account: any;
+}): Promise<{ txHash: Hex; _spaceId?: string }> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "joinRosca",
+			args: [spaceId],
+		});
+		const receipt = await publicClient.getTransactionReceipt({
+			hash: txHash,
+		});
+		const logs = receipt.logs.filter((log) =>
+			isSameAddress(log.address, roscaContrant?.address),
+		);
+		const _spaceId = logs[0].topics[2]?.substring(0, 18);
+		return { txHash, _spaceId };
+	} catch (error) {
+		console.error("Error joining rosca:", error);
+		return { txHash };
+	}
+}
