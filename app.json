@@ -3,7 +3,7 @@
     "name": "Clixpesa Dev",
     "slug": "clixpesa-mint",
     "owner": "clixpesa",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "orientation": "portrait",
     "icon": "./ui/assets/images/icon.png",
     "scheme": "clix.eth",
