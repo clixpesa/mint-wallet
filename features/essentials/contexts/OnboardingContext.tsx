@@ -153,7 +153,6 @@ export function OnboardingContextProvider({
 	};
 
 	const createClixtag = async (userName: string): Promise<string | any> => {
-		console.log(signedInUser?.uid);
 		const instance = httpsCallable(getFunctions(), "createAndStoreTag");
 		const tag = (await instance({ userId: signedInUser?.uid, tag: userName }))
 			.data;

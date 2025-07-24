@@ -1,4 +1,5 @@
-import { getRoscaMembers } from "@/features/contracts/roscas";
+//import { Button } from "tamagui";
+import { getAllRoscas } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -19,6 +20,7 @@ export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
+	const isTestnet = useAppState((s) => s.testnetEnabled);
 	const { defaultChainId } = useEnabledChains();
 	const { mainAccount, publicClient } = useWalletContext();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
@@ -30,10 +32,7 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getRoscaMembers({
-				chainId: defaultChainId,
-				spaceId: "0x5f951f49f67f43ee",
-			});
+			const reciept = await getAllRoscas(defaultChainId);
 			console.log(reciept);
 		} catch (error) {
 			console.log(error);
@@ -41,8 +40,9 @@ export default function HomeScreen() {
 	};
 
 	useEffect(() => {
-		if (user.mainAddress) fetchBalances(user.mainAddress, defaultChainId);
-	}, [user, fetchBalances, defaultChainId]);
+		if (user.mainAddress)
+			fetchBalances(user.mainAddress, defaultChainId, isTestnet);
+	}, [user, fetchBalances, defaultChainId, isTestnet]);
 
 	return (
 		<View flex={1} items="center" bg="$surface1">

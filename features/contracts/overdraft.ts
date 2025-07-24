@@ -76,7 +76,7 @@ export async function subscribeToOverdraft(
 			args: [
 				params.account.account.address,
 				parseEther(params.initialLimit.inUSD),
-				"CPODTest",
+				"CPODProd",
 			],
 		});
 		return txHash;

@@ -737,6 +737,83 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getAllRoscas",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bytes8",
+						"name": "id",
+						"type": "bytes8"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "admin",
+						"type": "address"
+					},
+					{
+						"internalType": "contract IERC20Upgradeable",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalBalance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "yield",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "loan",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "payoutAmount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "memberCount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "interaval",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "startDate",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct ClixpesaRoscas.SlotInfo",
+						"name": "slotInfo",
+						"type": "tuple"
+					}
+				],
+				"internalType": "struct ClixpesaRoscas.Rosca[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "bytes8",

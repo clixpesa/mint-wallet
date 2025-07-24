@@ -14,17 +14,12 @@ import {
 
 import {
 	BookOpen,
-	Cloud,
-	Coins,
 	Contrast,
 	Edit,
-	FileListLock,
-	Fingerprint,
 	HelpCenter,
 	LikeSquare,
 	Lock,
 	Logout,
-	Passkey,
 	SendAction,
 	XTwitter,
 } from "@/ui/components/icons";
@@ -32,6 +27,7 @@ import { shortenAddress } from "@/utilities/addresses";
 import { redirect } from "@/utilities/links/redirect";
 import { getAuth } from "@react-native-firebase/auth";
 import * as Application from "expo-application";
+import { openURL } from "expo-linking";
 import { usePathname } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
@@ -130,7 +126,7 @@ export default function AccountScreen() {
 				</YStack>
 				<Settings my="$md">
 					<Settings.Items>
-						<Settings.Title>Preferences</Settings.Title>
+						{/*<Settings.Title>Preferences</Settings.Title>
 						<Settings.Group>
 							<SettingsThemeAction />
 							<Settings.Item icon={Coins}>Local currency</Settings.Item>
@@ -150,11 +146,19 @@ export default function AccountScreen() {
 							<Settings.Item icon={FileListLock}>Recovery phrase</Settings.Item>
 
 							<Settings.Item icon={Cloud}>Google Drive backup</Settings.Item>
-						</Settings.Group>
+						</Settings.Group>*/}
 						<Settings.Title>Support</Settings.Title>
 						<Settings.Group>
-							<Settings.Item icon={LikeSquare}>Share feedback</Settings.Item>
-							<Settings.Item onPress={() => {}} icon={HelpCenter}>
+							<Settings.Item
+								icon={LikeSquare}
+								onPress={() => openBrowserAsync("https://tally.so/r/w5zBj6")}
+							>
+								Share feedback
+							</Settings.Item>
+							<Settings.Item
+								onPress={() => openURL("https://wa.me/+254728682258")}
+								icon={HelpCenter}
+							>
 								Help and Support
 							</Settings.Item>
 						</Settings.Group>

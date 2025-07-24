@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Clixpesa",
+    "name": "Clixpesa Dev",
     "slug": "clixpesa-mint",
     "owner": "clixpesa",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "orientation": "portrait",
     "icon": "./ui/assets/images/icon.png",
     "scheme": "clix.eth",
@@ -21,6 +21,7 @@
       "package": "com.clixpesa.app.test",
       "googleServicesFile": "./google-services.test.json"
     },
+    
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -62,6 +63,11 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
           }
         }
       ],

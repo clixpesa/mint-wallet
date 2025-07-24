@@ -162,7 +162,10 @@ export default function ReciveScreen() {
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
 					<YStack gap="$md" mt="$lg" width="92%">
-						<TouchableArea items="center">
+						<TouchableArea
+							items="center"
+							onPress={() => copyToClipboard(address)}
+						>
 							<Text variant="subHeading1">
 								{clixtag}
 								<Text variant="subHeading1" color="$neutral2">

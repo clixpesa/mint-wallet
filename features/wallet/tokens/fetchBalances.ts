@@ -6,9 +6,8 @@ import { getEnabledTokens, getTokenId } from "./utils";
 
 export const fetchTokenBalances = async (
 	address: Address,
-	isTestnet = true,
+	isTestnet: boolean,
 ): Promise<Record<TokenId, Balance>> => {
-	console.log(`Fetching balances for address: ${address}`);
 	const balances: Record<TokenId, Balance> = {};
 	const chainIds = getEnabledChains(isTestnet);
 	const tokens = getEnabledTokens(chainIds);
