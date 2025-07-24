@@ -17,10 +17,12 @@ import {
 	Input,
 	Separator,
 	Spacer,
+	SpinningLoader,
 	Stack,
 	Text,
 	TouchableArea,
 	UniversalImage,
+	UniversalImageResizeMode,
 	View,
 	XStack,
 	YStack,
@@ -94,9 +96,10 @@ export default function DepositScreen() {
 		setIsSending(true);
 		setIsTxLoading(true);
 		if (mainAccount && amount) {
-			console.log("Sending");
-			setTxHash(txHash);
-			setIsTxLoading(false);
+			setTimeout(() => {
+				setTxHash(txHash);
+				setIsTxLoading(false);
+			}, 3000);
 		}
 	};
 
@@ -191,7 +194,7 @@ export default function DepositScreen() {
 							size={32}
 							address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
 							chainId={tokenInfo.chainId}
-							avatarUri={require("@/ui/assets/images/provider-logos/mpesa.png")}
+							avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
 						/>
 						<Text variant="subHeading2">Payd - MPESA</Text>
 						<RotatableChevron direction="right" color="$neutral1" ml={-10} />
@@ -387,7 +390,7 @@ const ReviewContent = ({
 						size={46}
 						address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
 						chainId={tokenInfo.chainId}
-						avatarUri={require("@/ui/assets/images/provider-logos/mpesa.png")}
+						avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
 					/>
 				</XStack>
 				<Separator />
@@ -524,13 +527,58 @@ const SendContent = ({
 	onViewReciept,
 }: SendContentType) => {
 	return (
-		<Stack flex={1} justify="center">
+		<View flex={1} justify="center" items="center" width="100%">
 			{isLoading ? (
-				<Stack self="center" mr="$xl">
-					<UniversalImage
-						uri={require("@/ui/assets/gifs/send.gif")}
-						size={{ height: 80, width: 80 }}
-					/>
+				<Stack>
+					<YStack gap="$sm" items="center">
+						<XStack gap="$md">
+							<Stack
+								rounded="$xl"
+								height={80}
+								width={80}
+								z={10}
+								overflow="hidden"
+							>
+								<UniversalImage
+									uri={require("@/ui/assets/images/icon.png")}
+									size={{
+										height: 80,
+										width: 80,
+										resizeMode: UniversalImageResizeMode.Contain,
+									}}
+								/>
+							</Stack>
+							<Stack
+								rounded="$xl"
+								height={80}
+								width={80}
+								z={10}
+								overflow="hidden"
+							>
+								<UniversalImage
+									uri={require("@/ui/assets/images/provider-logos/payd-dark.png")}
+									size={{
+										height: 80,
+										width: 80,
+										resizeMode: UniversalImageResizeMode.Contain,
+									}}
+								/>
+							</Stack>
+						</XStack>
+						<SpinningLoader />
+						<YStack items="center" gap="$xs">
+							<Text variant="subHeading1">
+								Connecting you to {provider.name}
+							</Text>
+							<Text>
+								{`Buying ${currency.symbol} ${
+									tokenInfo.symbol.includes("USD")
+										? (Number(amount) * currency.rate).toFixed(2)
+										: amount.toFixed(2)
+								} worth of ${tokenInfo.symbol}`}
+							</Text>
+						</YStack>
+					</YStack>
 				</Stack>
 			) : (
 				<YStack gap="$md" width="85%" mb="$5xl">
@@ -543,14 +591,15 @@ const SendContent = ({
 					</Text>
 					<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 						<YStack>
-							<Text variant="heading3" color={"$neutral1"}>
+							<Text variant="heading3" color="$neutral1">
 								{amount.toFixed(3)} {tokenInfo.symbol}
 							</Text>
-							<Text color={"$neutral2"}>
-								{currency.symbol}{" "}
-								{tokenInfo.symbol.includes("USD")
-									? (Number(amount) * currency.rate).toFixed(2)
-									: amount.toFixed(2)}
+							<Text color="$neutral2">
+								{`${currency.symbol} ${
+									tokenInfo.symbol.includes("USD")
+										? (Number(amount) * currency.rate).toFixed(2)
+										: amount.toFixed(2)
+								}`}
 							</Text>
 						</YStack>
 						<TokenLogo
@@ -573,7 +622,7 @@ const SendContent = ({
 							size={46}
 							address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
 							chainId={tokenInfo.chainId}
-							avatarUri={require("@/ui/assets/images/provider-logos/mpesa.png")}
+							avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
 						/>
 					</XStack>
 					<YStack gap="$xs">
@@ -593,26 +642,47 @@ const SendContent = ({
 					</YStack>
 				</YStack>
 			)}
-			<YStack b="$3xl" gap="$md" position="absolute" width="100%">
-				<Button
-					size="lg"
-					variant="branded"
-					emphasis="tertiary"
-					width="85%"
-					onPress={onViewReciept}
+			{isLoading ? (
+				<Text
+					b="$3xl"
+					position="absolute"
+					width="90%"
+					text="center"
+					variant="body3"
+					color="$neutral2"
 				>
-					View reciept
-				</Button>
-				<Button
-					size="lg"
-					variant="branded"
-					loading={isLoading}
-					width="85%"
-					onPress={onPressDone}
+					By continuing, you acknowledge that you'll be subject to the Terms of
+					service and Privacy Policy of {provider.name}
+				</Text>
+			) : (
+				<YStack
+					b="$3xl"
+					gap="$md"
+					position="absolute"
+					width="100%"
+					self="center"
+					l="7%"
 				>
-					Done
-				</Button>
-			</YStack>
-		</Stack>
+					<Button
+						size="lg"
+						variant="branded"
+						emphasis="tertiary"
+						width="86%"
+						onPress={onViewReciept}
+					>
+						View reciept
+					</Button>
+					<Button
+						size="lg"
+						variant="branded"
+						loading={isLoading}
+						width="86%"
+						onPress={onPressDone}
+					>
+						Done
+					</Button>
+				</YStack>
+			)}
+		</View>
 	);
 };

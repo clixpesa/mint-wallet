@@ -20,6 +20,7 @@ export default function ProvidersScreen() {
 						<AccountIcon
 							address="0x456a3D042C0DbD3db53D5489e98dFb038553B0d0"
 							size={32}
+							avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
 						/>
 						<Text variant="subHeading2" fontSize={18}>
 							Payd
