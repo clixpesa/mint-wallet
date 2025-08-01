@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react";
 import dummyUsers from "./dummyusers.json";
 
 export interface SearchableRecipient {
-	key: string;
+	id: string;
 	name: string | null;
 	address: Address;
 	phone: string | null;
@@ -54,7 +54,7 @@ export function useRecipientSearch(searchTerm: string): {
 		});
 		if (isAddressSearch && matchedUsers.length === 0) {
 			recipients.push({
-				key: `addr-${searchTerm}`,
+				id: `addr-${searchTerm}`,
 				name: null,
 				address: searchTerm as Address,
 				phone: null,
@@ -63,7 +63,7 @@ export function useRecipientSearch(searchTerm: string): {
 		}
 		recipients.push(
 			...matchedUsers.map((user) => ({
-				key: user.uuid,
+				id: user.uuid,
 				name: user.name || user.tag || null,
 				address: user.address as Address,
 				phone: user.phone,

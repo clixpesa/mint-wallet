@@ -5,6 +5,7 @@ import {
 	ActivityLoader,
 	Input,
 	Loader,
+	ScrollView,
 	Stack,
 	Text,
 	TouchableArea,
@@ -13,6 +14,7 @@ import {
 } from "@/ui";
 import { Person, ScanQr, Search, X } from "@/ui/components/icons";
 import { shortenAddress } from "@/utilities/addresses";
+import * as Contacts from "expo-contacts";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 
@@ -20,7 +22,11 @@ export default function RecipientScreen() {
 	const inputRef = useRef<Input>(null);
 	const [searchText, setSearchText] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [contacts, setContacts] = useState<
+		({ name: string; phone: string | null } | undefined)[]
+	>([]);
 	const { recipients, searchTerm, loading } = useRecipientSearch(searchText);
+
 	const recentRecipients = [
 		/*{
 			key: "0x0001",
@@ -53,10 +59,34 @@ export default function RecipientScreen() {
 			});
 		}, 50);
 	};
+
 	useEffect(() => {
-		setTimeout(() => {
+		(async () => {
+			const { status } = await Contacts.requestPermissionsAsync();
+			console.log(status);
+			if (status === "granted") {
+				const { data } = await Contacts.getContactsAsync({
+					fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
+				});
+
+				if (data.length > 0) {
+					//const contact = data[0];
+					const contacts = data.flatMap((contact) => {
+						if (contact.phoneNumbers?.[0])
+							return {
+								id: contact.id,
+								name: contact.name,
+								phone:
+									contact.phoneNumbers?.[0].number?.trim().replace(/\s/g, "") ??
+									null,
+							};
+					});
+
+					setContacts(contacts);
+				}
+			}
 			setIsLoading(false);
-		}, 50);
+		})();
 	}, []);
 
 	return (
@@ -166,25 +196,102 @@ export default function RecipientScreen() {
 						</XStack>
 					</TouchableArea>
 				) : null}
-				<YStack
-					bg="$surface1"
-					width="100%"
-					px="$sm"
-					pt="$md"
-					pb={isLoading ? "$2xs" : "$xl"}
-					rounded="$lg"
-					gap="$md"
-				>
-					<Text color="$neutral2" pl="$xs">
-						Most Recent
-					</Text>
-					{isLoading ? (
-						<ActivityLoader opacity={1} />
-					) : recentRecipients.length > 0 ? (
-						recentRecipients.map((item) => (
-							<TouchableArea
-								key={item.key}
-								onPress={() =>
+				<ScrollView showsVerticalScrollIndicator={false}>
+					<YStack
+						bg="$surface1"
+						width="100%"
+						px="$sm"
+						pt="$md"
+						pb={isLoading ? "$2xs" : "$xl"}
+						rounded="$lg"
+						gap="$md"
+					>
+						<Text color="$neutral2" pl="$xs">
+							Most Recent
+						</Text>
+						{isLoading ? (
+							<ActivityLoader opacity={1} />
+						) : recentRecipients.length > 0 ? (
+							recentRecipients.map((item) => (
+								<TouchableArea
+									key={item.key}
+									onPress={() =>
+										router.navigate({
+											pathname: "/(transactions)/transfer/send",
+											params: {
+												name: item.name
+													? item.name
+													: shortenAddress(item.address, 5),
+												address: item.address,
+												phone: item.name
+													? item.phone
+														? item.phone
+														: shortenAddress(item.address, 6)
+													: "External account",
+											},
+										})
+									}
+								>
+									<XStack items="center" gap="$sm">
+										<AccountIcon size={42} address={item.address} />
+										<YStack gap="$2xs">
+											<Text variant="subHeading2">
+												{item.name
+													? item.name
+													: shortenAddress(item.address, 5)}
+											</Text>
+											<Text variant="body3" color="$neutral2">
+												{item.name
+													? item.phone
+														? item.phone
+														: shortenAddress(item.address, 6)
+													: "External account"}
+											</Text>
+										</YStack>
+									</XStack>
+								</TouchableArea>
+							))
+						) : (
+							<XStack items="center" gap="$sm">
+								<Stack
+									bg="$neutral3"
+									height={42}
+									rounded="$full"
+									width={42}
+									items="center"
+									justify="center"
+								>
+									<Person size={32} color="$surface1" />
+								</Stack>
+								<Text variant="subHeading1" color="$neutral2">
+									{" "}
+									No recents yet
+								</Text>
+							</XStack>
+						)}
+					</YStack>
+					{!searchTerm ? (
+						<YStack
+							bg="$surface1"
+							width="100%"
+							px="$sm"
+							pt="$md"
+							pb={isLoading ? "$2xs" : "$xl"}
+							rounded="$lg"
+							mt="$md"
+							mb="50%"
+							gap="$md"
+						>
+							<Text color="$neutral2" pl="$xs">
+								Your Contacts
+							</Text>
+							{isLoading ? (
+								<ActivityLoader opacity={1} />
+							) : contacts?.length > 0 ? (
+								contacts?.slice(1, 40).map((item) => (
+									<TouchableArea
+										key={item?.id}
+										/*onPress={() =>
 									router.navigate({
 										pathname: "/(transactions)/transfer/send",
 										params: {
@@ -199,44 +306,43 @@ export default function RecipientScreen() {
 												: "External account",
 										},
 									})
-								}
-							>
+								}*/
+									>
+										<XStack items="center" gap="$sm">
+											<AccountIcon
+												size={42}
+												address={`0x${item?.phone?.[3]}65DE816845861e75A2${item?.phone?.[7]}fCA122bb6898B8B1282${item?.phone?.[9]}`}
+											/>
+											<YStack gap="$2xs">
+												<Text variant="subHeading2">{item?.name}</Text>
+												<Text variant="body3" color="$neutral2">
+													{item?.phone}
+												</Text>
+											</YStack>
+										</XStack>
+									</TouchableArea>
+								))
+							) : (
 								<XStack items="center" gap="$sm">
-									<AccountIcon size={42} address={item.address} />
-									<YStack gap="$2xs">
-										<Text variant="subHeading2">
-											{item.name ? item.name : shortenAddress(item.address, 5)}
-										</Text>
-										<Text variant="body3" color="$neutral2">
-											{item.name
-												? item.phone
-													? item.phone
-													: shortenAddress(item.address, 6)
-												: "External account"}
-										</Text>
-									</YStack>
+									<Stack
+										bg="$neutral3"
+										height={42}
+										rounded="$full"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<Person size={32} color="$surface1" />
+									</Stack>
+									<Text variant="subHeading1" color="$neutral2">
+										{" "}
+										No Contacts
+									</Text>
 								</XStack>
-							</TouchableArea>
-						))
-					) : (
-						<XStack items="center" gap="$sm">
-							<Stack
-								bg="$neutral3"
-								height={42}
-								rounded="$full"
-								width={42}
-								items="center"
-								justify="center"
-							>
-								<Person size={32} color="$surface1" />
-							</Stack>
-							<Text variant="subHeading1" color="$neutral2">
-								{" "}
-								No recents yet
-							</Text>
-						</XStack>
-					)}
-				</YStack>
+							)}
+						</YStack>
+					) : null}
+				</ScrollView>
 			</YStack>
 		</Screen>
 	);
