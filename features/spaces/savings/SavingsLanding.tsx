@@ -16,8 +16,9 @@ import {
 	XStack,
 	YStack,
 } from "@/ui";
-import { MoneyFill, SafeFill } from "@/ui/components/icons";
+import { ExternalLink, MoneyFill, SafeFill } from "@/ui/components/icons";
 import { router } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import { Progress } from "tamagui";
 import type { Address } from "viem";
@@ -108,6 +109,16 @@ export function SavingsLanding() {
 							</Stack>
 						</XStack>
 					</YStack>
+					<TouchableArea
+						onPress={() => openBrowserAsync("https://clixpesa.com/savings")}
+					>
+						<XStack items="center" gap="$xs" mt="$md">
+							<Text variant="subHeading1" color="$accent1">
+								Learn more
+							</Text>
+							<ExternalLink size={24} color="$accent1" />
+						</XStack>
+					</TouchableArea>
 					<Spacer height="10%" />
 					<Button
 						variant="branded"

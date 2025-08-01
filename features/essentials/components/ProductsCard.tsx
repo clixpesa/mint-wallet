@@ -62,7 +62,13 @@ export const ProductsCard = () => {
 						Seperate your Personal and Business funds.
 					</Text>
 				</YStack>
-				<TouchableArea py="$vs" px="$md" bg="$accent2" rounded="$full">
+				<TouchableArea
+					py="$vs"
+					px="$md"
+					bg="$accent2"
+					rounded="$full"
+					onPress={() => router.navigate("/(transactions)/ramps/purse")}
+				>
 					<Text variant="buttonLabel2" color="$accent1">
 						Open
 					</Text>

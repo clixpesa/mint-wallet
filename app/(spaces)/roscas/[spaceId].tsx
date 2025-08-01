@@ -423,11 +423,11 @@ export default function SpaceHome() {
 			</XStack>
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
-				snapPoints={["30%"]}
+				snapPoints={["50%"]}
 				backdropComponent={renderBackdrop}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
-					<YStack gap="$sm" width="90%" mt="$3xl">
+					<YStack gap="$sm" width="90%" my="$3xl">
 						<TouchableArea
 							onPress={() => {
 								router.navigate({
