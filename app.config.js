@@ -79,6 +79,12 @@ export default {
           }
         }
       ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Clixpesa to access your contacts."
+        }
+      ]
     ],
     experiments: {
       typedRoutes: true

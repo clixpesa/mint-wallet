@@ -104,7 +104,7 @@ export function HomeActions(): JSX.Element {
 				onDismiss={() => {}}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
-					<YStack gap="$sm" width="90%" my="$3xl">
+					<YStack gap="$sm" width="90%" mt="$3xl" mb="$4xl">
 						<TouchableArea
 							onPress={() => router.navigate("/(essentials)/tokens/overview")}
 						>
