@@ -21,9 +21,10 @@ import {
 	XStack,
 	YStack,
 } from "@/ui";
-import { GroupFill, RoscaFill } from "@/ui/components/icons";
+import { ExternalLink, GroupFill, RoscaFill } from "@/ui/components/icons";
 import { isSameAddress } from "@/utilities/addresses";
 import { router } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import type { Address } from "viem";
 
@@ -100,6 +101,16 @@ export function GroupsLanding() {
 							</Stack>
 						</XStack>
 					</YStack>
+					<TouchableArea
+						onPress={() => openBrowserAsync("https://clixpesa.com/groups")}
+					>
+						<XStack items="center" gap="$xs" mt="$md">
+							<Text variant="subHeading1" color="$accent1">
+								Learn more
+							</Text>
+							<ExternalLink size={24} color="$accent1" />
+						</XStack>
+					</TouchableArea>
 					<Spacer height="10%" />
 					<YStack gap="$sm" width="85%" items="center">
 						<Button
