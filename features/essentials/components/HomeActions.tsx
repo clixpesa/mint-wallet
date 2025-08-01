@@ -1,19 +1,39 @@
 import { ActionButton } from "@/components/Buttons/ActionButton";
-import { XStack, useThemeColors } from "@/ui";
+import {
+	Separator,
+	Stack,
+	Text,
+	TouchableArea,
+	XStack,
+	YStack,
+	useThemeColors,
+} from "@/ui";
 import {
 	ArrowDownCircle,
 	Bank,
+	Coins,
+	FileList,
+	MobileAirtime,
 	MoreHorizontal,
+	Mpesa,
+	RotatableChevron,
 	SendAction,
 } from "@/ui/components/icons";
+import {
+	BottomSheetBackdrop,
+	type BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 export function HomeActions(): JSX.Element {
 	const colors = useThemeColors();
 	const iconSize = 24;
 	const contentColor = colors.accent1.val;
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
 	const onPressDeposit = useCallback(() => {
 		router.push("/(transactions)/ramps/deposit");
@@ -25,7 +45,7 @@ export function HomeActions(): JSX.Element {
 		router.push("/(transactions)/ramps/receive");
 	}, []);
 	const onPressMore = useCallback(() => {
-		console.log("OpenModal");
+		bottomSheetModalRef.current?.present();
 	}, []);
 	const actions = useMemo(
 		() => [
@@ -52,6 +72,19 @@ export function HomeActions(): JSX.Element {
 		],
 		[onPressDeposit, onPressSend, onPressReceive, onPressMore],
 	);
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				style={[props.style]}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.4}
+			/>
+		),
+		[],
+	);
+
 	return (
 		<XStack gap="$xs" my="$md">
 			{actions.map(({ label, Icon, onPress }, idx) => (
@@ -64,7 +97,123 @@ export function HomeActions(): JSX.Element {
 					iconSize={iconSize}
 				/>
 			))}
-			{/*Add Modal*/}
+			<BottomSheetModal
+				ref={bottomSheetModalRef}
+				snapPoints={["52%"]}
+				backdropComponent={renderBackdrop}
+				onDismiss={() => {}}
+			>
+				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
+					<YStack gap="$sm" width="90%" my="$3xl">
+						<TouchableArea
+							onPress={() => router.navigate("/(essentials)/tokens/overview")}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$md"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<Coins size={28} color="$accent1" />
+									</Stack>
+									<YStack width="80%" gap="$3xs">
+										<Text>My Assets</Text>
+										<Text variant="body4" color="$neutral2">
+											View your asset balances
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
+						<TouchableArea onPress={() => {}}>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$md"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<Mpesa size={28} color="$accent1" />
+									</Stack>
+									<YStack width="80%" gap="$3xs">
+										<XStack justify="space-between" items="center">
+											<Text>Lipa na MPESA</Text>
+											<Text color="$accent1">coming soon</Text>
+										</XStack>
+										<Text variant="body4" color="$neutral2">
+											Pay directly to MPESA
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
+						<TouchableArea onPress={() => {}}>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$md"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<MobileAirtime size={28} color="$accent1" />
+									</Stack>
+									<YStack width="80%" gap="$3xs">
+										<XStack justify="space-between" items="center">
+											<Text>Data and Airtime</Text>
+											<Text color="$accent1">coming soon</Text>
+										</XStack>
+										<Text variant="body4" color="$neutral2">
+											Buy airtime for supported networks
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
+						<TouchableArea onPress={() => {}}>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$md"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<FileList size={28} color="$accent1" />
+									</Stack>
+									<YStack width="80%" gap="$3xs">
+										<XStack justify="space-between" items="center">
+											<Text>Clixpesa Statement</Text>
+											<Text color="$accent1"> coming soon</Text>
+										</XStack>
+										<Text variant="body4" color="$neutral2">
+											Get your transactions statement
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+					</YStack>
+				</BottomSheetView>
+			</BottomSheetModal>
 		</XStack>
 	);
 }
