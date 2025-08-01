@@ -3285,6 +3285,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-google-signin/google-signin@npm:^21.0.0":
+  version: 21.0.0
+  resolution: "@react-native-google-signin/google-signin@npm:21.0.0::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40react-native-google-signin%2Fgoogle-signin%2F21.0.0%2Ffa4162edbed7aad5043a1b0625013dc86c157bb9"
+  dependencies:
+    "@types/google-one-tap": "npm:^1.2.6"
+    jwt-decode: "npm:^4.0.0"
+    nanoevents: "npm:^9.1.0"
+  peerDependencies:
+    expo: ">=52.0.40"
+    react: "*"
+    react-native: "*"
+  checksum: 10/f21c585f3bb2fca480b0c2e9e0113c52113ad421de1b2ce91f4a5017e4df9841a477e1a560ebd9cae366426268b694d1039610c8bb0af6258635c2d89aea36cf
+  languageName: node
+  linkType: hard
+
 "@react-native-masked-view/masked-view@npm:^0.3.2":
   version: 0.3.2
   resolution: "@react-native-masked-view/masked-view@npm:0.3.2"
@@ -5428,6 +5443,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/google-one-tap@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@types/google-one-tap@npm:1.2.6"
+  checksum: 10/7439aa51d79ad07e587087887ce86f0932222f4fa5e24e4a62fce5d8bf17ba663441d2f69da97d55056b82ed11f0474591d8c6a508232dd0a8f61b42ecc036ba
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.9
   resolution: "@types/graceful-fs@npm:4.1.9"
@@ -7071,6 +7093,7 @@ __metadata:
     "@react-native-firebase/app": "npm:^22.2.1"
     "@react-native-firebase/auth": "npm:^22.2.1"
     "@react-native-firebase/functions": "npm:^22.2.1"
+    "@react-native-google-signin/google-signin": "npm:^21.0.0"
     "@react-native-masked-view/masked-view": "npm:^0.3.2"
     "@react-navigation/bottom-tabs": "npm:^7.2.0"
     "@react-navigation/elements": "npm:^2.3.8"
@@ -10869,6 +10892,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jwt-decode@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "jwt-decode@npm:4.0.0"
+  checksum: 10/87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -11764,6 +11794,13 @@ __metadata:
     object-assign: "npm:^4.0.1"
     thenify-all: "npm:^1.0.0"
   checksum: 10/8427de0ece99a07e9faed3c0c6778820d7543e3776f9a84d22cf0ec0a8eb65f6e9aee9c9d353ff9a105ff62d33a9463c6ca638974cc652ee8140cd1e35951c87
+  languageName: node
+  linkType: hard
+
+"nanoevents@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "nanoevents@npm:9.1.0"
+  checksum: 10/77abbc15c4efc15518a0075b604e5db045e5d6184f4d08892c771928a84f53b1dd46138902213f66e8a9989e6c930168ca6441b80ff9098aec83c01a782bd42b
   languageName: node
   linkType: hard
 

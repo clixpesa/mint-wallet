@@ -1,0 +1,86 @@
+import {
+	GoogleOneTapSignIn,
+	isErrorWithCode,
+	isNoSavedCredentialFoundResponse,
+	isSuccessResponse,
+	statusCodes,
+} from "@react-native-google-signin/google-signin";
+import { Button } from "@/ui";
+
+import { getUrlSafeNonce } from "@/utilities/auth/getNonce";
+import { useAuth } from "provider/auth";
+import { Google } from "@/ui/components/icons";
+
+export const GoogleSignIn = () => {
+	const { verifyGoogleIdToken } = useAuth();
+
+	const signInWithGoogle = async () => {
+		try {
+			GoogleOneTapSignIn.configure({
+				webClientId: "autoDetect",
+			});
+			await GoogleOneTapSignIn.checkPlayServices();
+			const response = await GoogleOneTapSignIn.signIn();
+
+			if (isSuccessResponse(response)) {
+				const idToken = response.data?.idToken;
+				await verifyGoogleIdToken(idToken);
+			} else if (isNoSavedCredentialFoundResponse(response)) {
+				// Android and Apple only.
+				// No saved credential found (user has not signed in yet, or they revoked access)
+				// call `createAccount()`
+				const createResponse = await GoogleOneTapSignIn.createAccount({
+					nonce: getUrlSafeNonce(),
+				});
+				const idToken = createResponse.data?.idToken;
+				if (idToken) {
+					await verifyGoogleIdToken(idToken);
+				}
+			} else if (isNoSavedCredentialFoundResponse(response)) {
+				/// last resort: explicit sign in
+				const explicitResponse = await GoogleOneTapSignIn.presentExplicitSignIn(
+					{
+						nonce: getUrlSafeNonce(),
+					},
+				);
+				const idToken = explicitResponse.data?.idToken;
+				if (idToken) {
+					await verifyGoogleIdToken(idToken);
+				}
+			}
+		} catch (error) {
+			console.error(error);
+			if (isErrorWithCode(error)) {
+				switch (error.code) {
+					case statusCodes.ONE_TAP_START_FAILED:
+						// Android-only, you probably have hit rate limiting.
+						// You can still call `presentExplicitSignIn` in this case.
+						break;
+					case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+						// Android: play services not available or outdated.
+						// Get more details from `error.userInfo`.
+						// Web: when calling an unimplemented api (requestAuthorization)
+						// or when the Google Client Library is not loaded yet.
+						break;
+					default:
+					// something else happened
+				}
+			} else {
+				// an error that's not related to google sign in occurred
+			}
+		}
+	};
+
+	return (
+		<Button
+			onPress={() => signInWithGoogle()}
+			icon={<Google />}
+			gap="$sm"
+			rounded="$full"
+			animation="200ms"
+			emphasis="secondary"
+		>
+			Sign in with Google
+		</Button>
+	);
+};
