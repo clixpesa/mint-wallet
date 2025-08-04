@@ -1,4 +1,5 @@
 import { zustandMmkvStorage } from "@/store/storage";
+import { isSameAddress } from "@/utilities/addresses";
 import { getAuth, onAuthStateChanged } from "@react-native-firebase/auth";
 import { useEffect } from "react";
 import type { Address } from "viem";
@@ -17,6 +18,12 @@ export interface AppState {
 		eoaAddress?: Address;
 		mainAddress?: Address;
 	};
+	recentRecipients: {
+		id: string;
+		name: string;
+		address: string;
+		phone: string;
+	}[];
 	setHasAccount: (value: boolean) => void;
 	setIsUnlocked: (value: boolean) => void;
 	setTestnetEnabled: (value: boolean) => void;
@@ -27,6 +34,12 @@ export interface AppState {
 		phoneNumber?: string;
 	}) => void;
 	setUserAddresses: (eoaAddress?: Address, mainAddress?: Address) => void;
+	setRecentRecipient: (
+		id: string,
+		name: string,
+		address: string,
+		phone: string,
+	) => void;
 }
 
 const initialAppState = {
@@ -41,6 +54,7 @@ const initialAppState = {
 		eoaAddress: undefined,
 		mainAddress: undefined,
 	},
+	recentRecipients: [],
 };
 
 export const useAppState = create<AppState>()(
@@ -59,6 +73,27 @@ export const useAppState = create<AppState>()(
 						mainAddress,
 					},
 				})),
+			setRecentRecipient: (id, name, address, phone) => {
+				const recipients = get().recentRecipients;
+				if (
+					recipients.find((recipient) =>
+						isSameAddress(recipient.address, address),
+					)
+				)
+					return;
+				if (recipients.length === 3) recipients.pop();
+				if (recipients.length > 0) {
+					recipients.unshift({
+						id,
+						name,
+						address,
+						phone,
+					});
+				} else {
+					recipients.push({ id, name, address, phone });
+				}
+				set({ recentRecipients: recipients });
+			},
 		}),
 		{
 			name: "app-state",
@@ -68,6 +103,7 @@ export const useAppState = create<AppState>()(
 			partialize: (state) => ({
 				hasAccount: state.hasAccount,
 				user: state.user,
+				recentRecipients: state.recentRecipients,
 			}),
 		},
 	),

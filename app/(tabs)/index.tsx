@@ -10,11 +10,6 @@ import { useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
-import {
-	collection,
-	getDocs,
-	getFirestore,
-} from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
@@ -25,6 +20,8 @@ export default function HomeScreen() {
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
 	const isTestnet = useAppState((s) => s.testnetEnabled);
+	const recentRecipients = useAppState((s) => s.recentRecipients);
+	const setRecipients = useAppState((s) => s.setRecentRecipient);
 	const { defaultChainId } = useEnabledChains();
 	const { mainAccount, publicClient } = useWalletContext();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
@@ -36,22 +33,13 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const db = getFirestore();
-			const users = [];
-			const qSnapshot = await getDocs(collection(getFirestore(), "USERS"));
-			qSnapshot.forEach((doc) => {
-				const user = doc.data();
-				const claims = user.customClaims;
-				users.push({
-					id: user.uid,
-					address: claims?.evmAddr ?? null,
-					name: user.displayName ?? null,
-					phone: user.phoneNumber ?? null,
-					email: user.email ?? null,
-					tag: claims?.tag ?? null,
-				});
-			});
-			console.log(users);
+			console.log(recentRecipients);
+			setRecipients(
+				"0x6",
+				"External",
+				"0x765DE816845861e75A25fCA122bb6889B8B1279a",
+				"+254712345679",
+			);
 		} catch (error) {
 			console.log(error);
 		}
