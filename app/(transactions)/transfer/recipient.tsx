@@ -14,17 +14,14 @@ import {
 } from "@/ui";
 import { Person, ScanQr, Search, X } from "@/ui/components/icons";
 import { shortenAddress } from "@/utilities/addresses";
-import * as Contacts from "expo-contacts";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { Alert } from "react-native";
 
 export default function RecipientScreen() {
 	const inputRef = useRef<Input>(null);
 	const [searchText, setSearchText] = useState("");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [contacts, setContacts] = useState<
-		({ name: string; phone: string | null } | undefined)[]
-	>([]);
 	const { recipients, searchTerm, loading } = useRecipientSearch(searchText);
 
 	const recentRecipients = [
@@ -61,9 +58,14 @@ export default function RecipientScreen() {
 	};
 
 	useEffect(() => {
+		setTimeout(() => {
+			setIsLoading(false);
+		}, 50);
+	}, []);
+
+	/*useEffect(() => {
 		(async () => {
 			const { status } = await Contacts.requestPermissionsAsync();
-			console.log(status);
 			if (status === "granted") {
 				const { data } = await Contacts.getContactsAsync({
 					fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
@@ -72,7 +74,7 @@ export default function RecipientScreen() {
 				if (data.length > 0) {
 					//const contact = data[0];
 					const contacts = data.flatMap((contact) => {
-						if (contact.phoneNumbers?.[0])
+						if (contact.id && contact.phoneNumbers?.[0])
 							return {
 								id: contact.id,
 								name: contact.name,
@@ -81,13 +83,13 @@ export default function RecipientScreen() {
 									null,
 							};
 					});
-
-					setContacts(contacts);
+					const cleanContacts = contacts.filter(Boolean);
+					setContacts(cleanContacts);
 				}
 			}
 			setIsLoading(false);
 		})();
-	}, []);
+	}, []);*/
 
 	return (
 		<Screen
@@ -152,49 +154,70 @@ export default function RecipientScreen() {
 						</Text>
 					</Stack>
 				) : recipients[0] ? (
-					<TouchableArea
-						onPress={() =>
-							router.navigate({
-								pathname: "/(transactions)/transfer/send",
-								params: {
-									name: recipients[0].name
-										? recipients[0].name
-										: shortenAddress(recipients[0].address, 5),
-									address: recipients[0].address,
-									phone: recipients[0].name
-										? recipients[0].phone
-											? recipients[0].phone
-											: shortenAddress(recipients[0].address, 6)
-										: "External account",
-								},
-							})
-						}
-					>
-						<XStack
-							items="center"
-							px="$sm"
-							gap="$sm"
-							bg="$surface1"
-							rounded="$lg"
-							py="$md"
+					recipients.slice(0, 2).map((recipient) => (
+						<TouchableArea
+							key={recipient.id}
+							onPress={() => {
+								recipient.address
+									? router.navigate({
+											pathname: "/(transactions)/transfer/send",
+											params: {
+												name: recipient.name
+													? recipient.name
+													: shortenAddress(recipient.address, 5),
+												address: recipient.address,
+												phone: recipient.name
+													? recipient.phone
+														? recipient.phone
+														: shortenAddress(recipient.address, 6)
+													: "External account",
+											},
+										})
+									: Alert.alert(
+											"User not Clixpesa yet!",
+											"Please invite them over by sending them the link to our app.",
+										);
+							}}
 						>
-							<AccountIcon size={42} address={recipients[0].address} />
-							<YStack gap="$2xs">
-								<Text variant="subHeading2">
-									{recipients[0].name
-										? recipients[0].name
-										: shortenAddress(recipients[0].address, 5)}
-								</Text>
-								<Text variant="body3" color="$neutral2">
-									{recipients[0].name
-										? recipients[0].phone
-											? recipients[0].phone
-											: shortenAddress(recipients[0].address, 6)
-										: "External account"}
-								</Text>
-							</YStack>
-						</XStack>
-					</TouchableArea>
+							<XStack
+								items="center"
+								px="$sm"
+								gap="$sm"
+								bg="$surface1"
+								rounded="$lg"
+								py="$md"
+							>
+								{recipient.address ? (
+									<AccountIcon size={42} address={recipient.address} />
+								) : (
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$full"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<Person size={32} color="$accent1" />
+									</Stack>
+								)}
+								<YStack gap="$2xs">
+									<Text variant="subHeading2">
+										{recipient.name
+											? recipient.name
+											: shortenAddress(recipient.address, 5)}
+									</Text>
+									<Text variant="body3" color="$neutral2">
+										{recipient.name
+											? recipient.phone
+												? recipient.phone
+												: shortenAddress(recipient.address, 6)
+											: "External account"}
+									</Text>
+								</YStack>
+							</XStack>
+						</TouchableArea>
+					))
 				) : null}
 				<ScrollView showsVerticalScrollIndicator={false}>
 					<YStack
@@ -270,7 +293,7 @@ export default function RecipientScreen() {
 							</XStack>
 						)}
 					</YStack>
-					{!searchTerm ? (
+					{/*!searchTerm ? (
 						<YStack
 							bg="$surface1"
 							width="100%"
@@ -306,13 +329,19 @@ export default function RecipientScreen() {
 												: "External account",
 										},
 									})
-								}*/
+								}
 									>
 										<XStack items="center" gap="$sm">
-											<AccountIcon
-												size={42}
-												address={`0x${item?.phone?.[3]}65DE816845861e75A2${item?.phone?.[7]}fCA122bb6898B8B1282${item?.phone?.[9]}`}
-											/>
+											<Stack
+												bg="$accent2"
+												height={42}
+												rounded="$full"
+												width={42}
+												items="center"
+												justify="center"
+											>
+												<Person size={32} color="$accent1" />
+											</Stack>
 											<YStack gap="$2xs">
 												<Text variant="subHeading2">{item?.name}</Text>
 												<Text variant="body3" color="$neutral2">
@@ -341,7 +370,7 @@ export default function RecipientScreen() {
 								</XStack>
 							)}
 						</YStack>
-					) : null}
+					) : null*/}
 				</ScrollView>
 			</YStack>
 		</Screen>

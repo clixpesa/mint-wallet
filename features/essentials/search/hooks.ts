@@ -1,16 +1,20 @@
 import { isAddress, isSameAddress } from "@/utilities/addresses";
 import { useMemoCompare } from "@/utilities/react/hooks";
 import { useDebounce } from "@/utilities/time/timing";
+import {
+	collection,
+	getDocs,
+	getFirestore,
+} from "@react-native-firebase/firestore";
+import * as Contacts from "expo-contacts";
 import isEqual from "lodash/isEqual";
-import { useCallback, useMemo } from "react";
-import dummyUsers from "./dummyusers.json";
-
+import { useCallback, useEffect, useMemo, useState } from "react";
 export interface SearchableRecipient {
 	id: string;
 	name: string | null;
 	address: Address;
 	phone: string | null;
-	txs: number;
+	tag: string | null;
 }
 
 interface DummyUser {
@@ -26,6 +30,67 @@ export function useRecipientSearch(searchTerm: string): {
 	searchTerm: string;
 	loading: boolean;
 } {
+	const [contacts, setContacts] = useState<
+		({ id: string; name: string; phone: string | null } | undefined)[]
+	>([]);
+	const [searchableUsers, setSearchableUsers] = useState<SearchableRecipient[]>(
+		[],
+	);
+
+	useEffect(() => {
+		(async () => {
+			const { status } = await Contacts.requestPermissionsAsync();
+			if (status === "granted") {
+				const { data } = await Contacts.getContactsAsync({
+					fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
+				});
+
+				if (data.length > 0) {
+					//const contact = data[0];
+					const contacts = data.flatMap((contact) => {
+						if (contact.id && contact.phoneNumbers?.[0])
+							return {
+								id: contact.id,
+								name: contact.name,
+								phone:
+									contact.phoneNumbers?.[0].number?.trim().replace(/\s/g, "") ??
+									null,
+							};
+					});
+					const cleanContacts = contacts.filter(Boolean);
+					setContacts(cleanContacts);
+				}
+			}
+		})();
+	}, []);
+
+	useEffect(() => {
+		(async () => {
+			const users: SearchableRecipient[] = [];
+			const qSnapshot = await getDocs(collection(getFirestore(), "USERS"));
+			qSnapshot.forEach((doc) => {
+				const user = doc.data();
+				const claims = user.customClaims;
+				users.push({
+					id: user.uid,
+					address: claims?.evmAddr ?? null,
+					name: user.displayName ?? null,
+					phone: user.phoneNumber ?? null,
+					tag: claims?.tag ?? null,
+				});
+			});
+			for (const contact of contacts) {
+				users.push({
+					id: contact?.id,
+					address: null,
+					name: contact?.name,
+					phone: contact?.phone,
+					tag: null,
+				});
+			}
+			setSearchableUsers(users);
+		})();
+	}, [contacts]);
 	// get recipients based on searchTerm
 	const getRecipients = useCallback((): SearchableRecipient[] => {
 		if (!searchTerm.trim()) {
@@ -40,38 +105,40 @@ export function useRecipientSearch(searchTerm: string): {
 			searchTerm.length > 9 &&
 			!isAddressSearch;
 		// Mock implementation
-		const matchedUsers: DummyUser[] = dummyUsers.filter((user) => {
-			if (isAddressSearch) {
-				return isSameAddress(user.address, searchTerm);
-			}
-			if (isPhoneSearch) {
-				return user.phone?.includes(searchTerm.slice(2));
-			}
-			return (
-				user.tag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				user.address.toLowerCase().includes(searchTerm.toLowerCase())
-			);
-		});
+		const matchedUsers: SearchableRecipient[] = searchableUsers.filter(
+			(user) => {
+				if (isAddressSearch) {
+					return isSameAddress(user?.address, searchTerm);
+				}
+				if (isPhoneSearch) {
+					return user.phone?.includes(searchTerm.slice(2));
+				}
+				return (
+					user?.tag?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					user?.address?.toLowerCase().includes(searchTerm.toLowerCase())
+				);
+			},
+		);
 		if (isAddressSearch && matchedUsers.length === 0) {
 			recipients.push({
 				id: `addr-${searchTerm}`,
 				name: null,
 				address: searchTerm as Address,
 				phone: null,
-				txs: 0,
+				tag: null,
 			});
 		}
 		recipients.push(
 			...matchedUsers.map((user) => ({
-				id: user.uuid,
-				name: user.name || user.tag || null,
+				id: user.id,
+				name: user.name ? user.name : !user.tag ? null : `@${user.tag}`,
 				address: user.address as Address,
 				phone: user.phone,
-				txs: 0,
+				tag: user.tag,
 			})),
 		);
 		return recipients;
-	}, [searchTerm]);
+	}, [searchTerm, searchableUsers]);
 
 	const memoRecipients = useMemoCompare(getRecipients, isEqual);
 	const memoResult = useMemo(
@@ -83,7 +150,7 @@ export function useRecipientSearch(searchTerm: string): {
 		[memoRecipients, searchTerm],
 	);
 
-	const debouncedResult = useDebounce(memoResult, 500);
+	const debouncedResult = useDebounce(memoResult, 200);
 
 	return searchTerm ? debouncedResult : memoResult;
 }

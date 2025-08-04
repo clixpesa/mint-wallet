@@ -1,5 +1,4 @@
 //import { Button } from "tamagui";
-import { getAllRoscas } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -11,10 +10,15 @@ import { useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
+import {
+	collection,
+	getDocs,
+	getFirestore,
+} from "@react-native-firebase/firestore";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
-//import { Button } from "tamagui";
+import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -32,8 +36,22 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getAllRoscas(defaultChainId);
-			console.log(reciept);
+			const db = getFirestore();
+			const users = [];
+			const qSnapshot = await getDocs(collection(getFirestore(), "USERS"));
+			qSnapshot.forEach((doc) => {
+				const user = doc.data();
+				const claims = user.customClaims;
+				users.push({
+					id: user.uid,
+					address: claims?.evmAddr ?? null,
+					name: user.displayName ?? null,
+					phone: user.phoneNumber ?? null,
+					email: user.email ?? null,
+					tag: claims?.tag ?? null,
+				});
+			});
+			console.log(users);
 		} catch (error) {
 			console.log(error);
 		}
@@ -71,9 +89,9 @@ export default function HomeScreen() {
 					<TransactionsCard />
 					<ProductsCard />
 
-					{/*<Button height="$3xl" onPress={handleTestFns}>
+					<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>*/}
+					</Button>
 				</YStack>
 			</ScrollView>
 		</View>
