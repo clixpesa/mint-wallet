@@ -5,6 +5,7 @@ import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { transferTokenWithOverdraft } from "@/features/contracts/overdraft";
 import { transferFunds } from "@/features/contracts/tokens";
+import { useAppState } from "@/features/essentials/appState";
 import {
 	type Balance,
 	ChainId,
@@ -51,7 +52,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Address } from "viem";
 
 export default function SendScreen() {
-	const params: HeaderParams = useLocalSearchParams();
+	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
 	const { symbol, conversionRate } = getRate(currency);
@@ -67,6 +68,7 @@ export default function SendScreen() {
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
+	const setRecentRecipient = useAppState((s) => s.setRecentRecipient);
 
 	const chain = getChainInfo(tokenInfo.chainId);
 
@@ -108,6 +110,7 @@ export default function SendScreen() {
 	const onConfirmSend = async () => {
 		setIsSending(true);
 		setIsTxLoading(true);
+
 		/*console.log(mainAccount?.chain);
 		const actualAmount = amount
 			? useCurrency && tokenInfo.symbol.includes("USD")
@@ -141,9 +144,21 @@ export default function SendScreen() {
 		updateCurrentChainId(tokenInfo.chainId);
 	}, [tokenInfo, updateCurrentChainId]);
 
+	useEffect(() => {
+		setRecentRecipient(
+			params.address.slice(0, 5) as string,
+			params.name as string,
+			params.address as Address,
+			params.phone as string,
+		);
+	}, [params]);
+
 	return (
 		<View flex={1} items="center" bg="$surface1">
-			<Header address={params.address} name={params.name} />
+			<Header
+				address={params.address as Address}
+				name={params.name as string}
+			/>
 			<YStack gap="$xs" width="92%" mt="$5xl" items="center">
 				<XStack items="center">
 					{useCurrency ? (
