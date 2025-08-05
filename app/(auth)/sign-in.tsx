@@ -112,20 +112,6 @@ export default function SignInScreen() {
 						</Text>
 						<Separator borderWidth={1} />
 					</XStack>
-					{/* <Button
-						icon={<Google color="$accent1" />}
-						borderColor="$neutral3"
-						borderWidth={2}
-						shadowColor="$accent1"
-						shadowOpacity={0.4}
-						shadowRadius="$sm"
-						bg="$surface1"
-						size="lg"
-					>
-						<Text color="$accent1" variant="buttonLabel1">
-							Sign in with Google
-						</Text>
-					</Button> */}
 					<GoogleSignIn />
 				</YStack>
 				<Stack mx="$2xl" py="$xl">
