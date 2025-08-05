@@ -8,12 +8,12 @@ import {
 import { Button } from "@/ui";
 
 import { getUrlSafeNonce } from "@/utilities/auth/getNonce";
-import { useAuth } from "provider/auth";
 import { Google } from "@/ui/components/icons";
+import { useOnboardingContext } from "@/features/essentials";
 
 export const GoogleSignIn = () => {
-	const { verifyGoogleIdToken } = useAuth();
-
+	const { verifyGoogleIdToken } = useOnboardingContext();
+	
 	const signInWithGoogle = async () => {
 		try {
 			GoogleOneTapSignIn.configure({
@@ -79,6 +79,7 @@ export const GoogleSignIn = () => {
 			rounded="$full"
 			animation="200ms"
 			emphasis="secondary"
+				size="lg"
 		>
 			Sign in with Google
 		</Button>

@@ -8,6 +8,7 @@ import {
 	signInWithCredential,
 	signInWithEmailAndPassword,
 	signInWithPhoneNumber,
+	GoogleAuthProvider,
 } from "@react-native-firebase/auth";
 import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
 import {
@@ -29,6 +30,9 @@ export type OnboardingContext = {
 	createClixtag: (userName: string) => Promise<string | null>;
 	getSignedInUser: () => FirebaseAuthTypes.User | null;
 	resetOnboardingContextData: () => void;
+	verifyGoogleIdToken: (
+		idToken: string,
+	) => Promise<FirebaseAuthTypes.UserCredential | undefined>;
 };
 
 const initialOnboardingContext: OnboardingContext = {
@@ -40,6 +44,7 @@ const initialOnboardingContext: OnboardingContext = {
 	createClixtag: async () => null,
 	getSignedInUser: () => null,
 	resetOnboardingContextData: () => undefined,
+	verifyGoogleIdToken: async () => undefined,
 };
 
 const OnboardingContext = createContext<OnboardingContext>(
@@ -142,6 +147,28 @@ export function OnboardingContextProvider({
 		}
 	};
 
+	const verifyGoogleIdToken = async (idToken: string) => {
+		try {
+			const googleCredential = GoogleAuthProvider.credential(idToken);
+			const userCredential = await signInWithCredential(
+				getAuth(),
+				googleCredential,
+			);
+
+			await storeMnemonic(userCredential.user.uid);
+			setSignedInUser(userCredential.user);
+
+			return userCredential;
+		} catch (error) {
+			logger.error(error, {
+				tags: {
+					file: "OnboardingContext",
+					function: "verifyGoogleIdToken",
+				},
+			});
+		}
+	};
+
 	const getSignedInUser = (): FirebaseAuthTypes.User | null => {
 		return signedInUser;
 	};
@@ -175,6 +202,7 @@ export function OnboardingContextProvider({
 				createClixtag,
 				getSignedInUser,
 				resetOnboardingContextData,
+				verifyGoogleIdToken,
 			}}
 		>
 			{children}

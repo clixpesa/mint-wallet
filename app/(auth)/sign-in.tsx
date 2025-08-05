@@ -17,6 +17,7 @@ import { Google } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image } from "react-native";
+import { GoogleSignIn } from "@/features/auth/components/GoogleSignIn";
 
 export default function SignInScreen() {
 	const [useEmail, setUseEmail] = useState<boolean>(false);
@@ -111,7 +112,7 @@ export default function SignInScreen() {
 						</Text>
 						<Separator borderWidth={1} />
 					</XStack>
-					<Button
+					{/* <Button
 						icon={<Google color="$accent1" />}
 						borderColor="$neutral3"
 						borderWidth={2}
@@ -124,7 +125,8 @@ export default function SignInScreen() {
 						<Text color="$accent1" variant="buttonLabel1">
 							Sign in with Google
 						</Text>
-					</Button>
+					</Button> */}
+					<GoogleSignIn />
 				</YStack>
 				<Stack mx="$2xl" py="$xl">
 					<TermsOfService />
