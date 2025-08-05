@@ -7,7 +7,6 @@ import { UIProvider, useThemeColors } from "@/ui";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { Slot, Stack, router, useSegments } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import type React from "react";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -80,7 +79,6 @@ function AppInner(): React.JSX.Element {
 					<Slot />
 				</WalletContextProvider>
 			)}
-			<StatusBar style="auto" />
 		</SafeAreaView>
 	);
 }
