@@ -13,7 +13,7 @@ import { useOnboardingContext } from "@/features/essentials";
 
 export const GoogleSignIn = () => {
 	const { verifyGoogleIdToken } = useOnboardingContext();
-	
+
 	const signInWithGoogle = async () => {
 		try {
 			GoogleOneTapSignIn.configure({
@@ -76,10 +76,9 @@ export const GoogleSignIn = () => {
 			onPress={() => signInWithGoogle()}
 			icon={<Google />}
 			gap="$sm"
-			rounded="$full"
 			animation="200ms"
 			emphasis="secondary"
-				size="lg"
+			size="lg"
 		>
 			Sign in with Google
 		</Button>
