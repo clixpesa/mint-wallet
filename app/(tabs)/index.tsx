@@ -18,8 +18,6 @@ import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 import { Button } from "tamagui";
-import { createPublicClient, http, parseAbiItem } from "viem";
-import { celo } from "viem/chains";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -40,37 +38,10 @@ export default function HomeScreen() {
 		setRefreshing(true);
 		setTimeout(() => setRefreshing(false), 2000);
 	};
-	console.log(dataX);
 
 	const handleTestFns = async () => {
 		try {
-			resetX();
-			onrampWithXwift({
-				amount: 100,
-				phone: "+254769166181",
-				tokenId: "cUSD_CELO",
-				address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-			});
-
-			const publicClient = createPublicClient({
-				chain: celo,
-				transport: http(
-					"https://42220.rpc.thirdweb.com/c9f58f940343e75c35e9e07f93acc785",
-				),
-			});
-			const unwatch = publicClient?.watchEvent({
-				address: ["0x765DE816845861e75A25fCA122bb6898B8B1282a"],
-				event: parseAbiItem(
-					"event Transfer(address indexed from, address indexed to, uint256 value)",
-				),
-				args: {
-					to: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-				},
-				onLogs: (logs) => {
-					console.log(logs[0].transactionHash);
-					unwatch();
-				},
-			});
+			console.log("Text function");
 		} catch (error) {
 			console.log(error);
 		}
