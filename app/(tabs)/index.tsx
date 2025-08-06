@@ -8,12 +8,18 @@ import {
 import { useAppState } from "@/features/essentials/appState";
 import { useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
+import {
+	useOnrampPMutation,
+	useOnrampXMutation,
+} from "@/features/wallet/transactions/ramps";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
 import { Button } from "tamagui";
+import { createPublicClient, http, parseAbiItem } from "viem";
+import { celo } from "viem/chains";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -23,23 +29,48 @@ export default function HomeScreen() {
 	const recentRecipients = useAppState((s) => s.recentRecipients);
 	const setRecipients = useAppState((s) => s.setRecentRecipient);
 	const { defaultChainId } = useEnabledChains();
-	const { mainAccount, publicClient } = useWalletContext();
+	const { mainAccount } = useWalletContext();
+	//const publicClient = usePublicClient();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
+	const [onrampWithPayd, { reset: resetP, data: dataP }] = useOnrampPMutation();
+	const [onrampWithXwift, { reset: resetX, data: dataX }] =
+		useOnrampXMutation();
 
 	const onRefresh = () => {
 		setRefreshing(true);
 		setTimeout(() => setRefreshing(false), 2000);
 	};
+	console.log(dataX);
 
 	const handleTestFns = async () => {
 		try {
-			console.log(recentRecipients);
-			setRecipients(
-				"0x6",
-				"External",
-				"0x765DE816845861e75A25fCA122bb6889B8B1279a",
-				"+254712345679",
-			);
+			resetX();
+			onrampWithXwift({
+				amount: 100,
+				phone: "+254769166181",
+				tokenId: "cUSD_CELO",
+				address: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
+			});
+
+			const publicClient = createPublicClient({
+				chain: celo,
+				transport: http(
+					"https://42220.rpc.thirdweb.com/c9f58f940343e75c35e9e07f93acc785",
+				),
+			});
+			const unwatch = publicClient?.watchEvent({
+				address: ["0x765DE816845861e75A25fCA122bb6898B8B1282a"],
+				event: parseAbiItem(
+					"event Transfer(address indexed from, address indexed to, uint256 value)",
+				),
+				args: {
+					to: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
+				},
+				onLogs: (logs) => {
+					console.log(logs[0].transactionHash);
+					unwatch();
+				},
+			});
 		} catch (error) {
 			console.log(error);
 		}

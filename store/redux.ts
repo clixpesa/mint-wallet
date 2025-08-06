@@ -6,6 +6,10 @@ import {
 } from "@reduxjs/toolkit";
 
 import { blockscoutApi } from "@/features/wallet/transactions/blockscout";
+import {
+	paydRampsApi,
+	xwiftRampsApi,
+} from "@/features/wallet/transactions/ramps";
 import { storeEffects } from "./effects";
 
 const listenerMiddleware = createListenerMiddleware();
@@ -19,6 +23,8 @@ const reduxSlice = createSlice({
 const rootReducer = combineReducers({
 	redux: reduxSlice.reducer,
 	[blockscoutApi.reducerPath]: blockscoutApi.reducer,
+	[paydRampsApi.reducerPath]: paydRampsApi.reducer,
+	[xwiftRampsApi.reducerPath]: xwiftRampsApi.reducer,
 });
 
 export const store = configureStore({
@@ -27,6 +33,8 @@ export const store = configureStore({
 		getDefaultMiddleware().prepend(
 			listenerMiddleware.middleware,
 			blockscoutApi.middleware,
+			paydRampsApi.middleware,
+			xwiftRampsApi.middleware,
 		),
 });
 

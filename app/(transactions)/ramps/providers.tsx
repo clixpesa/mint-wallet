@@ -138,7 +138,7 @@ export default function ProvidersScreen() {
 						</YStack>
 						<TouchableArea
 							onPress={() => {
-								setOnramp("payd", "mpesa");
+								//setOnramp("payd", "mpesa");
 								bottomSheetModalRef.current?.close();
 							}}
 						>
@@ -151,7 +151,10 @@ export default function ProvidersScreen() {
 									/>
 
 									<YStack width="80%" gap="$3xs">
-										<Text>Payd</Text>
+										<XStack justify="space-between">
+											<Text>Payd</Text>
+											<Text color="$statusCritical">Under maintenance!</Text>
+										</XStack>
 										<Text variant="body4" color="$neutral2">
 											Simplified Payments in minutes.
 										</Text>

@@ -3,6 +3,7 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
+import { useAppState } from "@/features/essentials/appState";
 import {
 	type ChainId,
 	type TokenWithBalance,
@@ -11,6 +12,10 @@ import {
 	useWalletContext,
 } from "@/features/wallet";
 import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
+import {
+	useOnrampPMutation,
+	useOnrampXMutation,
+} from "@/features/wallet/transactions/ramps";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -44,30 +49,40 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Dimensions } from "react-native";
+import { Alert, Dimensions } from "react-native";
+import { createPublicClient, http, parseAbiItem } from "viem";
 
 export default function DepositScreen() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const onramp = useWalletState((s) => s.onramp);
+	const user = useAppState((s) => s.user);
 	const { symbol, conversionRate } = getRate(currency);
 	const { defaultChainId } = useEnabledChains();
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
 	const [useCurrency, setUseCurrency] = useState<boolean>(true);
-	const [isOverdraft, setIsOverdraft] = useState<boolean>(false);
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(true);
 	const [isSending, setIsSending] = useState<boolean>(false);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
+	const [onrampWithPayd, { reset: resetP, data: dataP }] = useOnrampPMutation();
+	const [onrampWithXwift, { reset: resetX, data: dataX }] =
+		useOnrampXMutation();
 
-	let filter = "USD";
-	if (params.token) filter = params.token.includes("USD") ? "USD" : "KES";
+	//const filter = "USD";
+	//if (params.token) filter = params.token.includes("USD") ? "USD" : "KES";
 
 	const allTokens = useEnabledTokens();
-	const tokens = allTokens.filter((token) => token.chainId === defaultChainId);
+	const supportedTokens = allTokens.filter(
+		(token) => token.chainId === defaultChainId,
+	);
+	const tokens =
+		onramp.provider === "pretium"
+			? supportedTokens.filter((token) => !token.symbol.includes("KES"))
+			: supportedTokens;
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const chain = getChainInfo(tokenInfo.chainId);
 
@@ -94,18 +109,83 @@ export default function DepositScreen() {
 	);
 
 	const onConfirmSend = async () => {
-		bottomSheetModalRef.current?.snapToPosition(
-			Dimensions.get("screen").height,
-		);
-		setIsSending(true);
 		setIsTxLoading(true);
-		if (mainAccount && amount) {
+		if (mainAccount && amount && user.phoneNumber) {
+			bottomSheetModalRef.current?.snapToPosition(
+				Dimensions.get("screen").height,
+			);
+			setIsSending(true);
+			if (onramp.provider === "pretium") {
+				onrampWithXwift({
+					amount: Number(actualAmount) * conversionRate + 2.5,
+					phone: user.phoneNumber,
+					tokenId: `${tokenInfo.symbol}_CELO`,
+					address: mainAccount.account?.address,
+				});
+			} else {
+				onrampWithPayd({
+					amount: Number(actualAmount),
+					phone: user.phoneNumber,
+					tokenId: `${tokenInfo.symbol}_CELO`,
+					address: mainAccount.account?.address,
+				});
+			}
+		} else {
+			setIsTxLoading(false);
+			bottomSheetModalRef.current?.close();
+			Alert.alert(
+				"Invalid MPESA Account!",
+				"Looks like you do not have a valid MPESA number. Please use the RECEIVE option to Top up",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
+					},
+					{
+						text: "Receive",
+						onPress: () => router.navigate("/(transactions)/ramps/receive"),
+					},
+				],
+			);
+		}
+	};
+
+	useEffect(() => {
+		let unwatch: () => void = () => {};
+		if (dataP?.success) {
+			console.log("Waiting for TX");
 			setTimeout(() => {
 				setTxHash(txHash);
 				setIsTxLoading(false);
 			}, 3000);
 		}
-	};
+		if (dataX?.code === 200) {
+			console.log("Waiting for TX");
+			const publicClient = createPublicClient({
+				chain: chain,
+				transport: http(
+					`https://${tokenInfo.chainId}.rpc.thirdweb.com/c9f58f940343e75c35e9e07f93acc785`,
+				),
+			});
+			unwatch = publicClient?.watchEvent({
+				address: [tokenInfo.address],
+				event: parseAbiItem(
+					"event Transfer(address indexed from, address indexed to, uint256 value)",
+				),
+				args: {
+					to: mainAccount?.account?.address,
+				},
+				onLogs: (logs) => {
+					setTxHash(logs[0].transactionHash);
+					unwatch();
+					setIsTxLoading(false);
+				},
+			});
+		}
+		return () => {
+			unwatch();
+		};
+	}, [dataP, dataX, chain, tokenInfo, mainAccount]);
 
 	useEffect(() => {
 		updateCurrentChainId(tokenInfo.chainId);
@@ -213,6 +293,12 @@ export default function DepositScreen() {
 						<RotatableChevron direction="right" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
+				<Text>
+					Min Amount:{" "}
+					<Text fontWeight="$md">
+						Ksh {tokenInfo.symbol.includes("USD") ? "100" : "20"}
+					</Text>
+				</Text>
 			</YStack>
 			<Spacer />
 			<Button
@@ -675,18 +761,28 @@ const SendContent = ({
 				</YStack>
 			)}
 			{isLoading ? (
-				<Text
+				<YStack
 					b="$3xl"
 					position="absolute"
 					width="90%"
-					text="center"
-					variant="body3"
-					color="$neutral2"
+					items="center"
+					gap="$md"
 				>
-					By continuing, you acknowledge that you'll be subject to the Terms of
-					service and Privacy Policy of{" "}
-					{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)}
-				</Text>
+					<Text text="center" variant="body3" color="$neutral2">
+						By continuing, you acknowledge that you'll be subject to the Terms
+						of service and Privacy Policy of{" "}
+						{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)}
+					</Text>
+					<Button
+						size="lg"
+						variant="branded"
+						emphasis="secondary"
+						width="86%"
+						onPress={() => router.back()}
+					>
+						Cancel
+					</Button>
+				</YStack>
 			) : (
 				<YStack
 					b="$3xl"

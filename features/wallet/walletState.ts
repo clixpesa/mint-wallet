@@ -34,7 +34,7 @@ const initialWalletState = {
 		balanceUSD: 0,
 	},
 	onramp: {
-		provider: "payd",
+		provider: "pretium",
 		method: "mpesa",
 	},
 };

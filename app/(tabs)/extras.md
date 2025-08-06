@@ -18,4 +18,25 @@ export default function ExtrasScreen() {
 		</View>
 	);
 }
+
+
+const checkTransfers = async () => {
+				const logs = await publicClient?.getLogs({
+					address: "0x1E0433C1769271ECcF4CFF9FDdD515eefE6CdF92",
+					event: parseAbiItem("event Transfer(address,address,uint256)"),
+					args: { to: mainAccount?.account?.address },
+					fromBlock: await publicClient.getBlockNumber(), // or specific block number
+				});
+				console.log("Found transfers:", logs);
+				if (logs.length > 0) {
+					if (pollingInterval.current) {
+						clearInterval(pollingInterval.current);
+						pollingInterval.current = null;
+					}
+					console.log(logs);
+				}
+			};
+
+			// Call periodically
+			pollingInterval.current = setInterval(checkTransfers, 1000);
 ```
