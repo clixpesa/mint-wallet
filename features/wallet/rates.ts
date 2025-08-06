@@ -15,7 +15,7 @@ export const rates = {
 	},
 	[Currency.KES]: {
 		symbol: "Ksh",
-		conversionRate: 129.74,
+		conversionRate: 129.26,
 	},
 	[Currency.UGX]: {
 		symbol: "Ush",
