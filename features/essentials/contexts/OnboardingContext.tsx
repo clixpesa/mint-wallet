@@ -2,13 +2,13 @@ import { appStorage } from "@/store/storage";
 import { logger } from "@/utilities/logger/logger";
 import {
 	type FirebaseAuthTypes,
-	GoogleAuthProvider,
 	PhoneAuthProvider,
 	getAuth,
 	onAuthStateChanged,
 	signInWithCredential,
 	signInWithEmailAndPassword,
 	signInWithPhoneNumber,
+	GoogleAuthProvider,
 } from "@react-native-firebase/auth";
 import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
 import {
@@ -59,6 +59,17 @@ export function OnboardingContextProvider({
 	const [verificationId, setVerificationId] = useState<string | null>(null);
 
 	useEffect(() => {
+		// Try to load user from storage first
+		/*let storedUser: FirebaseAuthTypes.User | null = null;
+		const getStoredUser = async () => {
+			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
+		};
+		getStoredUser();
+
+		if (storedUser) {
+			console.log("User found in storage", storedUser);
+			setSignedInUser(storedUser);
+		}*/
 		const subscriber = onAuthStateChanged(getAuth(), (user) => {
 			setSignedInUser(user);
 		});
@@ -103,7 +114,8 @@ export function OnboardingContextProvider({
 			if (source === "phone") {
 				const credential = PhoneAuthProvider.credential(verificationId, code);
 				userCredential = await signInWithCredential(getAuth(), credential);
-				//await storeMnemonic(userCredential.user.uid);
+				//await appStorage.setItem("user", userCredential.user.toJSON());
+				await storeMnemonic(userCredential.user.uid);
 				setSignedInUser(userCredential.user);
 			} else if (source === "email") {
 				const instance = httpsCallable(getFunctions(), "verifyEmailWithOTP");
@@ -122,7 +134,8 @@ export function OnboardingContextProvider({
 						response.data?.message,
 					);
 
-					//await storeMnemonic(userCredential.user.uid);
+					//await appStorage.setItem("user", userCredential.user.toJSON());
+					await storeMnemonic(userCredential.user.uid);
 					setSignedInUser(userCredential.user);
 				}
 			}
@@ -142,7 +155,7 @@ export function OnboardingContextProvider({
 				googleCredential,
 			);
 
-			//await storeMnemonic(userCredential.user.uid);
+			await storeMnemonic(userCredential.user.uid);
 			setSignedInUser(userCredential.user);
 
 			return userCredential;

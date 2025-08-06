@@ -1,5 +1,4 @@
 import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
-import { useOnboardingContext } from "@/features/essentials";
 import {
 	AnimatedYStack,
 	SpinningLoader,
@@ -22,8 +21,6 @@ export default function SecurityScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [use4Digits, setUse4Digits] = useState<boolean>(false);
 	const [initialCode, setInitialCode] = useState<string | undefined>(undefined);
-	const { getSignedInUser, storeMnemonic } = useOnboardingContext();
-
 	const handleVerification = async (code: string) => {
 		try {
 			if (!initialCode) {
@@ -31,13 +28,10 @@ export default function SecurityScreen() {
 				codeInputRef.current?.clear();
 			} else {
 				setIsLoading(true);
-				const user = getSignedInUser();
-				console.log("Signed in user", user?.uid);
-				if (user) await storeMnemonic(user?.uid);
 				setTimeout(() => {
 					setIsLoading(false);
 					if (initialCode === code) router.push("/(auth)/username");
-				}, 1000);
+				}, 2000);
 			}
 		} catch (e) {
 			console.warn(e);

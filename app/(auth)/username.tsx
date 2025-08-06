@@ -20,13 +20,16 @@ import { Image } from "react-native";
 export default function UsernameScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [username, setUsername] = useState<string>();
-	const { createClixtag } = useOnboardingContext();
+	const { createClixtag, getSignedInUser, storeMnemonic } =
+		useOnboardingContext();
 	const handleUsername = async () => {
 		setIsLoading(true);
 		try {
 			if (username && username?.length >= 3) {
 				const tag = await createClixtag(username.trim().toLowerCase());
-				//Get user from firbase
+				//console.log(`${tag}.clix.eth`);
+				const user = getSignedInUser();
+				await storeMnemonic(user?.uid);
 				setIsLoading(false);
 				router.replace("/");
 			}
