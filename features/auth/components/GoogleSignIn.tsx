@@ -1,3 +1,4 @@
+import { Button } from "@/ui";
 import {
 	GoogleOneTapSignIn,
 	isErrorWithCode,
@@ -5,16 +6,19 @@ import {
 	isSuccessResponse,
 	statusCodes,
 } from "@react-native-google-signin/google-signin";
-import { Button } from "@/ui";
 
-import { getUrlSafeNonce } from "@/utilities/auth/getNonce";
-import { Google } from "@/ui/components/icons";
 import { useOnboardingContext } from "@/features/essentials";
+import { Google } from "@/ui/components/icons";
+import { getUrlSafeNonce } from "@/utilities/auth/getNonce";
+import { router } from "expo-router";
+import { useState } from "react";
 
 export const GoogleSignIn = () => {
 	const { verifyGoogleIdToken } = useOnboardingContext();
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const signInWithGoogle = async () => {
+		setIsLoading(true);
 		try {
 			GoogleOneTapSignIn.configure({
 				webClientId: "autoDetect",
@@ -48,8 +52,11 @@ export const GoogleSignIn = () => {
 					await verifyGoogleIdToken(idToken);
 				}
 			}
+			setIsLoading(false);
+			router.navigate("/(auth)/security");
 		} catch (error) {
 			console.error(error);
+			setIsLoading(false);
 			if (isErrorWithCode(error)) {
 				switch (error.code) {
 					case statusCodes.ONE_TAP_START_FAILED:
@@ -77,10 +84,11 @@ export const GoogleSignIn = () => {
 			icon={<Google />}
 			gap="$sm"
 			animation="200ms"
+			loading={isLoading}
 			emphasis="secondary"
 			size="lg"
 		>
-			Sign in with Google
+			{isLoading ? "Signing you in .." : "Sign in with Google"}
 		</Button>
 	);
 };

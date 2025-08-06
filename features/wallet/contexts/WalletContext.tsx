@@ -100,7 +100,6 @@ export function WalletContextProvider({
 			const enMnemonicData = (await appStorage.getItem(
 				user.uid,
 			)) as MnemonicData | null;
-
 			if (!enMnemonicData || !enMnemonicData.enMnemonic) {
 				throw new Error("Mnemonic data not found");
 			}
