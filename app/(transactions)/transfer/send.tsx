@@ -49,6 +49,7 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Dimensions } from "react-native";
 import type { Address } from "viem";
 
 export default function SendScreen() {
@@ -77,7 +78,6 @@ export default function SendScreen() {
 			? (Number(amount) / conversionRate).toFixed(6)
 			: amount
 		: "0.00";
-
 	const onOpenModal = useCallback(() => {
 		inputRef.current?.blur();
 		bottomSheetModalRef.current?.present();
@@ -97,9 +97,9 @@ export default function SendScreen() {
 
 	useEffect(() => {
 		if (
-			(Number(actualAmount) > tokenInfo.balance &&
-				tokenInfo.chainId === ChainId.Alfajores) ||
-			tokenInfo.chainId === ChainId.Celo
+			Number(actualAmount) > tokenInfo.balance &&
+			(tokenInfo.chainId === ChainId.Alfajores ||
+				tokenInfo.chainId === ChainId.Celo)
 		) {
 			setIsOverdraft(true);
 		} else {
@@ -108,15 +108,11 @@ export default function SendScreen() {
 	}, [actualAmount, tokenInfo]);
 
 	const onConfirmSend = async () => {
+		bottomSheetModalRef.current?.snapToPosition(
+			Dimensions.get("screen").height,
+		);
 		setIsSending(true);
 		setIsTxLoading(true);
-
-		/*console.log(mainAccount?.chain);
-		const actualAmount = amount
-			? useCurrency && tokenInfo.symbol.includes("USD")
-				? (Number(amount) / conversionRate).toFixed(6)
-				: amount
-			: "0.00";*/
 		if (!isOverdraft && mainAccount && amount) {
 			console.log("tranfering tokens");
 			const txHash = await transferFunds({
@@ -435,8 +431,8 @@ const ReviewContent = ({
 		: tokenInfo.balance + overdraft.balance - amount < 0;
 
 	return (
-		<>
-			<YStack gap="$md" mt="$lg" width="85%">
+		<YStack gap="$md" mt="$lg" mb="$3xl" width="85%">
+			<YStack gap="$md" mt="$lg">
 				<Text>You're sending {isOverdraft ? "with Jazisha" : null}</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
@@ -524,7 +520,7 @@ const ReviewContent = ({
 					</YStack>
 				)}
 			</YStack>
-			<Spacer />
+
 			<Button
 				size="lg"
 				variant="branded"
@@ -532,16 +528,14 @@ const ReviewContent = ({
 				pressStyle={{
 					bg: "$blueVibrant",
 				}}*/
-				b="$3xl"
+				mt="$3xl"
 				isDisabled={isOverdraftLimit}
 				loading={isLoading}
-				position="absolute"
-				width="85%"
 				onPress={onConfirmSend}
 			>
 				Confirm send
 			</Button>
-		</>
+		</YStack>
 	);
 };
 
@@ -556,7 +550,7 @@ const TokenList = ({
 	const [searchText, setSearchText] = useState("");
 	const tokensWithBal = tokens.filter((token) => token.balance > 0);
 	return (
-		<YStack gap="$sm" mt="$xl" width="92%">
+		<YStack gap="$sm" my="$xl" width="92%">
 			<XStack
 				borderWidth={2}
 				borderColor="$surface3"
@@ -661,7 +655,7 @@ const SendContent = ({
 	onViewReciept,
 }: SendContentType) => {
 	return (
-		<Stack flex={1} justify="center">
+		<Stack flex={1} justify="center" items="center" width="100%" minH="100%">
 			<YStack gap="$md" width="85%" mb="$5xl">
 				{isLoading ? (
 					<Stack self="center" mr="$xl">
@@ -744,13 +738,13 @@ const SendContent = ({
 					</YStack>
 				)}
 			</YStack>
-			<YStack b="$3xl" gap="$md" position="absolute" width="100%">
+			<YStack b="$3xl" gap="$md" position="absolute" width="85%">
 				{!isLoading && (
 					<Button
 						size="lg"
 						variant="branded"
 						emphasis="tertiary"
-						width="85%"
+						width="100%"
 						onPress={onViewReciept}
 					>
 						View reciept
@@ -760,7 +754,7 @@ const SendContent = ({
 					size="lg"
 					variant="branded"
 					loading={isLoading}
-					width="85%"
+					width="100%"
 					onPress={onPressDone}
 				>
 					{isLoading ? "Sending..." : "Done"}
