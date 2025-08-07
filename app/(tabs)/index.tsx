@@ -1,5 +1,4 @@
 //import { Button } from "tamagui";
-import { getAllRoscas } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -9,21 +8,32 @@ import {
 import { useAppState } from "@/features/essentials/appState";
 import { useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
+import {
+	useOnrampPMutation,
+	useOnrampXMutation,
+} from "@/features/wallet/transactions/ramps";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
-//import { Button } from "tamagui";
+import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useDispatch();
 	const user = useAppState((s) => s.user);
 	const isTestnet = useAppState((s) => s.testnetEnabled);
+	const recentRecipients = useAppState((s) => s.recentRecipients);
+	const setRecipients = useAppState((s) => s.setRecentRecipient);
 	const { defaultChainId } = useEnabledChains();
-	const { mainAccount, publicClient } = useWalletContext();
+	const { mainAccount } = useWalletContext();
+	//const publicClient = usePublicClient();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
+	const [onrampWithPayd, { reset: resetP, data: dataP }] = useOnrampPMutation();
+	const [onrampWithXwift, { reset: resetX, data: dataX }] =
+		useOnrampXMutation();
 
 	const onRefresh = () => {
 		setRefreshing(true);
@@ -32,8 +42,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const reciept = await getAllRoscas(defaultChainId);
-			console.log(reciept);
+			const user = await getAuth().currentUser;
+			const tokenResult = await getIdTokenResult(user);
+			console.log(tokenResult);
 		} catch (error) {
 			console.log(error);
 		}
@@ -71,9 +82,9 @@ export default function HomeScreen() {
 					<TransactionsCard />
 					<ProductsCard />
 
-					{/*<Button height="$3xl" onPress={handleTestFns}>
+					<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>*/}
+					</Button>
 				</YStack>
 			</ScrollView>
 		</View>

@@ -13,12 +13,17 @@ interface WalletState {
 	currency: Currency;
 	tokenBalances: Record<TokenId, Balance>; // Record of address to Balance
 	overdraft: Balance;
+	onramp: {
+		provider: string;
+		method: string;
+	};
 	fetchBalances: (
 		address: Address,
 		chainId: ChainId,
 		isTestnet: boolean,
 	) => Promise<void>;
 	updateOverdraft: (amount: Balance["balanceUSD"]) => void;
+	setOnramp: (provider: string, method: string) => void;
 }
 
 const initialWalletState = {
@@ -27,6 +32,10 @@ const initialWalletState = {
 	overdraft: {
 		balance: 0,
 		balanceUSD: 0,
+	},
+	onramp: {
+		provider: "pretium",
+		method: "mpesa",
 	},
 };
 
@@ -54,6 +63,14 @@ export const useWalletState = create<WalletState>((set, get) => ({
 			balanceUSD: amount,
 		};
 		set({ overdraft });
+	},
+	setOnramp: (provider, method) => {
+		set({
+			onramp: {
+				provider,
+				method,
+			},
+		});
 	},
 }));
 

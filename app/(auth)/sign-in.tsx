@@ -1,4 +1,8 @@
-import { TermsOfService, useOnboardingContext } from "@/features/essentials";
+import {
+	GoogleSignIn,
+	TermsOfService,
+	useOnboardingContext,
+} from "@/features/essentials";
 import {
 	AnimatedYStack,
 	Button,
@@ -13,7 +17,6 @@ import {
 	YStack,
 } from "@/ui";
 import { RegisterHeader } from "@/ui/assets";
-import { Google } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image } from "react-native";
@@ -111,20 +114,7 @@ export default function SignInScreen() {
 						</Text>
 						<Separator borderWidth={1} />
 					</XStack>
-					<Button
-						icon={<Google color="$accent1" />}
-						borderColor="$neutral3"
-						borderWidth={2}
-						shadowColor="$accent1"
-						shadowOpacity={0.4}
-						shadowRadius="$sm"
-						bg="$surface1"
-						size="lg"
-					>
-						<Text color="$accent1" variant="buttonLabel1">
-							Sign in with Google
-						</Text>
-					</Button>
+					<GoogleSignIn />
 				</YStack>
 				<Stack mx="$2xl" py="$xl">
 					<TermsOfService />

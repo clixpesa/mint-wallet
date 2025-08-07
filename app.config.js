@@ -38,6 +38,7 @@ export default {
       "expo-secure-store",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin",
       [
         "expo-splash-screen",
         {
@@ -75,10 +76,17 @@ export default {
           android: {
             compileSdkVersion: 35,
             targetSdkVersion: 35,
-            buildToolsVersion: "35.0.0"
+            buildToolsVersion: "35.0.0",
+            kotlinVersion: "2.0.21"
           }
         }
       ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Clixpesa to access your contacts."
+        }
+      ]
     ],
     experiments: {
       typedRoutes: true

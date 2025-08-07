@@ -3,6 +3,7 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from "@react-navigation/native";
+import { StatusBar } from 'expo-status-bar'
 import type { TamaguiProviderProps } from "tamagui";
 
 import { TamaguiProvider } from "tamagui";
@@ -23,6 +24,7 @@ export function UIProvider({
 			{...rest}
 		>
 			<ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+				<StatusBar style={isDark ? 'light' : 'dark'} />
 				{children}
 			</ThemeProvider>
 		</TamaguiProvider>

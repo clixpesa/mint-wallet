@@ -3,6 +3,7 @@ import { AccountIconWChainLogo } from "@/components/account/AccountIconWChainLog
 
 import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
+import { useAppState } from "@/features/essentials/appState";
 import {
 	type ChainId,
 	type TokenWithBalance,
@@ -11,6 +12,10 @@ import {
 	useWalletContext,
 } from "@/features/wallet";
 import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
+import {
+	useOnrampPMutation,
+	useOnrampXMutation,
+} from "@/features/wallet/transactions/ramps";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -44,29 +49,40 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, Dimensions } from "react-native";
+import { createPublicClient, http, parseAbiItem } from "viem";
 
 export default function DepositScreen() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
-	const overdraft = useWalletState((s) => s.overdraft);
+	const onramp = useWalletState((s) => s.onramp);
+	const user = useAppState((s) => s.user);
 	const { symbol, conversionRate } = getRate(currency);
 	const { defaultChainId } = useEnabledChains();
 	const inputRef = useRef<Input>(null);
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const [amount, setAmount] = useState<string>();
 	const [useCurrency, setUseCurrency] = useState<boolean>(true);
-	const [isOverdraft, setIsOverdraft] = useState<boolean>(false);
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(true);
 	const [isSending, setIsSending] = useState<boolean>(false);
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
+	const [onrampWithPayd, { reset: resetP, data: dataP }] = useOnrampPMutation();
+	const [onrampWithXwift, { reset: resetX, data: dataX }] =
+		useOnrampXMutation();
 
-	let filter = "USD";
-	if (params.token) filter = params.token.includes("USD") ? "USD" : "KES";
+	//const filter = "USD";
+	//if (params.token) filter = params.token.includes("USD") ? "USD" : "KES";
 
 	const allTokens = useEnabledTokens();
-	const tokens = allTokens.filter((token) => token.chainId === defaultChainId);
+	const supportedTokens = allTokens.filter(
+		(token) => token.chainId === defaultChainId,
+	);
+	const tokens =
+		onramp.provider === "pretium"
+			? supportedTokens.filter((token) => !token.symbol.includes("KES"))
+			: supportedTokens;
 	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
 	const chain = getChainInfo(tokenInfo.chainId);
 
@@ -93,19 +109,92 @@ export default function DepositScreen() {
 	);
 
 	const onConfirmSend = async () => {
-		setIsSending(true);
 		setIsTxLoading(true);
-		if (mainAccount && amount) {
+		if (mainAccount && amount && user.phoneNumber) {
+			bottomSheetModalRef.current?.snapToPosition(
+				Dimensions.get("screen").height,
+			);
+			setIsSending(true);
+			if (onramp.provider === "pretium") {
+				onrampWithXwift({
+					amount: Number(actualAmount) * conversionRate + 2.5,
+					phone: user.phoneNumber,
+					tokenId: `${tokenInfo.symbol}_CELO`,
+					address: mainAccount.account?.address,
+				});
+			} else {
+				onrampWithPayd({
+					amount: Number(actualAmount),
+					phone: user.phoneNumber,
+					tokenId: `${tokenInfo.symbol}_CELO`,
+					address: mainAccount.account?.address,
+				});
+			}
+		} else {
+			setIsTxLoading(false);
+			bottomSheetModalRef.current?.close();
+			Alert.alert(
+				"Invalid MPESA Account!",
+				"Looks like you do not have a valid MPESA number. Please use the RECEIVE option to Top up",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
+					},
+					{
+						text: "Receive",
+						onPress: () => router.navigate("/(transactions)/ramps/receive"),
+					},
+				],
+			);
+		}
+	};
+
+	useEffect(() => {
+		let unwatch: () => void = () => {};
+		if (dataP?.success) {
+			console.log("Waiting for TX");
 			setTimeout(() => {
 				setTxHash(txHash);
 				setIsTxLoading(false);
 			}, 3000);
 		}
-	};
+		if (dataX?.code === 200) {
+			console.log("Waiting for TX");
+			const publicClient = createPublicClient({
+				chain: chain,
+				transport: http(
+					`https://${tokenInfo.chainId}.rpc.thirdweb.com/c9f58f940343e75c35e9e07f93acc785`,
+				),
+			});
+			unwatch = publicClient?.watchEvent({
+				address: [tokenInfo.address],
+				event: parseAbiItem(
+					"event Transfer(address indexed from, address indexed to, uint256 value)",
+				),
+				args: {
+					to: mainAccount?.account?.address,
+				},
+				onLogs: (logs) => {
+					setTxHash(logs[0].transactionHash);
+					unwatch();
+					setIsTxLoading(false);
+				},
+			});
+		}
+		return () => {
+			unwatch();
+		};
+	}, [dataP, dataX, chain, tokenInfo, mainAccount]);
 
 	useEffect(() => {
 		updateCurrentChainId(tokenInfo.chainId);
 	}, [tokenInfo, updateCurrentChainId]);
+
+	const providerLogo =
+		onramp.provider === "payd"
+			? require("@/ui/assets/images/provider-logos/payd-circular.png")
+			: require("@/ui/assets/images/provider-logos/pretium-circular.png");
 
 	return (
 		<View flex={1} items="center" bg="$surface1">
@@ -194,12 +283,22 @@ export default function DepositScreen() {
 							size={32}
 							address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
 							chainId={tokenInfo.chainId}
-							avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
+							avatarUri={providerLogo}
 						/>
-						<Text variant="subHeading2">Payd - MPESA</Text>
+						<Text variant="subHeading2">
+							{onramp.provider.charAt(0).toUpperCase() +
+								onramp.provider.slice(1)}{" "}
+							- MPESA
+						</Text>
 						<RotatableChevron direction="right" color="$neutral1" ml={-10} />
 					</XStack>
 				</TouchableArea>
+				<Text>
+					Min Amount:{" "}
+					<Text fontWeight="$md">
+						Ksh {tokenInfo.symbol.includes("USD") ? "100" : "20"}
+					</Text>
+				</Text>
 			</YStack>
 			<Spacer />
 			<Button
@@ -219,7 +318,11 @@ export default function DepositScreen() {
 			<BottomSheetModal
 				ref={bottomSheetModalRef}
 				snapPoints={
-					isReview ? (isSending ? ["100%"] : ["55%"]) : ["50%", "90%"]
+					isReview
+						? isSending
+							? [Dimensions.get("screen").height]
+							: ["55%"]
+						: ["50%", "90%"]
 				}
 				backdropComponent={renderBackdrop}
 				onDismiss={() => inputRef.current?.focus()}
@@ -242,7 +345,11 @@ export default function DepositScreen() {
 									symbol: symbol,
 									rate: conversionRate,
 								}}
-								provider={{ name: "Payd", method: "mpesa" }}
+								provider={{
+									name: onramp.provider,
+									method: "mpesa",
+									logo: providerLogo,
+								}}
 								isLoading={isTxLoading}
 								onPressDone={() => router.back()}
 								onViewReciept={() =>
@@ -265,7 +372,11 @@ export default function DepositScreen() {
 									symbol: symbol,
 									rate: conversionRate,
 								}}
-								provider={{ name: "Payd", method: "mpesa" }}
+								provider={{
+									name: onramp.provider,
+									method: "mpesa",
+									logo: providerLogo,
+								}}
 								isLoading={isLoading}
 								onConfirmSend={onConfirmSend}
 							/>
@@ -341,6 +452,7 @@ type ReviewContentType = {
 	provider: {
 		name: string;
 		method: string;
+		logo: string;
 	};
 	isLoading: boolean;
 	onConfirmSend: () => void;
@@ -355,74 +467,73 @@ const ReviewContent = ({
 	onConfirmSend,
 }: ReviewContentType) => {
 	return (
-		<>
-			<YStack gap="$md" mt="$lg" width="85%">
-				<Text>You're adding</Text>
-				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
-					<YStack>
-						<Text variant="heading3" color="$neutral1">
-							{amount.toFixed(3)} {tokenInfo.symbol}
-						</Text>
-						<Text color="$neutral2">
-							{currency.symbol}{" "}
-							{tokenInfo.symbol.includes("USD")
-								? (Number(amount) * currency.rate).toFixed(2)
-								: amount.toFixed(2)}
-						</Text>
-					</YStack>
-					<TokenLogo
-						chainId={tokenInfo.chainId}
-						symbol={tokenInfo.symbol}
-						url={tokenInfo.logo}
-						size={42}
-					/>
-				</XStack>
-				<XStack width="92%" items="center" gap="$lg">
-					<Text>Via</Text>
-					<Separator borderWidth={1} />
-				</XStack>
-				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
-					<YStack gap="$2xs">
-						<Text variant="subHeading1">{provider.name} - MPESA</Text>
-						<Text color="$neutral2">Instant</Text>
-					</YStack>
-					<AccountIconWChainLogo
-						size={46}
-						address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
-						chainId={tokenInfo.chainId}
-						avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
-					/>
-				</XStack>
-				<Separator />
+		<YStack gap="$md" mt="$lg" mb="$3xl" width="85%">
+			<Text>You're adding</Text>
+			<XStack width="100%" justify="space-between" items="center" pr="$2xs">
+				<YStack>
+					<Text variant="heading3" color="$neutral1">
+						{amount.toFixed(3)} {tokenInfo.symbol}
+					</Text>
+					<Text color="$neutral2">
+						{currency.symbol}{" "}
+						{tokenInfo.symbol.includes("USD")
+							? (Number(amount) * currency.rate).toFixed(2)
+							: amount.toFixed(2)}
+					</Text>
+				</YStack>
+				<TokenLogo
+					chainId={tokenInfo.chainId}
+					symbol={tokenInfo.symbol}
+					url={tokenInfo.logo}
+					size={42}
+				/>
+			</XStack>
+			<XStack width="92%" items="center" gap="$lg">
+				<Text>Via</Text>
+				<Separator borderWidth={1} />
+			</XStack>
+			<XStack width="100%" justify="space-between" items="center" pr="$2xs">
+				<YStack gap="$2xs">
+					<Text variant="subHeading1">
+						{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)} -
+						MPESA
+					</Text>
+					<Text color="$neutral2">Instant</Text>
+				</YStack>
+				<AccountIconWChainLogo
+					size={46}
+					address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
+					chainId={tokenInfo.chainId}
+					avatarUri={provider.logo}
+				/>
+			</XStack>
+			<Separator />
 
-				<XStack justify="space-between">
-					<Text>Fee:</Text>
-					<XStack gap="$xs">
-						<Text
-							variant="subHeading2"
-							textDecorationLine="line-through"
-							color="$orangeBase"
-						>
-							Ksh 12.00
-						</Text>
-						<Text variant="subHeading2">0.00</Text>
-					</XStack>
+			<XStack justify="space-between">
+				<Text>Fee:</Text>
+				<XStack gap="$xs">
+					<Text
+						variant="subHeading2"
+						textDecorationLine="line-through"
+						color="$orangeBase"
+					>
+						Ksh 12.00
+					</Text>
+					<Text variant="subHeading2">0.00</Text>
 				</XStack>
-			</YStack>
-
-			<Spacer />
+			</XStack>
 			<Button
 				size="lg"
 				variant="branded"
-				b="$3xl"
+				mt="$3xl"
 				loading={isLoading}
-				position="absolute"
-				width="85%"
+				//position="absolute"
+				//width="85%"
 				onPress={onConfirmSend}
 			>
 				Confirm send
 			</Button>
-		</>
+		</YStack>
 	);
 };
 
@@ -436,7 +547,7 @@ const TokenList = ({
 	const inputRef = useRef<Input>(null);
 	const [searchText, setSearchText] = useState("");
 	return (
-		<YStack gap="$sm" mt="$xl" width="92%">
+		<YStack gap="$sm" my="$xl" width="92%">
 			<XStack
 				borderWidth={2}
 				borderColor="$surface3"
@@ -511,6 +622,7 @@ type SendContentType = {
 	provider: {
 		name: string;
 		method: string;
+		logo: string;
 	};
 	isLoading: boolean;
 	onPressDone: () => void;
@@ -526,60 +638,63 @@ const SendContent = ({
 	onPressDone,
 	onViewReciept,
 }: SendContentType) => {
+	const providerLogo =
+		provider.name === "payd"
+			? require("@/ui/assets/images/provider-logos/payd-dark.png")
+			: require("@/ui/assets/images/provider-logos/pretium-dark.png");
 	return (
-		<View flex={1} justify="center" items="center" width="100%">
+		<View flex={1} justify="center" items="center" width="100%" minH="100%">
 			{isLoading ? (
-				<Stack>
-					<YStack gap="$sm" items="center">
-						<XStack gap="$md">
-							<Stack
-								rounded="$xl"
-								height={80}
-								width={80}
-								z={10}
-								overflow="hidden"
-							>
-								<UniversalImage
-									uri={require("@/ui/assets/images/icon.png")}
-									size={{
-										height: 80,
-										width: 80,
-										resizeMode: UniversalImageResizeMode.Contain,
-									}}
-								/>
-							</Stack>
-							<Stack
-								rounded="$xl"
-								height={80}
-								width={80}
-								z={10}
-								overflow="hidden"
-							>
-								<UniversalImage
-									uri={require("@/ui/assets/images/provider-logos/payd-dark.png")}
-									size={{
-										height: 80,
-										width: 80,
-										resizeMode: UniversalImageResizeMode.Contain,
-									}}
-								/>
-							</Stack>
-						</XStack>
-						<SpinningLoader />
-						<YStack items="center" gap="$xs">
-							<Text variant="subHeading1">
-								Connecting you to {provider.name}
-							</Text>
-							<Text>
-								{`Buying ${currency.symbol} ${
-									tokenInfo.symbol.includes("USD")
-										? (Number(amount) * currency.rate).toFixed(2)
-										: amount.toFixed(2)
-								} worth of ${tokenInfo.symbol}`}
-							</Text>
-						</YStack>
+				<YStack gap="$sm" items="center">
+					<XStack gap="$md">
+						<Stack
+							rounded="$xl"
+							height={80}
+							width={80}
+							z={10}
+							overflow="hidden"
+						>
+							<UniversalImage
+								uri={require("@/ui/assets/images/icon.png")}
+								size={{
+									height: 80,
+									width: 80,
+									resizeMode: UniversalImageResizeMode.Contain,
+								}}
+							/>
+						</Stack>
+						<Stack
+							rounded="$xl"
+							height={80}
+							width={80}
+							z={10}
+							overflow="hidden"
+						>
+							<UniversalImage
+								uri={providerLogo}
+								size={{
+									height: 80,
+									width: 80,
+									resizeMode: UniversalImageResizeMode.Contain,
+								}}
+							/>
+						</Stack>
+					</XStack>
+					<SpinningLoader />
+					<YStack items="center" gap="$xs">
+						<Text variant="subHeading1">
+							Connecting you to{" "}
+							{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)}
+						</Text>
+						<Text>
+							{`Buying ${currency.symbol} ${
+								tokenInfo.symbol.includes("USD")
+									? (Number(amount) * currency.rate).toFixed(2)
+									: amount.toFixed(2)
+							} worth of ${tokenInfo.symbol}`}
+						</Text>
 					</YStack>
-				</Stack>
+				</YStack>
 			) : (
 				<YStack gap="$md" width="85%" mb="$5xl">
 					<YStack gap="$md">
@@ -615,14 +730,17 @@ const SendContent = ({
 					</XStack>
 					<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 						<YStack gap="$2xs">
-							<Text variant="subHeading1">{provider.name} - MPESA</Text>
+							<Text variant="subHeading1">
+								{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)}{" "}
+								- MPESA
+							</Text>
 							<Text color="$neutral2">Instant</Text>
 						</YStack>
 						<AccountIconWChainLogo
 							size={46}
 							address="0x1BB5Bc2d6d1272C43a6823875E34c84f1B98113A"
 							chainId={tokenInfo.chainId}
-							avatarUri={require("@/ui/assets/images/provider-logos/payd-circular.png")}
+							avatarUri={provider.logo}
 						/>
 					</XStack>
 					<YStack gap="$xs">
@@ -643,17 +761,28 @@ const SendContent = ({
 				</YStack>
 			)}
 			{isLoading ? (
-				<Text
+				<YStack
 					b="$3xl"
 					position="absolute"
 					width="90%"
-					text="center"
-					variant="body3"
-					color="$neutral2"
+					items="center"
+					gap="$md"
 				>
-					By continuing, you acknowledge that you'll be subject to the Terms of
-					service and Privacy Policy of {provider.name}
-				</Text>
+					<Text text="center" variant="body3" color="$neutral2">
+						By continuing, you acknowledge that you'll be subject to the Terms
+						of service and Privacy Policy of{" "}
+						{provider.name.charAt(0).toUpperCase() + provider.name.slice(1)}
+					</Text>
+					<Button
+						size="lg"
+						variant="branded"
+						emphasis="secondary"
+						width="86%"
+						onPress={() => router.back()}
+					>
+						Cancel
+					</Button>
+				</YStack>
 			) : (
 				<YStack
 					b="$3xl"

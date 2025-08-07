@@ -40,6 +40,7 @@ export type MnemonicData = {
 	address: string;
 	mnemonic?: { phrase: string; path: string; locale: string } | string | null;
 	enMnemonic?: string;
+	enSkey?: string;
 };
 
 export type Balance = {

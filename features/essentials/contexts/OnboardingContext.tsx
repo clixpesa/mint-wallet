@@ -2,6 +2,7 @@ import { appStorage } from "@/store/storage";
 import { logger } from "@/utilities/logger/logger";
 import {
 	type FirebaseAuthTypes,
+	GoogleAuthProvider,
 	PhoneAuthProvider,
 	getAuth,
 	onAuthStateChanged,
@@ -29,6 +30,9 @@ export type OnboardingContext = {
 	createClixtag: (userName: string) => Promise<string | null>;
 	getSignedInUser: () => FirebaseAuthTypes.User | null;
 	resetOnboardingContextData: () => void;
+	verifyGoogleIdToken: (
+		idToken: string,
+	) => Promise<FirebaseAuthTypes.UserCredential | undefined>;
 };
 
 const initialOnboardingContext: OnboardingContext = {
@@ -40,6 +44,7 @@ const initialOnboardingContext: OnboardingContext = {
 	createClixtag: async () => null,
 	getSignedInUser: () => null,
 	resetOnboardingContextData: () => undefined,
+	verifyGoogleIdToken: async () => undefined,
 };
 
 const OnboardingContext = createContext<OnboardingContext>(
@@ -109,8 +114,7 @@ export function OnboardingContextProvider({
 			if (source === "phone") {
 				const credential = PhoneAuthProvider.credential(verificationId, code);
 				userCredential = await signInWithCredential(getAuth(), credential);
-				//await appStorage.setItem("user", userCredential.user.toJSON());
-				await storeMnemonic(userCredential.user.uid);
+				//await storeMnemonic(userCredential.user.uid);
 				setSignedInUser(userCredential.user);
 			} else if (source === "email") {
 				const instance = httpsCallable(getFunctions(), "verifyEmailWithOTP");
@@ -128,9 +132,7 @@ export function OnboardingContextProvider({
 						verificationId,
 						response.data?.message,
 					);
-
-					//await appStorage.setItem("user", userCredential.user.toJSON());
-					await storeMnemonic(userCredential.user.uid);
+					//await storeMnemonic(userCredential.user.uid);
 					setSignedInUser(userCredential.user);
 				}
 			}
@@ -138,6 +140,27 @@ export function OnboardingContextProvider({
 		} catch (error) {
 			logger.error(error, {
 				tags: { file: "OnboardingContext", function: "signInWithOTP" },
+			});
+		}
+	};
+
+	const verifyGoogleIdToken = async (idToken: string) => {
+		try {
+			const googleCredential = GoogleAuthProvider.credential(idToken);
+			const userCredential = await signInWithCredential(
+				getAuth(),
+				googleCredential,
+			);
+
+			///await storeMnemonic(userCredential.user.uid);
+			setSignedInUser(userCredential.user);
+			return userCredential;
+		} catch (error) {
+			logger.error(error, {
+				tags: {
+					file: "OnboardingContext",
+					function: "verifyGoogleIdToken",
+				},
 			});
 		}
 	};
@@ -175,6 +198,7 @@ export function OnboardingContextProvider({
 				createClixtag,
 				getSignedInUser,
 				resetOnboardingContextData,
+				verifyGoogleIdToken,
 			}}
 		>
 			{children}
