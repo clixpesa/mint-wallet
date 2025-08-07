@@ -40,6 +40,7 @@ import {
 	type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useRef, useState } from "react";
 
 export default function SetGoal() {
@@ -142,7 +143,6 @@ export default function SetGoal() {
 			onOpenModal();
 		}
 	};
-
 	return (
 		<Screen title="Set your goal">
 			<YStack gap="$xs" width="92%" mt="$3xl" items="center">
@@ -329,7 +329,7 @@ export default function SetGoal() {
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
 					{isSending ? (
-						<YStack items="center" gap="$sm" width="100%" mt="$3xl">
+						<YStack items="center" gap="$sm" width="100%" my="$3xl">
 							<CheckmarkCircle
 								color="$statusSuccess"
 								size={80}
@@ -344,7 +344,11 @@ export default function SetGoal() {
 								variant="branded"
 								emphasis="tertiary"
 								width="85%"
-								onPress={() => {}}
+								onPress={() =>
+									openBrowserAsync(
+										`${mainAccount?.chain?.blockExplorers?.default.url}/tx/${txReciept?.txHash}`,
+									)
+								}
 							>
 								View ticket
 							</Button>

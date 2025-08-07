@@ -31,6 +31,7 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useRef, useState } from "react";
 
 export default function GroupOverview() {
@@ -215,7 +216,7 @@ export default function GroupOverview() {
 				handleIndicatorStyle={{ backgroundColor: "#ffffff" }}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
-					<YStack items="center" gap="$sm" width="100%" mt="$3xl">
+					<YStack items="center" gap="$sm" width="100%" my="$3xl">
 						<CheckmarkCircle
 							color="$statusSuccess"
 							size={80}
@@ -230,7 +231,11 @@ export default function GroupOverview() {
 							variant="branded"
 							emphasis="tertiary"
 							width="85%"
-							onPress={() => {}}
+							onPress={() =>
+								openBrowserAsync(
+									`${mainAccount?.chain?.blockExplorers?.default.url}/tx/${txReciept?.txHash}`,
+								)
+							}
 						>
 							View ticket
 						</Button>
