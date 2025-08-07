@@ -14,6 +14,7 @@ import {
 } from "@/features/wallet/transactions/ramps";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useDispatch } from "react-redux";
@@ -41,7 +42,9 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			console.log("Text function");
+			const user = await getAuth().currentUser;
+			const tokenResult = await getIdTokenResult(user);
+			console.log(tokenResult);
 		} catch (error) {
 			console.log(error);
 		}

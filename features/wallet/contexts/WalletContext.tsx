@@ -19,7 +19,7 @@ import { entryPoint07Address } from "viem/account-abstraction";
 
 import { useAppState } from "@/features/essentials/appState";
 import { appStorage } from "@/store/storage";
-import { getAuth } from "@react-native-firebase/auth";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import { mnemonicToAccount } from "viem/accounts";
 import {
 	type SmartAccountClient,
@@ -100,13 +100,11 @@ export function WalletContextProvider({
 			const enMnemonicData = (await appStorage.getItem(
 				user.uid,
 			)) as MnemonicData | null;
-
 			if (!enMnemonicData || !enMnemonicData.enMnemonic) {
 				throw new Error("Mnemonic data not found");
 			}
-			const mnemonicId = await user
-				.getIdTokenResult()
-				.then((tokenResult) => tokenResult.claims.mnemonicId);
+			const tokenResult = await getIdTokenResult(user, true);
+			const mnemonicId = tokenResult.claims.mnemonicId;
 			const keyParams = user.uid + mnemonicId;
 			const mnemonic = await decryptMnemonic(
 				enMnemonicData.enMnemonic,

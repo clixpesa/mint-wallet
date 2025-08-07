@@ -2,13 +2,13 @@ import { appStorage } from "@/store/storage";
 import { logger } from "@/utilities/logger/logger";
 import {
 	type FirebaseAuthTypes,
+	GoogleAuthProvider,
 	PhoneAuthProvider,
 	getAuth,
 	onAuthStateChanged,
 	signInWithCredential,
 	signInWithEmailAndPassword,
 	signInWithPhoneNumber,
-	GoogleAuthProvider,
 } from "@react-native-firebase/auth";
 import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
 import {
@@ -114,8 +114,7 @@ export function OnboardingContextProvider({
 			if (source === "phone") {
 				const credential = PhoneAuthProvider.credential(verificationId, code);
 				userCredential = await signInWithCredential(getAuth(), credential);
-				//await appStorage.setItem("user", userCredential.user.toJSON());
-				await storeMnemonic(userCredential.user.uid);
+				//await storeMnemonic(userCredential.user.uid);
 				setSignedInUser(userCredential.user);
 			} else if (source === "email") {
 				const instance = httpsCallable(getFunctions(), "verifyEmailWithOTP");
@@ -133,9 +132,7 @@ export function OnboardingContextProvider({
 						verificationId,
 						response.data?.message,
 					);
-
-					//await appStorage.setItem("user", userCredential.user.toJSON());
-					await storeMnemonic(userCredential.user.uid);
+					//await storeMnemonic(userCredential.user.uid);
 					setSignedInUser(userCredential.user);
 				}
 			}
@@ -155,9 +152,8 @@ export function OnboardingContextProvider({
 				googleCredential,
 			);
 
-			await storeMnemonic(userCredential.user.uid);
+			///await storeMnemonic(userCredential.user.uid);
 			setSignedInUser(userCredential.user);
-
 			return userCredential;
 		} catch (error) {
 			logger.error(error, {

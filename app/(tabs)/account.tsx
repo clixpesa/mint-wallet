@@ -25,7 +25,7 @@ import {
 } from "@/ui/components/icons";
 import { shortenAddress } from "@/utilities/addresses";
 import { redirect } from "@/utilities/links/redirect";
-import { getAuth } from "@react-native-firebase/auth";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import * as Application from "expo-application";
 import { openURL } from "expo-linking";
 import { usePathname } from "expo-router";
@@ -43,10 +43,9 @@ export default function AccountScreen() {
 	useEffect(() => {
 		const getClixtag = async () => {
 			const user = getAuth().currentUser;
-			await user?.getIdToken(true);
-			const clixtag = await user
-				?.getIdTokenResult()
-				.then((tokenResult) => tokenResult.claims.tag);
+			const clixtag = await getIdTokenResult(user, true).then(
+				(tokenResult) => tokenResult.claims.tag,
+			);
 			setClixtag(clixtag);
 		};
 		getClixtag();
