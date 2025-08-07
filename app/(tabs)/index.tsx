@@ -5,7 +5,7 @@ import {
 	TransactionsCard,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
-import { useWalletContext } from "@/features/wallet";
+import { usePublicClient, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
@@ -19,7 +19,7 @@ export default function HomeScreen() {
 	const isTestnet = useAppState((s) => s.testnetEnabled);
 	const { defaultChainId } = useEnabledChains();
 	const { mainAccount } = useWalletContext();
-	//const publicClient = usePublicClient();
+	const publicClient = usePublicClient();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
 
 	const onRefresh = () => {
@@ -29,6 +29,11 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
+			/*const hash = await mainAccount?.sendTransaction({
+				to: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
+				data: "0x",
+				value: 0n,
+			});*/
 			console.log("something");
 		} catch (error) {
 			console.log(error);

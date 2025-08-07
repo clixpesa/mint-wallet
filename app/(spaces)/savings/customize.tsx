@@ -35,6 +35,7 @@ import {
 	type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Customize() {
@@ -289,14 +290,14 @@ export default function Customize() {
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
 					{isSending ? (
-						<YStack items="center" gap="$sm" width="100%" mt="$3xl">
+						<YStack items="center" gap="$sm" width="100%" my="$3xl">
 							<CheckmarkCircle
 								color="$statusSuccess"
 								size={80}
 								strokeWidth={1.5}
 							/>
 							<Text>Your space for</Text>
-							<Text variant="subHeading1">{params.name}</Text>
+							<Text variant="subHeading1">{name}</Text>
 							<Text>has been created successfully!</Text>
 							<Spacer flex={1} />
 							<Button
@@ -304,7 +305,11 @@ export default function Customize() {
 								variant="branded"
 								emphasis="tertiary"
 								width="85%"
-								onPress={() => {}}
+								onPress={() =>
+									openBrowserAsync(
+										`${mainAccount?.chain?.blockExplorers?.default.url}/tx/${txReciept?.txHash}`,
+									)
+								}
 							>
 								View ticket
 							</Button>
@@ -319,7 +324,7 @@ export default function Customize() {
 										pathname: "/(spaces)/savings/[spaceId]",
 										params: {
 											name,
-											spaceId: txReciept.spaceId,
+											spaceId: txReciept?.spaceId,
 											targetAmount: Number(actualAmount),
 											targetDate: date.valueOf(),
 										},
