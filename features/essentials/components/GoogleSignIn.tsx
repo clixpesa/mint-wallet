@@ -1,4 +1,3 @@
-import { useOnboardingContext } from "@/features/essentials";
 import { Button } from "@/ui";
 import { Google } from "@/ui/components/icons";
 import { getUrlSafeNonce } from "@/utilities/auth/getNonce";
@@ -11,6 +10,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useOnboardingContext } from "../contexts/OnboardingContext";
 
 export const GoogleSignIn = () => {
 	const { verifyGoogleIdToken } = useOnboardingContext();

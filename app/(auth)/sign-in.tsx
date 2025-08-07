@@ -1,4 +1,8 @@
-import { TermsOfService, useOnboardingContext } from "@/features/essentials";
+import {
+	GoogleSignIn,
+	TermsOfService,
+	useOnboardingContext,
+} from "@/features/essentials";
 import {
 	AnimatedYStack,
 	Button,
@@ -13,11 +17,9 @@ import {
 	YStack,
 } from "@/ui";
 import { RegisterHeader } from "@/ui/assets";
-import { Google } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Image } from "react-native";
-import { GoogleSignIn } from "@/features/auth/components/GoogleSignIn";
 
 export default function SignInScreen() {
 	const [useEmail, setUseEmail] = useState<boolean>(false);
