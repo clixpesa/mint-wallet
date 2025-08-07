@@ -9,7 +9,7 @@ export default {
     name: IS_DEV ? "Clixpesa Dev" : "Clixpesa",
     slug: "clixpesa-mint",
     owner: EAS_APP_OWNER,
-    version: "2.0.2",
+    version: "2.0.3",
     orientation: "portrait",
     icon: "./ui/assets/images/icon.png",
     scheme: "clix.eth",

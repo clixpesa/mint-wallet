@@ -1,7 +1,7 @@
 {
 	"name": "clixpesa-mint",
 	"main": "expo-router/entry",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"scripts": {
 		"start": "expo start",
 		"reset-project": "node ./scripts/reset-project.js",
@@ -95,6 +95,5 @@
 		"expo-dev-client": "~5.0.20",
 		"typescript": "~5.8.3"
 	},
-	"private": true,
-	"packageManager": "yarn@4.9.2"
+	"private": true
 }
