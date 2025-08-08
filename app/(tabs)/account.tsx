@@ -28,7 +28,7 @@ import { redirect } from "@/utilities/links/redirect";
 import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import * as Application from "expo-application";
 import { openURL } from "expo-linking";
-import { usePathname } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -75,7 +75,9 @@ export default function AccountScreen() {
 			<ScrollView showsVerticalScrollIndicator={false}>
 				<YStack mx="$2xl" my="$lg" gap="$sm">
 					<XStack justify="space-between" items="center">
-						<TouchableArea onPress={() => {}}>
+						<TouchableArea
+							onPress={() => router.navigate("/account/edit-profile")}
+						>
 							<AccountIcon
 								address={
 									user.mainAddress
@@ -93,6 +95,7 @@ export default function AccountScreen() {
 									borderWidth={2}
 									borderColor="$surface3Hovered"
 									rounded="$md"
+									onPress={() => router.navigate("/account/edit-profile")}
 								>
 									<Edit size={24} m="$xs" color="$neutral2" />
 								</TouchableArea>
