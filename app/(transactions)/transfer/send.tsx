@@ -66,10 +66,15 @@ export default function SendScreen() {
 	const [isReview, setIsReview] = useState<boolean>(true);
 	const [isTxLoading, setIsTxLoading] = useState<boolean>(true);
 	const [isSending, setIsSending] = useState<boolean>(false);
-	const [tokenInfo, setTokenInfo] = useState(tokens[0]);
+
 	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
 	const [txHash, setTxHash] = useState<string>();
 	const setRecentRecipient = useAppState((s) => s.setRecentRecipient);
+	const celoTokens = tokens.filter(
+		(token) => token.chainId === mainAccount?.chain.id,
+	);
+
+	const [tokenInfo, setTokenInfo] = useState(celoTokens[0]);
 
 	const chain = getChainInfo(tokenInfo.chainId);
 

@@ -128,6 +128,17 @@ export default function SpaceHome() {
 						size="md"
 						variant="branded"
 						emphasis="secondary"
+						onPress={() =>
+							router.navigate({
+								pathname: "/(spaces)/savings/settings",
+								params: {
+									spaceId: spaceInfo.spaceId,
+									name: spaceInfo.name,
+									goal: spaceInfo.targetAmount,
+									deadline: spaceInfo.targetDate,
+								},
+							})
+						}
 					/>
 				</XStack>
 				<YStack
