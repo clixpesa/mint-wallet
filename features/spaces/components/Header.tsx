@@ -1,11 +1,37 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { useAppState } from "@/features/essentials/appState";
-import { Text, TouchableArea, XStack } from "@/ui";
-import { Bell, PlusCircle } from "@/ui/components/icons";
+import { Separator, Text, TouchableArea, XStack, YStack } from "@/ui";
+import {
+	Bell,
+	Participants,
+	PlusCircle,
+	RoscaFill,
+	RotatableChevron,
+} from "@/ui/components/icons";
+import {
+	BottomSheetBackdrop,
+	type BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
+import { useCallback, useRef } from "react";
 
 export const SpacesHeader = (index: number) => {
 	const user = useAppState((s) => s.user);
+	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				style={[props.style]}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.4}
+			/>
+		),
+		[],
+	);
 	return (
 		<XStack
 			width="100%"
@@ -35,7 +61,10 @@ export const SpacesHeader = (index: number) => {
 				</Text>
 			</XStack>
 			<XStack gap="$sm" px="$sm" items="center">
-				<TouchableArea rounded="$full">
+				<TouchableArea
+					rounded="$full"
+					onPress={() => router.navigate("/(spaces)/notifications")}
+				>
 					<Bell color="$neutral3" size={30} />
 				</TouchableArea>
 				<TouchableArea
@@ -43,12 +72,56 @@ export const SpacesHeader = (index: number) => {
 					onPress={() => {
 						index.index === 0
 							? router.navigate("/(spaces)/savings/create")
-							: router.navigate("/(spaces)/roscas/create");
+							: bottomSheetModalRef.current?.present();
 					}}
 				>
 					<PlusCircle color="$neutral3" size={32} />
 				</TouchableArea>
 			</XStack>
+			<BottomSheetModal
+				ref={bottomSheetModalRef}
+				snapPoints={["50%"]}
+				backdropComponent={renderBackdrop}
+			>
+				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
+					<YStack gap="$sm" width="90%" my="$3xl">
+						<TouchableArea
+							onPress={() => router.navigate("/(spaces)/roscas/create")}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<RoscaFill size={32} color="$neutral2" />
+
+									<YStack>
+										<Text>Create a group</Text>
+										<Text variant="body3" color="$neutral2">
+											Create a new savings circle.
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
+						<TouchableArea
+							onPress={() => router.navigate("/(spaces)/roscas/join")}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Participants size={32} color="$neutral2" />
+									<YStack>
+										<Text>Join a group</Text>
+										<Text variant="body3" color="$neutral2">
+											Search an join a group.
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+					</YStack>
+				</BottomSheetView>
+			</BottomSheetModal>
 		</XStack>
 	);
 };

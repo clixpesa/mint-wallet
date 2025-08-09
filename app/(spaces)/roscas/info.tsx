@@ -8,6 +8,7 @@ import { Edit, Logout, Search, SendAction } from "@/ui/components/icons";
 import { isSameAddress, shortenAddress } from "@/utilities/addresses";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import type { Address } from "viem";
 
 export default function GroupInfo() {
@@ -60,6 +61,12 @@ export default function GroupInfo() {
 									borderWidth={2}
 									borderColor="$surface3Hovered"
 									rounded="$2xl"
+									onPress={() => {
+										Alert.alert(
+											"Keep Calm!",
+											"Inviting your friends through links is coming soon.",
+										);
+									}}
 								>
 									<XStack items="center" m="$xs" gap="$xs">
 										<SendAction size={24} color="$neutral2" />

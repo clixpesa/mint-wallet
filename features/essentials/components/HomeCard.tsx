@@ -2,15 +2,7 @@ import { subscribeToOverdraft } from "@/features/contracts/overdraft";
 import { getRate, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useBalances, useWalletState } from "@/features/wallet/walletState";
-import {
-	Button,
-	Spacer,
-	Stack,
-	Text,
-	TouchableArea,
-	XStack,
-	YStack,
-} from "@/ui";
+import { Button, Stack, Text, TouchableArea, XStack, YStack } from "@/ui";
 import { Currency, Jazisha, RotatableChevron } from "@/ui/components/icons";
 import {
 	BottomSheetBackdrop,
@@ -62,7 +54,6 @@ export const HomeCard = () => {
 				},
 				chainId: defaultChainId,
 			});
-			console.log(txHash);
 			updateOverdraft(10);
 			setIsTxLoading(false);
 		} catch (error) {
@@ -149,35 +140,30 @@ const JazishaContent = ({
 	balance,
 }: { onPressButton: () => void; isLoading: boolean; balance: string }) => {
 	return (
-		<>
-			<YStack gap="$lg" mt="$md" items="center">
-				<Stack p="$md" bg="$blueLight" rounded="$lg">
-					<Jazisha size={32} color="$blueBase" />
-				</Stack>
-				<YStack width="80%" gap="$2xs">
-					<Text variant="subHeading1" text="center" px="$2xl">
-						Finalize what you need to with Jazisha!
-					</Text>
-					<Text text="center" color="$neutral2">
-						Transfer or make a payment even on low balance with Clixpesa
-						Overdraft.
-					</Text>
-				</YStack>
-				<YStack width="70%" gap="$2xs" items="center">
-					<Text>Available:</Text>
-					<Text variant="heading3" fontWeight="600">
-						{balance}/100 USD
-					</Text>
-					<Text color="$neutral2">Only on CELO</Text>
-				</YStack>
+		<YStack gap="$lg" mt="$md" mb="$3xl" items="center" width="92%">
+			<Stack p="$md" bg="$blueLight" rounded="$lg">
+				<Jazisha size={32} color="$blueBase" />
+			</Stack>
+			<YStack width="80%" gap="$2xs">
+				<Text variant="subHeading1" text="center" px="$2xl">
+					Finalize what you need to with Jazisha!
+				</Text>
+				<Text text="center" color="$neutral2">
+					Transfer or make a payment even on low balance with Clixpesa
+					Overdraft.
+				</Text>
 			</YStack>
-			<Spacer />
+			<YStack width="70%" gap="$2xs" items="center">
+				<Text>Available:</Text>
+				<Text variant="heading3" fontWeight="600">
+					{balance}/100 USD
+				</Text>
+				<Text color="$neutral2">Only on CELO</Text>
+			</YStack>
 			<Button
 				size="lg"
 				variant="branded"
 				emphasis={Number(balance) > 0 ? "secondary" : null}
-				b="$3xl"
-				position="absolute"
 				width="85%"
 				loading={isLoading}
 				onPress={onPressButton}
@@ -188,6 +174,6 @@ const JazishaContent = ({
 						? "Unsubscribe"
 						: "Get started"}
 			</Button>
-		</>
+		</YStack>
 	);
 };

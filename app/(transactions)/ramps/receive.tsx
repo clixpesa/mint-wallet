@@ -161,7 +161,7 @@ export default function ReciveScreen() {
 				backdropComponent={renderBackdrop}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
-					<YStack gap="$md" mt="$lg" width="92%">
+					<YStack gap="$md" mt="$lg" mb="$3xl" width="92%">
 						<TouchableArea
 							items="center"
 							onPress={() => copyToClipboard(address)}

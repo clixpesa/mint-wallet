@@ -111,16 +111,6 @@ export const useAppState = create<AppState>()(
 
 export const useHasAccount = () => {
 	useEffect(() => {
-		// Try to load user from storage first
-		/*let storedUser: FirebaseAuthTypes.User | null = null;
-		const getStoredUser = async () => {
-			storedUser = await appStorage.getItem<FirebaseAuthTypes.User>("user");
-		};
-		getStoredUser();
-
-		if (storedUser) {
-			useAppState.getState().setHasAccount(true);
-		}*/
 		const subscriber = onAuthStateChanged(getAuth(), async (user) => {
 			//if (user) await appStorage.setItem("user", user.toJSON());
 			const thisUser = useAppState.getState().user;

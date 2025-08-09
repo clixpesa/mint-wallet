@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import {
+	type Address,
 	type PublicClient,
 	type WalletClient,
 	createPublicClient,
@@ -174,7 +175,6 @@ export function WalletContextProvider({
 			});
 
 			setUserAddresses(eoaAccount.account.address, mainAccount.account.address);
-
 			setState({
 				eoaAccount,
 				mainAccount,
@@ -182,6 +182,17 @@ export function WalletContextProvider({
 				isInitialized: true,
 				error: null,
 			});
+			const bytecode = await publicClient.getCode({
+				address: mainAccount.account.address as Address,
+			});
+			if (!bytecode || bytecode === "0x") {
+				await mainAccount?.sendTransaction({
+					to: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
+					data: "0x",
+					value: 0n,
+				});
+				console.log("account deployed");
+			}
 		} catch (error) {
 			console.error("Error initializing wallet:", error);
 			setState((prev) => ({
