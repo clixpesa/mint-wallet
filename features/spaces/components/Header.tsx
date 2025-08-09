@@ -61,7 +61,10 @@ export const SpacesHeader = (index: number) => {
 				</Text>
 			</XStack>
 			<XStack gap="$sm" px="$sm" items="center">
-				<TouchableArea rounded="$full">
+				<TouchableArea
+					rounded="$full"
+					onPress={() => router.navigate("/(spaces)/notifications")}
+				>
 					<Bell color="$neutral3" size={30} />
 				</TouchableArea>
 				<TouchableArea

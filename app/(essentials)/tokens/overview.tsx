@@ -1,15 +1,33 @@
 import { Screen } from "@/components/layout/Screen";
 import { TokenItem } from "@/components/lists/TokenItem";
-import { getRate } from "@/features/wallet";
+import { subscribeToOverdraft } from "@/features/contracts/overdraft";
+import { getRate, useWalletContext } from "@/features/wallet";
 import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
-import { useBalances } from "@/features/wallet/walletState";
-import { Text, TouchableArea, YStack } from "@/ui";
-import { QrCode } from "@/ui/components/icons";
+import { useBalances, useWalletState } from "@/features/wallet/walletState";
+import { Button, Stack, Text, TouchableArea, XStack, YStack } from "@/ui";
+import {
+	ExternalLink,
+	Jazisha,
+	QrCode,
+	RotatableChevron,
+} from "@/ui/components/icons";
+import {
+	BottomSheetBackdrop,
+	type BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-
+import { openBrowserAsync } from "expo-web-browser";
+import { useCallback, useRef, useState } from "react";
 //TODO: Add filters bases on supported chains
 
 export default function AssetsScreen() {
+	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+	const { updateCurrentChainId, mainAccount, isLoading } = useWalletContext();
+	const updateOverdraft = useWalletState((s) => s.updateOverdraft);
+
+	const [isTxLoading, setIsTxLoading] = useState<boolean>(false);
 	const { totalBalanceUSD, overdraft, currency } = useBalances();
 	const tokens = useEnabledTokens();
 	const { defaultChainId } = useEnabledChains();
@@ -32,6 +50,43 @@ export default function AssetsScreen() {
 	const dollarsWithBal = tokens.filter(
 		(token) => token.symbol.includes("USD") && token.balance > 0,
 	);
+
+	const onOpenModal = useCallback(() => {
+		bottomSheetModalRef.current?.present();
+		//change chain to celo/alfajores
+		updateCurrentChainId(defaultChainId);
+	}, [defaultChainId, updateCurrentChainId]);
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				style={[props.style]}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.4}
+			/>
+		),
+		[],
+	);
+
+	const onHandleJazisha = async () => {
+		try {
+			setIsTxLoading(true);
+			const txHash = await subscribeToOverdraft({
+				account: mainAccount,
+				initialLimit: {
+					inUSD: "10",
+					inLocalCurreny: (10 * conversionRate).toFixed(6),
+				},
+				chainId: defaultChainId,
+			});
+			updateOverdraft(10);
+			setIsTxLoading(false);
+		} catch (error) {
+			setIsTxLoading(false);
+			console.log(error);
+		}
+	};
 	return (
 		<Screen
 			title="Your Assets"
@@ -61,8 +116,43 @@ export default function AssetsScreen() {
 					≈ ${totalBalanceUSD.toFixed(2)}
 				</Text>
 				<Text variant="subHeading2" color="$blueBase">
-					Available Overdraft: ${overdraft.balanceUSD.toFixed(2)}
+					Available Jazisha: ${overdraft.balanceUSD.toFixed(2)}
 				</Text>
+				<TouchableArea onPress={onOpenModal}>
+					<XStack
+						justify="space-between"
+						items="center"
+						bg="$surface1"
+						borderBottomWidth={2}
+						borderBottomColor="$surface2"
+						rounded="$lg"
+						mt="$sm"
+						p="$sm"
+					>
+						<XStack items="center" gap="$sm">
+							<Stack
+								bg="$blueBase"
+								height={42}
+								rounded="$md"
+								width={42}
+								items="center"
+								justify="center"
+							>
+								<Jazisha size={28} color="$surface1" />
+							</Stack>
+							<YStack width="80%" gap="$3xs">
+								<XStack justify="space-between">
+									<Text>Jazisha!</Text>
+									<Text color="$accent1">Subscribe</Text>
+								</XStack>
+								<Text variant="body3" color="$neutral2">
+									Transact even on low balances.
+								</Text>
+							</YStack>
+						</XStack>
+						<RotatableChevron direction="right" />
+					</XStack>
+				</TouchableArea>
 			</YStack>
 			<YStack gap="$sm" mt="$lg" width="92%">
 				<YStack
@@ -164,6 +254,76 @@ export default function AssetsScreen() {
 					)}
 				</YStack>
 			</YStack>
+			<BottomSheetModal
+				ref={bottomSheetModalRef}
+				snapPoints={["52%"]}
+				backdropComponent={renderBackdrop}
+				onDismiss={() => {}}
+			>
+				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
+					<JazishaContent
+						onPressButton={onHandleJazisha}
+						isLoading={isTxLoading}
+						balance={overdraft.balanceUSD.toFixed(2)}
+					/>
+				</BottomSheetView>
+			</BottomSheetModal>
 		</Screen>
 	);
 }
+
+const JazishaContent = ({
+	onPressButton,
+	isLoading,
+	balance,
+}: { onPressButton: () => void; isLoading: boolean; balance: string }) => {
+	return (
+		<YStack gap="$lg" mt="$md" mb="$3xl" items="center" width="92%">
+			<Stack p="$md" bg="$blueLight" rounded="$lg">
+				<Jazisha size={32} color="$blueBase" />
+			</Stack>
+			<YStack width="80%" gap="$2xs">
+				<Text variant="subHeading1" text="center" px="$2xl">
+					Finalize what you need to with Jazisha!
+				</Text>
+				<Text text="center" color="$neutral2">
+					Transfer or make a payment even on low balance with Clixpesa
+					Overdraft.
+				</Text>
+			</YStack>
+			{Number(balance) > 0 ? (
+				<YStack width="70%" gap="$2xs" items="center">
+					<Text>Available:</Text>
+					<Text variant="heading3" fontWeight="600">
+						{balance}/100 USD
+					</Text>
+					<Text color="$neutral2">Only on CELO</Text>
+				</YStack>
+			) : null}
+			<TouchableArea
+				onPress={() => openBrowserAsync("https://clixpesa.com/jazisha")}
+			>
+				<XStack items="center" gap="$xs">
+					<Text variant="subHeading1" color="$accent1">
+						Learn more
+					</Text>
+					<ExternalLink size={24} color="$accent1" />
+				</XStack>
+			</TouchableArea>
+			<Button
+				size="lg"
+				variant="branded"
+				emphasis={Number(balance) > 0 ? "secondary" : "primary"}
+				width="85%"
+				loading={isLoading}
+				onPress={onPressButton}
+			>
+				{isLoading
+					? "Subscribing..."
+					: Number(balance) > 0
+						? "Unsubscribe"
+						: "Get started"}
+			</Button>
+		</YStack>
+	);
+};
