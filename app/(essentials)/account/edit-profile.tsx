@@ -92,7 +92,10 @@ export default function EditProfile() {
 					</TouchableArea>
 					<TouchableArea
 						onPress={() =>
-							router.navigate("/(essentials)/account/link-emailorphone")
+							router.navigate({
+								pathname: "/(essentials)/account/link-emailorphone",
+								params: { link: "phone" },
+							})
 						}
 					>
 						<XStack
@@ -117,7 +120,10 @@ export default function EditProfile() {
 					</TouchableArea>
 					<TouchableArea
 						onPress={() =>
-							router.navigate("/(essentials)/account/link-emailorphone")
+							router.navigate({
+								pathname: "/(essentials)/account/link-emailorphone",
+								params: { link: "email" },
+							})
 						}
 					>
 						<XStack

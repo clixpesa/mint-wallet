@@ -1,16 +1,18 @@
 import { Screen } from "@/components/layout/Screen";
 import { Button, Spacer, Text, TextInput, YStack } from "@/ui";
-import { getAuth } from "@react-native-firebase/auth";
+import { getAuth, updateProfile } from "@react-native-firebase/auth";
+import { doc, getFirestore, updateDoc } from "@react-native-firebase/firestore";
 import { router } from "expo-router";
 import { useState } from "react";
 
 export default function EditName() {
-	const [name, setName] = useState<string>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const user = getAuth().currentUser;
+	const [name, setName] = useState<string>(user?.displayName ?? "");
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const updateName = async () => {
 		setIsLoading(true);
-		await user?.updateProfile({
+		await updateProfile(user, { displayName: name });
+		await updateDoc(doc(getFirestore(), "USERS", user?.uid), {
 			displayName: name,
 		});
 		setIsLoading(false);
