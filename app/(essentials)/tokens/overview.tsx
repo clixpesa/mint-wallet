@@ -118,41 +118,43 @@ export default function AssetsScreen() {
 				<Text variant="subHeading2" color="$blueBase">
 					Available Jazisha: ${overdraft.balanceUSD.toFixed(2)}
 				</Text>
-				<TouchableArea onPress={onOpenModal}>
-					<XStack
-						justify="space-between"
-						items="center"
-						bg="$surface1"
-						borderBottomWidth={2}
-						borderBottomColor="$surface2"
-						rounded="$lg"
-						mt="$sm"
-						p="$sm"
-					>
-						<XStack items="center" gap="$sm">
-							<Stack
-								bg="$blueBase"
-								height={42}
-								rounded="$md"
-								width={42}
-								items="center"
-								justify="center"
-							>
-								<Jazisha size={28} color="$surface1" />
-							</Stack>
-							<YStack width="80%" gap="$3xs">
-								<XStack justify="space-between">
-									<Text>Jazisha!</Text>
-									<Text color="$accent1">Subscribe</Text>
-								</XStack>
-								<Text variant="body3" color="$neutral2">
-									Transact even on low balances.
-								</Text>
-							</YStack>
+				{overdraft.balanceUSD > 0 ? null : (
+					<TouchableArea onPress={onOpenModal}>
+						<XStack
+							justify="space-between"
+							items="center"
+							bg="$surface1"
+							borderBottomWidth={2}
+							borderBottomColor="$surface2"
+							rounded="$lg"
+							mt="$sm"
+							p="$sm"
+						>
+							<XStack items="center" gap="$sm">
+								<Stack
+									bg="$blueBase"
+									height={42}
+									rounded="$md"
+									width={42}
+									items="center"
+									justify="center"
+								>
+									<Jazisha size={28} color="$surface1" />
+								</Stack>
+								<YStack width="80%" gap="$3xs">
+									<XStack justify="space-between">
+										<Text>Jazisha!</Text>
+										<Text color="$accent1">Subscribe</Text>
+									</XStack>
+									<Text variant="body3" color="$neutral2">
+										Transact even on low balances.
+									</Text>
+								</YStack>
+							</XStack>
+							<RotatableChevron direction="right" />
 						</XStack>
-						<RotatableChevron direction="right" />
-					</XStack>
-				</TouchableArea>
+					</TouchableArea>
+				)}
 			</YStack>
 			<YStack gap="$sm" mt="$lg" width="92%">
 				<YStack
