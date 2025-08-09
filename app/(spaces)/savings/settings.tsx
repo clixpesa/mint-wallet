@@ -27,6 +27,7 @@ import {
 import { openURL } from "expo-linking";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 export default function SavingsSettings() {
 	const params = useLocalSearchParams();
@@ -100,6 +101,12 @@ export default function SavingsSettings() {
 									borderWidth={2}
 									borderColor="$surface3Hovered"
 									rounded="$2xl"
+									onPress={() => {
+										Alert.alert(
+											"Keep Calm!",
+											"Sharing spaces with your friends is coming soon.",
+										);
+									}}
 								>
 									<XStack items="center" m="$xs" gap="$xs">
 										<SendAction size={24} color="$neutral2" />

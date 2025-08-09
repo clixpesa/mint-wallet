@@ -31,6 +31,7 @@ import { openURL } from "expo-linking";
 import { router, usePathname } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 
 export default function AccountScreen() {
@@ -103,6 +104,12 @@ export default function AccountScreen() {
 									borderWidth={2}
 									borderColor="$surface3Hovered"
 									rounded="$2xl"
+									onPress={() => {
+										Alert.alert(
+											"Keep Calm!",
+											"Sharing your account with your friends is coming soon.",
+										);
+									}}
 								>
 									<XStack items="center" m="$xs" gap="$xs">
 										<SendAction size={24} color="$neutral2" />
