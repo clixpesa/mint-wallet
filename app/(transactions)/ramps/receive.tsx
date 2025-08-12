@@ -19,7 +19,7 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { getAuth } from "@react-native-firebase/auth";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -55,15 +55,13 @@ export default function ReciveScreen() {
 	);
 
 	useEffect(() => {
-		const getClixtag = async () => {
+		(async () => {
 			const user = getAuth().currentUser;
-			await user?.getIdToken(true);
-			const clixtag = await user
-				?.getIdTokenResult()
-				.then((tokenResult) => tokenResult.claims.tag);
+			const clixtag = await getIdTokenResult(user, true).then(
+				(tokenResults) => tokenResults.claims.tag,
+			);
 			setClixtag(clixtag);
-		};
-		getClixtag();
+		})();
 	}, []);
 	return (
 		<Screen

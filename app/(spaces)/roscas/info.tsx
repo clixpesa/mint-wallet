@@ -74,7 +74,7 @@ export default function GroupInfo() {
 				//targetDate: date.valueOf(),
 				spaceId: params.spaceId as string,
 			});
-			console.log(reciept);
+			//console.log(reciept);
 			setIsLoading(false);
 		}
 	};

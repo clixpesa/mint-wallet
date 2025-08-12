@@ -1,4 +1,5 @@
 import { ActionButton } from "@/components/Buttons/ActionButton";
+import { useWalletContext } from "@/features/wallet";
 import {
 	Separator,
 	Stack,
@@ -26,9 +27,11 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
 export function HomeActions(): JSX.Element {
+	const { mainAccount } = useWalletContext();
 	const colors = useThemeColors();
 	const iconSize = 24;
 	const contentColor = colors.accent1.val;
@@ -131,6 +134,39 @@ export function HomeActions(): JSX.Element {
 							</XStack>
 						</TouchableArea>
 						<Separator />
+						<TouchableArea
+							onPress={() =>
+								openBrowserAsync(
+									`${mainAccount?.chain?.blockExplorers?.default.url}/address/${mainAccount?.account.address}\#tokentxns`,
+								)
+							}
+						>
+							<XStack justify="space-between" items="center">
+								<XStack items="center" gap="$sm">
+									<Stack
+										bg="$accent2"
+										height={42}
+										rounded="$md"
+										width={42}
+										items="center"
+										justify="center"
+									>
+										<FileList size={28} color="$accent1" />
+									</Stack>
+									<YStack width="80%" gap="$3xs">
+										<XStack justify="space-between" items="center">
+											<Text>Account Statement</Text>
+											{/*<Text color="$accent1"> coming soon</Text>*/}
+										</XStack>
+										<Text variant="body4" color="$neutral2">
+											View all your transactions onchain
+										</Text>
+									</YStack>
+								</XStack>
+								<RotatableChevron direction="right" />
+							</XStack>
+						</TouchableArea>
+						<Separator />
 						<TouchableArea onPress={() => {}}>
 							<XStack justify="space-between" items="center">
 								<XStack items="center" gap="$sm">
@@ -178,33 +214,6 @@ export function HomeActions(): JSX.Element {
 										</XStack>
 										<Text variant="body4" color="$neutral2">
 											Buy airtime for supported networks
-										</Text>
-									</YStack>
-								</XStack>
-								<RotatableChevron direction="right" />
-							</XStack>
-						</TouchableArea>
-						<Separator />
-						<TouchableArea onPress={() => {}}>
-							<XStack justify="space-between" items="center">
-								<XStack items="center" gap="$sm">
-									<Stack
-										bg="$accent2"
-										height={42}
-										rounded="$md"
-										width={42}
-										items="center"
-										justify="center"
-									>
-										<FileList size={28} color="$accent1" />
-									</Stack>
-									<YStack width="80%" gap="$3xs">
-										<XStack justify="space-between" items="center">
-											<Text>Clixpesa Statement</Text>
-											<Text color="$accent1"> coming soon</Text>
-										</XStack>
-										<Text variant="body4" color="$neutral2">
-											Get your transactions statement
 										</Text>
 									</YStack>
 								</XStack>
