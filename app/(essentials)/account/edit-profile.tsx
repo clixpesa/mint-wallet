@@ -64,7 +64,7 @@ export default function EditProfile() {
 									<Text>Loading...</Text>
 								)}
 							</XStack>
-							<RotatableChevron direction="right" />
+							{/*<RotatableChevron direction="right" />*/}
 						</XStack>
 					</TouchableArea>
 					<TouchableArea

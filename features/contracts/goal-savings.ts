@@ -194,3 +194,59 @@ export async function withdrawSavings(
 		return txHash;
 	}
 }
+
+export async function editGoalSavings(
+	params: CreateGoalSavingsParams,
+): Promise<{ txHash: Hex; spaceId?: string }> {
+	const chain = getChainInfo(params.chainId);
+	const savings = chain?.contracts.goalSavings;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: savings?.address,
+			abi: goalSavingsAbi,
+			functionName: "edit",
+			args: [
+				params.key,
+				params.name,
+				parseEther(params.targetAmount),
+				params.targetDate,
+			],
+		});
+		const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
+		const logs = receipt.logs.filter((log) =>
+			isSameAddress(log.address, savings?.address),
+		);
+		const spaceId = logs[0].topics[2]?.substring(0, 18);
+		return { txHash, spaceId };
+	} catch (error) {
+		console.error("Error in subscribing user:", error);
+		return { txHash, spaceId: undefined };
+	}
+}
+
+export async function closeGoalSavings(params: {
+	account: any;
+	spaceId: string;
+	chainId: ChainId;
+}): Promise<Hex> {
+	const chain = getChainInfo(params.chainId);
+	const savings = chain?.contracts.goalSavings;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await params.account.writeContract({
+			address: savings?.address,
+			abi: goalSavingsAbi,
+			functionName: "close",
+			args: [params.spaceId],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error closing goal savings:", error);
+		return txHash;
+	}
+}

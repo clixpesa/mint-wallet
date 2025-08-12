@@ -1,6 +1,10 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Screen } from "@/components/layout/Screen";
-import { getChainInfo } from "@/features/wallet";
+import {
+	closeGoalSavings,
+	editGoalSavings,
+} from "@/features/contracts/goal-savings";
+import { getChainInfo, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import {
 	Button,
@@ -25,7 +29,7 @@ import {
 	type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { openURL } from "expo-linking";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
@@ -38,6 +42,7 @@ export default function SavingsSettings() {
 	const [goal, setGoal] = useState<string>(params.goal as string);
 	const [date, setDate] = useState<Date>(new Date(Number(params.deadline)));
 	const [showButtons, setShowButtons] = useState<boolean>(true);
+	const { updateCurrentChainId, mainAccount } = useWalletContext();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const onChange = (
@@ -62,14 +67,40 @@ export default function SavingsSettings() {
 		setName(params.name as string);
 		setGoal(params.goal as string);
 	};
-	useEffect(() => {
+	const onPressSave = async () => {
 		setIsLoading(true);
-		const getSpace = async () => {
+		if (mainAccount && goal) {
+			const reciept = await editGoalSavings({
+				account: mainAccount,
+				chainId: defaultChainId,
+				name: name,
+				targetAmount: goal,
+				targetDate: date.valueOf(),
+				key: params.spaceId as string,
+			});
+			//console.log(reciept);
 			setIsLoading(false);
-		};
-		setIsLoading(false);
-		getSpace();
-	}, [defaultChainId]);
+		}
+	};
+
+	const onCloseSpace = async () => {
+		setIsLoading(true);
+		if (mainAccount) {
+			const reciept = await closeGoalSavings({
+				account: mainAccount,
+				chainId: defaultChainId,
+				spaceId: params.spaceId as string,
+			});
+			//console.log(reciept);
+			router.navigate("/(tabs)/spaces");
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		updateCurrentChainId(defaultChainId);
+	}, [defaultChainId, updateCurrentChainId]);
+
 	return (
 		<Screen>
 			<ScrollView showsVerticalScrollIndicator={false} width="100%">
@@ -205,14 +236,21 @@ export default function SavingsSettings() {
 									emphasis="secondary"
 									width="30%"
 									onPress={() => {
-										setEdit(!edit);
 										onCancel();
 									}}
 								>
 									Cancel
 								</Button>
-								<Button variant="branded" width="30%">
-									Save
+								<Button
+									variant="branded"
+									width="30%"
+									loading={isLoading}
+									onPress={() => {
+										setEdit(!edit);
+										onPressSave();
+									}}
+								>
+									{isLoading ? "Saving " : "Save"}
 								</Button>
 							</XStack>
 						) : null}
@@ -235,17 +273,21 @@ export default function SavingsSettings() {
 							<Text>Report an issue</Text>
 						</XStack>
 					</TouchableArea>
-					<XStack
-						bg="$surface1"
-						py="$sm"
-						px="$md"
-						rounded="$lg"
-						gap="$md"
-						items="center"
-					>
-						<Logout size={24} color="$statusCritical" />
-						<Text color="$statusCritical">Close Space</Text>
-					</XStack>
+					<TouchableArea onPress={() => onCloseSpace()}>
+						<XStack
+							bg="$surface1"
+							py="$sm"
+							px="$md"
+							rounded="$lg"
+							gap="$md"
+							items="center"
+						>
+							<Logout size={24} color="$statusCritical" />
+							<Text color="$statusCritical">
+								{isLoading ? "Closing your space..." : "Close Space"}
+							</Text>
+						</XStack>
+					</TouchableArea>
 				</YStack>
 			)}
 		</Screen>
