@@ -2,8 +2,14 @@ import { BackButton } from "@/components/Buttons/BackButton";
 import type { SpaceInfo } from "@/features/contracts/goal-savings";
 import { getSavings } from "@/features/contracts/goal-savings";
 import { TransactionsCard } from "@/features/spaces/components/TransactionsCard";
-import { getChainInfo, getRate } from "@/features/wallet";
-import { useEnabledChains } from "@/features/wallet/hooks";
+import { useSpacesState } from "@/features/spaces/spacesState";
+import {
+	getChainInfo,
+	getRate,
+	usePublicClient,
+	useWalletContext,
+} from "@/features/wallet";
+import { useEnabledChains, useEnabledTokens } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import {
 	Button,
@@ -17,18 +23,20 @@ import {
 	YStack,
 } from "@/ui";
 import { ReceiveAlt, SendAction, Settings } from "@/ui/components/icons";
+import { isSameAddress } from "@/utilities/addresses";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Progress } from "tamagui";
+import { decodeEventLog, formatUnits } from "viem";
 
 export default function SpaceHome() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
+	const getSpaceTxs = useSpacesState((s) => s.getSpaceTxs);
 	const { defaultChainId } = useEnabledChains();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { symbol, conversionRate } = getRate(currency);
 	const chain = getChainInfo(defaultChainId);
-
 	const [spaceInfo, setSpaceInfo] = useState<SpaceInfo>({
 		spaceId: params.spaceId as string,
 		name: params.name as string,
@@ -44,7 +52,13 @@ export default function SpaceHome() {
 	const progress = Number(
 		((spaceInfo.amount / spaceInfo.targetAmount) * 100).toFixed(0),
 	);
-	const transactions = [];
+	const publicClient = usePublicClient();
+	const allTokens = useEnabledTokens();
+	const supportedTokens = allTokens.filter(
+		(token) => token.chainId === defaultChainId,
+	);
+	const { mainAccount } = useWalletContext();
+	const [transactions, setTransactions] = useState([]);
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -54,10 +68,88 @@ export default function SpaceHome() {
 				spaceId: spaceInfo.spaceId,
 			});
 			if (savings) setSpaceInfo(savings);
+			const txHashs = getSpaceTxs(spaceInfo.spaceId);
+			const txs = await handleTxs(txHashs);
+			setTransactions(txs);
 			setIsLoading(false);
 		};
 		getSpace();
 	}, [defaultChainId, spaceInfo.spaceId]);
+
+	const handleTxs = async (txHashs) => {
+		try {
+			const transferEventAbi = {
+				type: "event",
+				name: "Transfer",
+				inputs: [
+					{ name: "from", type: "address", indexed: true },
+					{ name: "to", type: "address", indexed: true },
+					{ name: "value", type: "uint256", indexed: false },
+				],
+			} as const;
+			const txs = [];
+			for (const txHash of txHashs) {
+				const tx = await publicClient?.getTransactionReceipt({
+					hash: txHash,
+				});
+				const block = await publicClient?.getBlock({
+					blockNumber: tx?.blockNumber,
+				});
+				const transfers = tx.logs
+					.map((log) => {
+						try {
+							const decoded = decodeEventLog({
+								abi: [transferEventAbi],
+								data: log.data,
+								topics: log.topics,
+							});
+							const token = supportedTokens.find((token) =>
+								isSameAddress(token.address, log.address),
+							);
+							const amount = formatUnits(
+								decoded.args.value,
+								Number(token?.decimals),
+							);
+							const aTx = decoded.args
+								? {
+										id: tx?.transactionHash.slice(0, 10),
+										title: isSameAddress(
+											decoded.args.to,
+											mainAccount.account.address,
+										)
+											? `Cashed out ${token?.symbol}`
+											: `Added ${token?.symbol}`,
+
+										amount: Number(amount),
+										amountUSD:
+											token?.symbol.includes("SH") ||
+											token?.symbol.includes("KES")
+												? Number(amount) / conversionRate
+												: Number(amount),
+										tokenId: `${token?.symbol}_${token?.chainId}`,
+										date: new Date(
+											Number(block?.timestamp) * 1000,
+										).toLocaleDateString("en-US", {
+											weekday: "short",
+											day: "numeric",
+											month: "short",
+											year: "numeric",
+										}),
+									}
+								: null;
+							return aTx;
+						} catch (e) {
+							return null; // Not a Transfer event
+						}
+					})
+					.filter(Boolean); // Remove nulls
+				txs.push(...transfers);
+			}
+			return txs;
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<View flex={1} bg="$surface1" items="center">

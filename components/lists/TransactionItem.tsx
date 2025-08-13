@@ -53,7 +53,7 @@ export function TransactionItem({
 				</XStack>
 				<YStack px="$2xs" gap="$2xs">
 					<Text variant="subHeading2" text="right">
-						{`${txInfo.title.includes("Rece") ? "+" : "-"}${amount.actual.toFixed(2)}`}
+						{`${txInfo.title.includes("Rece") || txInfo.title.includes("Add") ? "+" : "-"}${amount.actual.toFixed(2)}`}
 					</Text>
 					<Text variant="body3" color="$neutral2" text="right">
 						~{`${eqvAmount.toFixed(2)} ${currency}`}
