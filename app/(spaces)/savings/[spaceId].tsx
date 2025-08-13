@@ -69,7 +69,7 @@ export default function SpaceHome() {
 			});
 			if (savings) setSpaceInfo(savings);
 			const txHashs = getSpaceTxs(spaceInfo.spaceId);
-			const txs = await handleTxs(txHashs);
+			const txs = await handleTxs(txHashs.reverse());
 			setTransactions(txs);
 			setIsLoading(false);
 		};
