@@ -28,7 +28,8 @@ export default function EditName() {
 					onChangeText={(text) => setName(text)}
 				/>
 				<Text variant="body4" color="$neutral2" text="center">
-					People will see this name when you intract in groups and send transact
+					People will see this name when you intract in groups and send
+					transactions
 				</Text>
 			</YStack>
 			<Spacer />
@@ -36,6 +37,7 @@ export default function EditName() {
 				position="absolute"
 				b="$3xl"
 				width="85%"
+				size="lg"
 				loading={isLoading}
 				variant="branded"
 				onPress={() => updateName()}

@@ -96,7 +96,7 @@ export function OnboardingContextProvider({
 		resetOnboardingContextData();
 		try {
 			const instance = httpsCallable(getFunctions(), "sendEmailOTP");
-			const response = await instance({ email });
+			const response = await instance({ email, isSignIn: true });
 			setVerificationId(email);
 		} catch (error) {
 			logger.error(error, {

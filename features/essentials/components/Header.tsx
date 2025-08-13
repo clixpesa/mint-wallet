@@ -1,6 +1,5 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Text, TouchableArea, XStack } from "@/ui";
-import { BarchartLine, ScanHome } from "@/ui/components/icons";
 import { router } from "expo-router";
 import { useAppState } from "../appState";
 
@@ -35,12 +34,15 @@ export const HomeHeader = () => {
 				</Text>
 			</XStack>
 			<XStack gap="$sm" px="$sm" items="center">
-				<TouchableArea rounded="$full">
+				<Text color="$neutral2" variant="body3">
+					1USD=128.26
+				</Text>
+				{/*<TouchableArea rounded="$full">
 					<ScanHome color="$neutral3" size={34} />
 				</TouchableArea>
 				<TouchableArea rounded="$full">
 					<BarchartLine color="$neutral3" size={32} />
-				</TouchableArea>
+				</TouchableArea>*/}
 			</XStack>
 		</XStack>
 	);

@@ -30,7 +30,7 @@ export const TransactionsCard = memo(() => {
 	} = useGetAllTokenTxsQuery({
 		address: mainAddress,
 		tokens: tokens,
-		// Consider adding refetchOnMountOrArgChange: false if appropriate
+		refetchOnMountOrArgChange: true,
 	});
 
 	// Memoize transactions to prevent recalculations
