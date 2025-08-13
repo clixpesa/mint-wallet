@@ -56,7 +56,9 @@ export default function VerifyEmailPhone() {
 				}
 			}
 			setIsLoading(false);
-			router.replace("/(essentials)/account/edit-profile");
+			//router.replace("/(essentials)/account/edit-profile");
+			router.back();
+			router.back();
 		} catch (error) {
 			logger.error(error, {
 				tags: {
