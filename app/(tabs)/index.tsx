@@ -11,7 +11,7 @@ import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
-import { Button } from "tamagui";
+//import { Button } from "tamagui";
 import { decodeEventLog } from "viem";
 
 export default function HomeScreen() {
@@ -119,9 +119,9 @@ export default function HomeScreen() {
 					<TransactionsCard />
 					<ProductsCard />
 
-					<Button height="$3xl" onPress={handleTestFns}>
+					{/*<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>
+					</Button>*/}
 				</YStack>
 			</ScrollView>
 		</View>
