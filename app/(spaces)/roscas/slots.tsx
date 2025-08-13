@@ -278,7 +278,7 @@ export default function SlotsScreen() {
 				backdropComponent={renderBackdrop}
 			>
 				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
-					<YStack items="center" gap="$sm" width="100%" mt="$3xl">
+					<YStack items="center" gap="$sm" width="100%" my="$3xl">
 						<Stack
 							bg="$accent2"
 							height={60}

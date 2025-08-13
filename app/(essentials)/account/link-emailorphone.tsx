@@ -26,9 +26,9 @@ export default function LinkEmailPhone() {
 		if (isEmail) {
 			if (email) {
 				const instance = httpsCallable(getFunctions(), "sendEmailOTP");
-				const response = await instance({ email });
+				const response = await instance({ email, isSignIn: false });
 				setIsLoading(false);
-				router.push({
+				router.navigate({
 					pathname: "/(essentials)/account/verify",
 					params: {
 						entry: email,
@@ -41,7 +41,7 @@ export default function LinkEmailPhone() {
 			if (phoneNumber) {
 				const confirm = await signInWithPhoneNumber(getAuth(), phoneNumber);
 				setIsLoading(false);
-				router.push({
+				router.navigate({
 					pathname: "/(essentials)/account/verify",
 					params: {
 						entry: phoneNumber,
@@ -84,6 +84,7 @@ export default function LinkEmailPhone() {
 				loading={isLoading}
 				onPress={onPressContinue}
 				position="absolute"
+				size="lg"
 				b="$3xl"
 				width="85%"
 			>

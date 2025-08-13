@@ -44,6 +44,7 @@ export default function SavingsSettings() {
 	const [showButtons, setShowButtons] = useState<boolean>(true);
 	const { updateCurrentChainId, mainAccount } = useWalletContext();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isSaving, setIsSaving] = useState<boolean>(false);
 
 	const onChange = (
 		event: DateTimePickerEvent,
@@ -68,7 +69,7 @@ export default function SavingsSettings() {
 		setGoal(params.goal as string);
 	};
 	const onPressSave = async () => {
-		setIsLoading(true);
+		setIsSaving(true);
 		if (mainAccount && goal) {
 			const reciept = await editGoalSavings({
 				account: mainAccount,
@@ -79,7 +80,7 @@ export default function SavingsSettings() {
 				key: params.spaceId as string,
 			});
 			//console.log(reciept);
-			setIsLoading(false);
+			setIsSaving(false);
 		}
 	};
 
@@ -229,7 +230,7 @@ export default function SavingsSettings() {
 								</XStack>
 							</TouchableArea>
 						</XStack>
-						{edit ? (
+						{edit || isSaving ? (
 							<XStack gap="$md" self="center" mt="$xl">
 								<Button
 									variant="branded"
@@ -244,13 +245,13 @@ export default function SavingsSettings() {
 								<Button
 									variant="branded"
 									width="30%"
-									loading={isLoading}
+									loading={isSaving}
 									onPress={() => {
 										setEdit(!edit);
 										onPressSave();
 									}}
 								>
-									{isLoading ? "Saving " : "Save"}
+									{isSaving ? "Saving..." : "Save"}
 								</Button>
 							</XStack>
 						) : null}

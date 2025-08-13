@@ -33,6 +33,7 @@ export default function GroupInfo() {
 	const [edit, setEdit] = useState<boolean>(false);
 	const [name, setName] = useState<string>(params.name as string);
 	const [members, setMembers] = useState<Address[]>([]);
+	const [isSaving, setIsSaving] = useState<boolean>(false);
 	const { updateCurrentChainId, mainAccount } = useWalletContext();
 	const [userMap, setUserMap] = useState<
 		Map<
@@ -64,7 +65,7 @@ export default function GroupInfo() {
 		//setGoal(params.goal as string);
 	};
 	const onPressSave = async () => {
-		setIsLoading(true);
+		setIsSaving(true);
 		if (mainAccount) {
 			const reciept = await editRosca({
 				account: mainAccount,
@@ -75,7 +76,7 @@ export default function GroupInfo() {
 				spaceId: params.spaceId as string,
 			});
 			//console.log(reciept);
-			setIsLoading(false);
+			setIsSaving(false);
 		}
 	};
 
@@ -183,7 +184,7 @@ export default function GroupInfo() {
 							/>
 						</XStack>
 					) : null}
-					{edit ? (
+					{edit || isSaving ? (
 						<XStack gap="$md" self="center" mt="$xl">
 							<Button
 								variant="branded"
@@ -198,13 +199,13 @@ export default function GroupInfo() {
 							<Button
 								variant="branded"
 								width="30%"
-								loading={isLoading}
+								loading={isSaving}
 								onPress={() => {
 									setEdit(!edit);
 									onPressSave();
 								}}
 							>
-								{isLoading ? "Saving " : "Save"}
+								{isLoading ? "Saving..." : "Save"}
 							</Button>
 						</XStack>
 					) : null}
