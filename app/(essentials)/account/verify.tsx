@@ -7,7 +7,7 @@ import {
 	PhoneAuthProvider,
 	getAuth,
 	linkWithCredential,
-	signInWithPhoneNumber,
+	verifyPhoneNumber,
 } from "@react-native-firebase/auth";
 import { doc, getFirestore, updateDoc } from "@react-native-firebase/firestore";
 import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
@@ -72,7 +72,7 @@ export default function VerifyEmailPhone() {
 	const handleResendCode = async () => {
 		setIsLoading(true);
 		if (params.source === "phone") {
-			const confirm = await signInWithPhoneNumber(getAuth(), params.entry);
+			const confirm = await verifyPhoneNumber(getAuth(), params.entry, 30000);
 			setVerificationId(confirm?.verificationId);
 		} else {
 			const instance = httpsCallable(getFunctions(), "sendEmailOTP");

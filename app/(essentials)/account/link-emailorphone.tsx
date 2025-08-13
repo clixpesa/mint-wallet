@@ -9,7 +9,7 @@ import {
 	XStack,
 	YStack,
 } from "@/ui";
-import { getAuth, signInWithPhoneNumber } from "@react-native-firebase/auth";
+import { getAuth, verifyPhoneNumber } from "@react-native-firebase/auth";
 import { getFunctions, httpsCallable } from "@react-native-firebase/functions";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -39,7 +39,7 @@ export default function LinkEmailPhone() {
 			}
 		} else {
 			if (phoneNumber) {
-				const confirm = await signInWithPhoneNumber(getAuth(), phoneNumber);
+				const confirm = await verifyPhoneNumber(getAuth(), phoneNumber, 30000);
 				setIsLoading(false);
 				router.navigate({
 					pathname: "/(essentials)/account/verify",
