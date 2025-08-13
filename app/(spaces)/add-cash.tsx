@@ -6,6 +6,7 @@ import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { depositSavings } from "@/features/contracts/goal-savings";
 import { fundRoscaSlot } from "@/features/contracts/roscas";
+import { useSpacesState } from "@/features/spaces/spacesState";
 import {
 	type Balance,
 	type ChainId,
@@ -49,12 +50,14 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Dimensions } from "react-native";
 import type { Address } from "viem";
 
 export default function FundSpaceScreen() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
+	const setSpaceTx = useSpacesState((s) => s.setSpaceTxs);
 	const { symbol, conversionRate } = getRate(currency);
 	const { defaultChainId } = useEnabledChains();
 	const inputRef = useRef<Input>(null);
@@ -114,6 +117,9 @@ export default function FundSpaceScreen() {
 	}, [actualAmount, tokenInfo]);*/
 
 	const onConfirmSend = async () => {
+		bottomSheetModalRef.current?.snapToPosition(
+			Dimensions.get("screen").height,
+		);
 		setIsSending(true);
 		setIsTxLoading(true);
 		if (!isOverdraft && mainAccount && amount) {
@@ -127,6 +133,7 @@ export default function FundSpaceScreen() {
 				});
 				console.log(txHash, params.id);
 				setTxHash(txHash);
+				setSpaceTx(params.id as string, txHash);
 			} else {
 				const txHash = await depositSavings({
 					account: mainAccount,
@@ -136,6 +143,7 @@ export default function FundSpaceScreen() {
 				});
 				console.log(txHash, params.id);
 				setTxHash(txHash);
+				setSpaceTx(params.id as string, txHash);
 			}
 			setIsTxLoading(false);
 		}
@@ -147,7 +155,10 @@ export default function FundSpaceScreen() {
 
 	return (
 		<View flex={1} items="center" bg="$surface1">
-			<Header address={params.address} name={params.name} />
+			<Header
+				address={params.address as Address}
+				name={params.name as string}
+			/>
 			<YStack gap="$xs" width="92%" mt="$5xl" items="center">
 				<XStack items="center">
 					{useCurrency ? (
@@ -423,9 +434,9 @@ const ReviewContent = ({
 		: tokenInfo.balance + overdraft.balance - amount < 0;
 
 	return (
-		<>
-			<YStack gap="$md" mt="$lg" width="85%">
-				<Text>You're adding {isOverdraft ? "with Jazisha" : null}</Text>
+		<YStack gap="$md" mt="$lg" mb="$3xl" width="85%">
+			<YStack gap="$md" mt="$lg">
+				<Text>You're sending {isOverdraft ? "with Jazisha" : null}</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
 						<Text
@@ -512,24 +523,21 @@ const ReviewContent = ({
 					</YStack>
 				)}
 			</YStack>
-			<Spacer />
 			<Button
 				size="lg"
 				variant="branded"
 				/*bg="$blueBase"
-        pressStyle={{
-          bg: "$blueVibrant",
-        }}*/
-				b="$3xl"
+				pressStyle={{
+					bg: "$blueVibrant",
+				}}*/
+				mt="$3xl"
 				isDisabled={isOverdraftLimit}
 				loading={isLoading}
-				position="absolute"
-				width="85%"
 				onPress={onConfirmSend}
 			>
 				Confirm send
 			</Button>
-		</>
+		</YStack>
 	);
 };
 
@@ -649,7 +657,7 @@ const SendContent = ({
 	onViewReciept,
 }: SendContentType) => {
 	return (
-		<Stack flex={1} justify="center">
+		<Stack flex={1} justify="center" items="center" width="100%" minH="100%">
 			<YStack gap="$md" width="85%" mb="$5xl">
 				{isLoading ? (
 					<Stack self="center" mr="$xl">
@@ -665,7 +673,7 @@ const SendContent = ({
 					</YStack>
 				)}
 				<Text text="center" variant="subHeading1">
-					{isLoading ? "You're adding..." : "You added"}
+					{isLoading ? "You're sending..." : "You sent"}
 				</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
@@ -732,13 +740,13 @@ const SendContent = ({
 					</YStack>
 				)}
 			</YStack>
-			<YStack b="$3xl" gap="$md" position="absolute" width="100%">
+			<YStack b="$3xl" gap="$md" position="absolute" width="85%">
 				{!isLoading && (
 					<Button
 						size="lg"
 						variant="branded"
 						emphasis="tertiary"
-						width="85%"
+						width="100%"
 						onPress={onViewReciept}
 					>
 						View reciept
@@ -748,7 +756,7 @@ const SendContent = ({
 					size="lg"
 					variant="branded"
 					loading={isLoading}
-					width="85%"
+					width="100%"
 					onPress={onPressDone}
 				>
 					{isLoading ? "Sending..." : "Done"}

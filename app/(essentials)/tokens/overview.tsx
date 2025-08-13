@@ -303,7 +303,9 @@ const JazishaContent = ({
 				</YStack>
 			) : null}
 			<TouchableArea
-				onPress={() => openBrowserAsync("https://clixpesa.com/jazisha")}
+				onPress={() =>
+					openBrowserAsync("https://clixpesa.com/feature/overdraft")
+				}
 			>
 				<XStack items="center" gap="$xs">
 					<Text variant="subHeading1" color="$accent1">

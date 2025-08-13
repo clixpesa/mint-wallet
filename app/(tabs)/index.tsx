@@ -12,6 +12,7 @@ import { LinearGradient, ScrollView, View, YStack } from "@/ui";
 import { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 //import { Button } from "tamagui";
+import { decodeEventLog } from "viem";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -29,12 +30,58 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			/*const hash = await mainAccount?.sendTransaction({
-				to: "0xDE0B552766A0B93B0c405f56c6D0999b9916790A",
-				data: "0x",
-				value: 0n,
-			});*/
-			console.log("something");
+			const transferEventAbi = {
+				type: "event",
+				name: "Transfer",
+				inputs: [
+					{ name: "from", type: "address", indexed: true },
+					{ name: "to", type: "address", indexed: true },
+					{ name: "value", type: "uint256", indexed: false },
+				],
+			} as const;
+			const txHashs = [
+				"0xc685f39b21d67b31a598f084d563bdc0969d4da75b432128490bde74114dc50b",
+				"0x1abd0f8300b4e86d8c10b87c7a2ecc091b26370bc2a90e843ece85424caab21e",
+			];
+			const txs = [];
+			for (const txHash of txHashs) {
+				const tx = await publicClient?.getTransactionReceipt({
+					hash: txHash,
+				});
+				const block = await publicClient?.getBlock({
+					blockNumber: tx?.blockNumber,
+				});
+				const transfers = tx.logs
+					.map((log) => {
+						try {
+							const decoded = decodeEventLog({
+								abi: [transferEventAbi],
+								data: log.data,
+								topics: log.topics,
+							});
+							const aTx = decoded.args
+								? {
+										...decoded.args,
+										token: log.address,
+										date: new Date(
+											Number(block?.timestamp) * 1000,
+										).toLocaleDateString("en-US", {
+											weekday: "short",
+											day: "numeric",
+											month: "short",
+											year: "numeric",
+										}),
+									}
+								: null;
+							return aTx;
+						} catch (e) {
+							return null; // Not a Transfer event
+						}
+					})
+					.filter(Boolean); // Remove nulls
+				txs.push(...transfers);
+			}
+			console.log(txs);
 		} catch (error) {
 			console.log(error);
 		}

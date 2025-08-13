@@ -525,7 +525,6 @@ const ReviewContent = ({
 					</YStack>
 				)}
 			</YStack>
-
 			<Button
 				size="lg"
 				variant="branded"

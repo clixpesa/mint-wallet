@@ -102,7 +102,9 @@ export function GroupsLanding() {
 						</XStack>
 					</YStack>
 					<TouchableArea
-						onPress={() => openBrowserAsync("https://clixpesa.com/groups")}
+						onPress={() =>
+							openBrowserAsync("https://clixpesa.com/feature/roscas")
+						}
 					>
 						<XStack items="center" gap="$xs" mt="$md">
 							<Text variant="subHeading1" color="$accent1">

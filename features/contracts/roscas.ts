@@ -517,3 +517,31 @@ export async function joinRosca({
 		return { txHash };
 	}
 }
+
+export async function editRosca({
+	account,
+	chainId,
+	spaceId,
+	name,
+}: {
+	account: any;
+	chainId: ChainId;
+	spaceId: string;
+	name: string;
+}): Promise<Hex> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "editRosca",
+			args: [spaceId, name],
+		});
+		return txHash;
+	} catch (error) {
+		console.error("Error editing rosca:", error);
+		return txHash;
+	}
+}

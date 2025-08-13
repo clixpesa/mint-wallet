@@ -6,6 +6,7 @@ import { TokenItem } from "@/components/lists/TokenItem";
 import { TokenLogo } from "@/components/logos/TokenLogo";
 import { withdrawSavings } from "@/features/contracts/goal-savings";
 import { withdrawRoscaSlot } from "@/features/contracts/roscas";
+import { useSpacesState } from "@/features/spaces/spacesState";
 import {
 	type Balance,
 	type ChainId,
@@ -48,12 +49,14 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Dimensions } from "react-native";
 import type { Address } from "viem";
 
 export default function FundSpaceScreen() {
 	const params = useLocalSearchParams();
 	const currency = useWalletState((s) => s.currency);
 	const overdraft = useWalletState((s) => s.overdraft);
+	const setSpaceTx = useSpacesState((s) => s.setSpaceTxs);
 	const { symbol, conversionRate } = getRate(currency);
 	const { defaultChainId } = useEnabledChains();
 	const inputRef = useRef<Input>(null);
@@ -111,9 +114,12 @@ export default function FundSpaceScreen() {
   }, [actualAmount, tokenInfo]);*/
 
 	const onConfirmSend = async () => {
+		bottomSheetModalRef.current?.snapToPosition(
+			Dimensions.get("screen").height,
+		);
 		setIsSending(true);
 		setIsTxLoading(true);
-		if (!isOverdraft && mainAccount && amount) {
+		if (mainAccount && amount) {
 			if (params.origin === "rosca") {
 				const txHash = await withdrawRoscaSlot({
 					account: mainAccount,
@@ -122,6 +128,7 @@ export default function FundSpaceScreen() {
 				});
 				console.log(txHash, params.id);
 				setTxHash(txHash);
+				setSpaceTx(params.id as string, txHash);
 			} else {
 				const txHash = await withdrawSavings({
 					account: mainAccount,
@@ -131,6 +138,7 @@ export default function FundSpaceScreen() {
 				});
 				console.log(txHash, params.id);
 				setTxHash(txHash);
+				setSpaceTx(params.id as string, txHash);
 			}
 			setIsTxLoading(false);
 		}
@@ -164,13 +172,7 @@ export default function FundSpaceScreen() {
 						bg="$transparent"
 						keyboardType="number-pad"
 						placeholder="0"
-						color={
-							isOverdraft
-								? "$blueBase"
-								: Number(actualAmount) > tokenInfo.balance
-									? "$statusCritical"
-									: "$neutral1"
-						}
+						color="$neutral1"
 						height={60}
 						onPress={() => inputRef.current?.focus()}
 						value={amount}
@@ -254,9 +256,7 @@ export default function FundSpaceScreen() {
 				b="$3xl"
 				position="absolute"
 				width="85%"
-				isDisabled={
-					!amount || (!isOverdraft && Number(actualAmount) > tokenInfo.balance)
-				}
+				isDisabled={!amount}
 				onPress={() => {
 					setIsReview(true);
 					onOpenModal();
@@ -413,13 +413,10 @@ const ReviewContent = ({
 		? (amount - tokenInfo.balanceUSD) * currency.rate
 		: amount - tokenInfo.balance;
 
-	const isOverdraftLimit = tokenInfo.symbol.includes("USD")
-		? tokenInfo.balanceUSD + overdraft.balanceUSD - amount < 0
-		: tokenInfo.balance + overdraft.balance - amount < 0;
-
+	const isOverdraftLimit = false;
 	return (
-		<>
-			<YStack gap="$md" mt="$lg" width="85%">
+		<YStack gap="$md" mt="$lg" mb="$3xl" width="85%">
+			<YStack gap="$md" mt="$lg">
 				<Text>You're withdrawing {isOverdraft ? "with Jazisha" : null}</Text>
 				<XStack width="100%" justify="space-between" items="center" pr="$2xs">
 					<YStack>
@@ -507,25 +504,22 @@ const ReviewContent = ({
 						</XStack>
 					</YStack>
 				)}
-			</YStack>
-			<Spacer />
-			<Button
-				size="lg"
-				variant="branded"
-				/*bg="$blueBase"
+				<Button
+					size="lg"
+					variant="branded"
+					/*bg="$blueBase"
         pressStyle={{
           bg: "$blueVibrant",
         }}*/
-				b="$3xl"
-				isDisabled={isOverdraftLimit}
-				loading={isLoading}
-				position="absolute"
-				width="85%"
-				onPress={onConfirmSend}
-			>
-				Confirm withdrawal
-			</Button>
-		</>
+
+					isDisabled={isOverdraftLimit}
+					loading={isLoading}
+					onPress={onConfirmSend}
+				>
+					Confirm withdrawal
+				</Button>
+			</YStack>
+		</YStack>
 	);
 };
 
@@ -645,7 +639,7 @@ const SendContent = ({
 	onViewReciept,
 }: SendContentType) => {
 	return (
-		<Stack flex={1} justify="center">
+		<Stack flex={1} justify="center" items="center" width="100%" minH="100%">
 			<YStack gap="$md" width="85%" mb="$5xl">
 				{isLoading ? (
 					<Stack self="center" mr="$xl">
@@ -729,13 +723,13 @@ const SendContent = ({
 					</YStack>
 				)}
 			</YStack>
-			<YStack b="$3xl" gap="$md" position="absolute" width="100%">
+			<YStack b="$3xl" gap="$md" position="absolute" width="85%">
 				{!isLoading && (
 					<Button
 						size="lg"
 						variant="branded"
 						emphasis="tertiary"
-						width="85%"
+						width="100%"
 						onPress={onViewReciept}
 					>
 						View reciept
@@ -745,7 +739,7 @@ const SendContent = ({
 					size="lg"
 					variant="branded"
 					loading={isLoading}
-					width="85%"
+					width="100%"
 					onPress={onPressDone}
 				>
 					{isLoading ? "Withdrawing..." : "Done"}
