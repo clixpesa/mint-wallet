@@ -14,7 +14,7 @@ import {
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
 import { router } from "expo-router";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useAppState } from "../appState";
 
 const MemoizedTransactionItem = memo(TransactionItem);
@@ -23,10 +23,14 @@ export const TransactionsCard = memo(() => {
 	const tokens = useEnabledTokens();
 	const mainAddress = useAppState((s) => s.user.mainAddress);
 	const currency = useWalletState((s) => s.currency);
+	const [isRefreshing, setIsRefreshing] = useState(false);
+
 	const {
 		data,
 		error,
 		isLoading: txLoading,
+		isFetching,
+		refetch,
 	} = useGetAllTokenTxsQuery({
 		address: mainAddress,
 		tokens: tokens,
@@ -45,19 +49,36 @@ export const TransactionsCard = memo(() => {
 		[transactions],
 	);
 
-	const isLoading = txLoading || !data;
+	// Handle refresh state
+	useEffect(() => {
+		if (isFetching && transactions.length > 0) {
+			setIsRefreshing(true);
+		} else {
+			setIsRefreshing(false);
+		}
+	}, [isFetching, transactions.length]);
+
+	// Only show initial loading if we have no data at all
+	const isInitialLoading = txLoading && !data;
 
 	return (
 		<YStack
 			bg="$surface1"
 			width="100%"
 			px="$md"
-			py={isLoading ? "$2xs" : "$md"}
+			py={isInitialLoading ? "$2xs" : "$md"}
 			mt={transactions.length > 0 ? "$md" : "$3xl"}
 			rounded="$lg"
 			gap="$md"
 		>
-			{isLoading ? (
+			{/* Show refresh indicator if we have data but are fetching new data */}
+			{isRefreshing && transactions.length > 0 && (
+				<XStack items="center" justify="center" py="$xs">
+					<TransactionLoader opacity={0.6} height={20} />
+				</XStack>
+			)}
+
+			{isInitialLoading ? (
 				<TransactionLoader opacity={1} withAmounts />
 			) : displayedTransactions.length ? (
 				displayedTransactions.map((item) => {
@@ -87,7 +108,7 @@ export const TransactionsCard = memo(() => {
 				<NoTransactionsView />
 			)}
 
-			{!isLoading && transactions.length > 0 && <SeeAllButton />}
+			{!isInitialLoading && transactions.length > 0 && <SeeAllButton />}
 		</YStack>
 	);
 });
