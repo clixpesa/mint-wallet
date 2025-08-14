@@ -14,104 +14,120 @@ import {
 } from "@/ui";
 import { NoTransactions } from "@/ui/components/icons";
 import { router } from "expo-router";
-import { memo, useEffect, useMemo, useState } from "react";
+import {
+	forwardRef,
+	memo,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useState,
+} from "react";
 import { useAppState } from "../appState";
 
 const MemoizedTransactionItem = memo(TransactionItem);
 
-export const TransactionsCard = memo(() => {
-	const tokens = useEnabledTokens();
-	const mainAddress = useAppState((s) => s.user.mainAddress);
-	const currency = useWalletState((s) => s.currency);
-	const [isRefreshing, setIsRefreshing] = useState(false);
+export interface TransactionsCardRef {
+	refetch: () => void;
+}
 
-	const {
-		data,
-		error,
-		isLoading: txLoading,
-		isFetching,
-		refetch,
-	} = useGetAllTokenTxsQuery({
-		address: mainAddress,
-		tokens: tokens,
-		refetchOnMountOrArgChange: true,
-	});
+export const TransactionsCard = memo(
+	forwardRef<TransactionsCardRef>((props, ref) => {
+		const tokens = useEnabledTokens();
+		const mainAddress = useAppState((s) => s.user.mainAddress);
+		const currency = useWalletState((s) => s.currency);
+		const [isRefreshing, setIsRefreshing] = useState(false);
 
-	// Memoize transactions to prevent recalculations
-	const transactions = useMemo(
-		() => getAllTokenTxs(data?.transactions, mainAddress),
-		[data?.transactions, mainAddress],
-	);
+		const {
+			data,
+			error,
+			isLoading: txLoading,
+			isFetching,
+			refetch,
+		} = useGetAllTokenTxsQuery({
+			address: mainAddress,
+			tokens: tokens,
+			//refetchOnMountOrArgChange: true,
+		});
 
-	// Memoize the first two transactions
-	const displayedTransactions = useMemo(
-		() => transactions.slice(0, 2),
-		[transactions],
-	);
+		// Expose refetch function through ref
+		useImperativeHandle(ref, () => ({ refetch }), [refetch]);
 
-	// Handle refresh state
-	useEffect(() => {
-		if (isFetching && transactions.length > 0) {
-			setIsRefreshing(true);
-		} else {
-			setIsRefreshing(false);
-		}
-	}, [isFetching, transactions.length]);
+		// Memoize transactions to prevent recalculations
+		const transactions = useMemo(
+			() => getAllTokenTxs(data?.transactions, mainAddress),
+			[data?.transactions, mainAddress],
+		);
 
-	// Only show initial loading if we have no data at all
-	const isInitialLoading = txLoading && !data;
+		// Memoize the first two transactions
+		const displayedTransactions = useMemo(
+			() => transactions.slice(0, 2),
+			[transactions],
+		);
 
-	return (
-		<YStack
-			bg="$surface1"
-			width="100%"
-			px="$md"
-			py={isInitialLoading ? "$2xs" : "$md"}
-			mt={transactions.length > 0 ? "$md" : "$3xl"}
-			rounded="$lg"
-			gap="$md"
-		>
-			{/* Show refresh indicator if we have data but are fetching new data */}
-			{isRefreshing && transactions.length > 0 && (
-				<XStack items="center" justify="center" py="$xs">
-					<TransactionLoader opacity={0.6} height={20} />
-				</XStack>
-			)}
+		// Handle refresh state
+		useEffect(() => {
+			if (isFetching && transactions.length > 0) {
+				setIsRefreshing(true);
+			} else {
+				setIsRefreshing(false);
+			}
+		}, [isFetching, transactions.length]);
 
-			{isInitialLoading ? (
-				<TransactionLoader opacity={1} withAmounts />
-			) : displayedTransactions.length ? (
-				displayedTransactions.map((item) => {
-					const token = getTokenById(item.tokenId);
-					return item ? (
-						<MemoizedTransactionItem
-							key={`${item.id}_${item.tokenId}`}
-							txInfo={{
-								title: item.title,
-								date: item.date,
-							}}
-							tokenInfo={{
-								name: token.name,
-								symbol: token.symbol,
-								logoUrl: token.logo,
-								chainId: token.chainId,
-							}}
-							amount={{
-								actual: item.amount,
-								inUSD: item.amountUSD,
-							}}
-							currency={currency}
-						/>
-					) : null;
-				})
-			) : (
-				<NoTransactionsView />
-			)}
+		// Only show initial loading if we have no data at all
+		const isInitialLoading = txLoading && !data;
 
-			{!isInitialLoading && transactions.length > 0 && <SeeAllButton />}
-		</YStack>
-	);
-});
+		return (
+			<YStack
+				bg="$surface1"
+				width="100%"
+				px="$md"
+				py={isInitialLoading ? "$2xs" : "$md"}
+				mt={transactions.length > 0 ? "$md" : "$3xl"}
+				rounded="$lg"
+				gap="$md"
+			>
+				{/* Show refresh indicator if we have data but are fetching new data */}
+				{isRefreshing && transactions.length > 0 && (
+					<XStack items="center" justify="center" py="$xs">
+						<TransactionLoader opacity={0.6} height={20} />
+					</XStack>
+				)}
+
+				{isInitialLoading ? (
+					<TransactionLoader opacity={1} withAmounts />
+				) : displayedTransactions.length ? (
+					displayedTransactions.map((item) => {
+						const token = getTokenById(item.tokenId);
+						return item ? (
+							<MemoizedTransactionItem
+								key={`${item.id}_${item.tokenId}`}
+								txInfo={{
+									title: item.title,
+									date: item.date,
+								}}
+								tokenInfo={{
+									name: token.name,
+									symbol: token.symbol,
+									logoUrl: token.logo,
+									chainId: token.chainId,
+								}}
+								amount={{
+									actual: item.amount,
+									inUSD: item.amountUSD,
+								}}
+								currency={currency}
+							/>
+						) : null;
+					})
+				) : (
+					<NoTransactionsView />
+				)}
+
+				{!isInitialLoading && transactions.length > 0 && <SeeAllButton />}
+			</YStack>
+		);
+	}),
+);
 
 // Extracted components to prevent recreation on parent render
 const NoTransactionsView = memo(() => (

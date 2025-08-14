@@ -3,13 +3,15 @@ import {
 	HomeHeader,
 	ProductsCard,
 	TransactionsCard,
+	type TransactionsCardRef,
 } from "@/features/essentials";
 import { useAppState } from "@/features/essentials/appState";
 import { usePublicClient, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
 
 export default function HomeScreen() {
@@ -20,6 +22,17 @@ export default function HomeScreen() {
 	const { mainAccount } = useWalletContext();
 	const publicClient = usePublicClient();
 	const fetchBalances = useWalletState((s) => s.fetchBalances);
+	const transactionsRef = useRef<TransactionsCardRef>(null);
+
+	// Refetch transactions when screen comes into focus
+	useFocusEffect(
+		useCallback(() => {
+			// Only refetch if we have cached data (avoid unnecessary loading on first visit)
+			if (transactionsRef.current) {
+				transactionsRef.current.refetch();
+			}
+		}, []),
+	);
 
 	const onRefresh = async () => {
 		setRefreshing(true);
@@ -28,8 +41,10 @@ export default function HomeScreen() {
 			if (user.mainAddress) {
 				await fetchBalances(user.mainAddress, defaultChainId, isTestnet);
 			}
-			// Force refetch of transactions by invalidating cache
-			// This will be handled by the RTK Query cache invalidation
+			// Refetch transactions
+			if (transactionsRef.current) {
+				transactionsRef.current.refetch();
+			}
 		} finally {
 			setTimeout(() => setRefreshing(false), 1000);
 		}
@@ -68,7 +83,7 @@ export default function HomeScreen() {
 			>
 				<HomeCard />
 				<YStack gap="$sm" width="92%">
-					<TransactionsCard />
+					<TransactionsCard ref={transactionsRef} />
 					<ProductsCard />
 
 					{/*<Button height="$3xl" onPress={handleTestFns}>
