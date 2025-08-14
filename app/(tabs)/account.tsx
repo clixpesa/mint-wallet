@@ -222,7 +222,12 @@ const SettingsItemLogoutAction = () => {
 	//const { signOut } = useAuth();
 
 	return (
-		<Settings.Item icon={Logout} onPress={() => {}}>
+		<Settings.Item
+			icon={Logout}
+			onPress={async () => {
+				await getAuth().signOut();
+			}}
+		>
 			Log Out
 		</Settings.Item>
 	);
