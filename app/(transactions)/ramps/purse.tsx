@@ -72,7 +72,7 @@ export default function BizPurseScreen() {
 						<Stack width="83%">
 							<Text variant="subHeading2">Request payments from customers</Text>
 							<Text variant="body3" color="$neutral2">
-								Send payment links to you customers for payments at anytime,
+								Send payment links to your customers for payments at anytime,
 								anywhere
 							</Text>
 						</Stack>
