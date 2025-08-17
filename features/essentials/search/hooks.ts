@@ -17,14 +17,6 @@ export interface SearchableRecipient {
 	tag: string | null;
 }
 
-interface DummyUser {
-	uuid: string;
-	phone: string | null;
-	name: string | null;
-	tag?: string | null;
-	address: Address;
-}
-
 export function useRecipientSearch(searchTerm: string): {
 	recipients: SearchableRecipient[];
 	searchTerm: string;
@@ -155,6 +147,55 @@ export function useRecipientSearch(searchTerm: string): {
 	return searchTerm ? debouncedResult : memoResult;
 }
 
-export function useSearchInput() {
-	// Hook logic goes here
+export function useTagSearch(searchTerm: string) {
+	const [searchTags, setSearchTags] = useState<string[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [result, setResult] = useState<{
+		isAvailable: boolean;
+		searchTerm: string;
+	}>({ isAvailable: false, searchTerm: "" });
+
+	const [processedTerm, setProcessedTerm] = useState<string>("");
+
+	useEffect(() => {
+		(async () => {
+			const tags: string[] = [];
+			const qSnapshot = await getDocs(collection(getFirestore(), "USERS"));
+			qSnapshot.forEach((doc) => {
+				const user = doc.data();
+				const claims = user.customClaims;
+				tags.push(claims?.tag ?? null);
+			});
+			setSearchTags(tags.filter(Boolean));
+		})();
+	}, []);
+
+	useEffect(() => {
+		if (!searchTerm.trim()) {
+			setResult({ isAvailable: false, searchTerm: searchTerm });
+			setProcessedTerm(searchTerm);
+			setIsLoading(false);
+			return;
+		}
+
+		if (searchTerm !== processedTerm) {
+			setIsLoading(true);
+		}
+
+		const timer = setTimeout(() => {
+			const matchingTags = searchTags.filter(
+				(tag) => tag.toLowerCase() === searchTerm.trim().toLowerCase(),
+			);
+			setResult({
+				isAvailable: !matchingTags.length && searchTerm.length >= 3,
+				searchTerm: searchTerm,
+			});
+			setProcessedTerm(searchTerm);
+			setIsLoading(false);
+		}, 400); // Debounce delay
+
+		return () => clearTimeout(timer);
+	}, [searchTerm, searchTags, processedTerm]);
+
+	return { ...result, loading: isLoading };
 }
