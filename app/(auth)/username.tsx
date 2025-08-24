@@ -1,11 +1,10 @@
 import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
-import { useOnboardingContext } from "@/features/essentials";
+import { useOnboardingContext, useTagSearch } from "@/features/essentials";
 import {
 	AnimatedYStack,
 	Button,
 	Input,
 	Spacer,
-	SpinningLoader,
 	Stack,
 	Text,
 	View,
@@ -19,7 +18,8 @@ import { Image } from "react-native";
 
 export default function UsernameScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [username, setUsername] = useState<string>();
+	const [username, setUsername] = useState<string>("");
+	const { isAvailable, searchTerm, loading } = useTagSearch(username);
 	const { createClixtag } = useOnboardingContext();
 	const handleUsername = async () => {
 		setIsLoading(true);
@@ -60,34 +60,48 @@ export default function UsernameScreen() {
 						linked to your account.
 					</Text>
 				</YStack>
-				<XStack
-					borderWidth={2}
-					borderColor="$surface3"
-					rounded="$vl"
-					minW="90%"
-					items="center"
-					px="$md"
-				>
-					<Text fontSize="$lg" fontWeight="$md">
-						@
-					</Text>
-					<Input
-						fontSize="$lg"
-						autoFocus
-						px={1}
-						py="$md"
-						placeholder="username"
-						height="auto"
-						minW="75%"
-						onChangeText={(text) => setUsername(text)}
-					/>
-				</XStack>
-				{isLoading ? (
-					<XStack gap="$md" items="center">
-						<SpinningLoader size={28} />
-						<Text>Checking ...</Text>
+				<YStack gap="$2xs">
+					<XStack
+						borderWidth={2}
+						borderColor="$surface3"
+						rounded="$vl"
+						minW="90%"
+						items="center"
+						px="$md"
+					>
+						<Text fontSize="$lg" fontWeight="$md">
+							@
+						</Text>
+						<Input
+							fontSize="$lg"
+							autoFocus
+							px={1}
+							py="$md"
+							placeholder="username"
+							height="auto"
+							minW="75%"
+							onChangeText={(text) => setUsername(text)}
+						/>
 					</XStack>
-				) : null}
+					<Text
+						color={
+							loading
+								? "$neutral1"
+								: isAvailable
+									? "$statusSuccess"
+									: "$statusCritical"
+						}
+						mx="$md"
+					>
+						{loading
+							? "Checking availability..."
+							: isAvailable
+								? `${searchTerm} available`
+								: searchTerm.length < 3
+									? "should be atleast 3 chars"
+									: `${searchTerm} is taken`}
+					</Text>
+				</YStack>
 			</AnimatedYStack>
 			<Spacer />
 			<Button
@@ -96,9 +110,10 @@ export default function UsernameScreen() {
 				b="$4xl"
 				minW="85%"
 				loading={isLoading}
+				isDisabled={username.length < 3 || !isAvailable}
 				onPress={handleUsername}
 			>
-				{isLoading ? "Checking..." : "Continue"}
+				{isLoading ? "Creating..." : "Continue"}
 			</Button>
 		</View>
 	);

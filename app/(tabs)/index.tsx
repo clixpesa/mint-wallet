@@ -10,9 +10,16 @@ import { usePublicClient, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
+import {
+	arrayUnion,
+	doc,
+	getFirestore,
+	updateDoc,
+} from "@react-native-firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
+import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -47,6 +54,18 @@ export default function HomeScreen() {
 			}
 		} finally {
 			setTimeout(() => setRefreshing(false), 1000);
+		}
+	};
+
+	const handleTestFns = async () => {
+		try {
+			const userRef = doc(getFirestore(), "USERS", user.uid);
+			const spaceRef = doc(getFirestore(), "SPACES", "0x9be8649b13044ca7");
+			await updateDoc(spaceRef, {
+				requests: arrayUnion(userRef),
+			});
+		} catch (e) {
+			console.log(e);
 		}
 	};
 
@@ -86,9 +105,9 @@ export default function HomeScreen() {
 					<TransactionsCard ref={transactionsRef} />
 					<ProductsCard />
 
-					{/*<Button height="$3xl" onPress={handleTestFns}>
+					<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>*/}
+					</Button>
 				</YStack>
 			</ScrollView>
 		</View>
