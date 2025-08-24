@@ -6,14 +6,28 @@ import { useEnabledChains } from "@/features/wallet/hooks";
 import {
 	Button,
 	ScrollView,
+	Spacer,
+	Stack,
 	Text,
 	TextInput,
 	TouchableArea,
 	XStack,
 	YStack,
 } from "@/ui";
-import { Edit, Logout, Search, SendAction } from "@/ui/components/icons";
+import {
+	Edit,
+	Logout,
+	RoscaFill,
+	Search,
+	SendAction,
+} from "@/ui/components/icons";
 import { isSameAddress, shortenAddress } from "@/utilities/addresses";
+import {
+	BottomSheetBackdrop,
+	type BottomSheetBackdropProps,
+	BottomSheetModal,
+	BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import {
 	collection,
 	getDocs,
@@ -22,18 +36,21 @@ import {
 	where,
 } from "@react-native-firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import type { Address } from "viem";
 
 export default function GroupInfo() {
 	const params = useLocalSearchParams();
+	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const { defaultChainId } = useEnabledChains();
 	const chain = getChainInfo(defaultChainId);
 	const [edit, setEdit] = useState<boolean>(false);
 	const [name, setName] = useState<string>(params.name as string);
 	const [members, setMembers] = useState<Address[]>([]);
 	const [isSaving, setIsSaving] = useState<boolean>(false);
+	const [isActive, setIsActive] = useState<boolean>(true);
+	const [isTxLoading, setIsTxLoading] = useState<boolean>(false);
 	const { updateCurrentChainId, mainAccount } = useWalletContext();
 	const [userMap, setUserMap] = useState<
 		Map<
@@ -117,6 +134,30 @@ export default function GroupInfo() {
 			});
 		}
 		return userMap;
+	};
+
+	const onOpenModal = useCallback(() => {
+		bottomSheetModalRef.current?.present();
+	}, []);
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				style={[props.style]}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.4}
+			/>
+		),
+		[],
+	);
+
+	const handleGroupExit = () => {
+		setIsTxLoading(true);
+		setTimeout(() => {
+			setIsTxLoading(false);
+			bottomSheetModalRef.current?.close();
+		}, 2000);
 	};
 	return (
 		<Screen>
@@ -242,20 +283,77 @@ export default function GroupInfo() {
 							);
 						})}
 					</YStack>
-
-					<XStack
-						bg="$surface1"
-						py="$sm"
-						px="$md"
-						rounded="$lg"
-						gap="$md"
-						items="center"
-					>
-						<Logout size={24} color="$statusCritical" />
-						<Text color="$statusCritical">Exit group</Text>
-					</XStack>
+					<TouchableArea onPress={onOpenModal}>
+						<XStack
+							bg="$surface1"
+							py="$sm"
+							px="$md"
+							rounded="$lg"
+							gap="$md"
+							items="center"
+						>
+							<Logout size={24} color="$statusCritical" />
+							<Text color="$statusCritical">Exit group</Text>
+						</XStack>
+					</TouchableArea>
 				</YStack>
 			</ScrollView>
+			<BottomSheetModal
+				ref={bottomSheetModalRef}
+				snapPoints={["50%"]}
+				backdropComponent={renderBackdrop}
+			>
+				<BottomSheetView style={{ flex: 1, alignItems: "center" }}>
+					<YStack items="center" gap="$sm" width="100%" my="$3xl">
+						<Stack
+							bg="$accent2"
+							height={60}
+							rounded="$md"
+							width={60}
+							items="center"
+							justify="center"
+						>
+							<RoscaFill size={28} color="$accent1" />
+						</Stack>
+						<YStack gap="$2xs" items="center">
+							<Text>
+								{isActive
+									? "Ops! You can't leave"
+									: "Are you sure you want to leave"}
+							</Text>
+							<Text variant="subHeading1">{params.name}</Text>
+							{isActive ? (
+								<Text text="center" px="$3xl" color="$statusCritical">
+									You can not leave an active Group until the circle is
+									complete!
+								</Text>
+							) : null}
+						</YStack>
+						<Spacer flex={1} />
+						{isActive ? null : (
+							<Button
+								size="lg"
+								variant={isActive ? "warning" : "branded"}
+								width="85%"
+								isDisabled={isActive}
+								loading={isTxLoading}
+								onPress={() => handleGroupExit()}
+							>
+								{isTxLoading ? "Leaving Group..." : "Confirm Exit"}
+							</Button>
+						)}
+						<Button
+							size="lg"
+							variant="branded"
+							emphasis="secondary"
+							width="85%"
+							onPress={() => bottomSheetModalRef.current?.close()}
+						>
+							Cancel
+						</Button>
+					</YStack>
+				</BottomSheetView>
+			</BottomSheetModal>
 		</Screen>
 	);
 }
