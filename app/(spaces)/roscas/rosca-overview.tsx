@@ -1,5 +1,6 @@
 import { Screen } from "@/components/layout/Screen";
-import { frequencyOptions, joinRosca } from "@/features/contracts/roscas";
+import { frequencyOptions } from "@/features/contracts/roscas";
+import { useAppState } from "@/features/essentials/appState";
 import { getTokensByChainId, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import {
@@ -30,12 +31,20 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import {
+	arrayUnion,
+	doc,
+	getDoc,
+	getFirestore,
+	setDoc,
+	updateDoc,
+} from "@react-native-firebase/firestore";
 import { router, useLocalSearchParams } from "expo-router";
-import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useRef, useState } from "react";
 
 export default function GroupOverview() {
 	const params = useLocalSearchParams();
+	const user = useAppState((s) => s.user);
 	const { defaultChainId } = useEnabledChains();
 	const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 	const tokens = getTokensByChainId(defaultChainId);
@@ -78,9 +87,8 @@ export default function GroupOverview() {
 
 	const onPressJoin = async () => {
 		setIsTxLoading(true);
-
 		if (mainAccount) {
-			const reciept = await joinRosca({
+			/*const reciept = await joinRosca({
 				account: mainAccount,
 				chainId: defaultChainId,
 				spaceId: params.spaceId as string,
@@ -89,9 +97,29 @@ export default function GroupOverview() {
 			setTxReciept({
 				txHash: reciept.txHash,
 				spaceId: reciept._spaceId,
-			});
-			setIsTxLoading(false);
-			onOpenModal();
+			});*/
+			try {
+				const userRef = doc(getFirestore(), "USERS", user.uid);
+				const spaceRef = doc(
+					getFirestore(),
+					"SPACES",
+					params.spaceId as string,
+				);
+				const space = await getDoc(spaceRef);
+				if (space.exists()) {
+					await updateDoc(spaceRef, {
+						requests: arrayUnion(userRef),
+					});
+				} else {
+					await setDoc(spaceRef, {
+						requests: arrayUnion(userRef),
+					});
+				}
+				setIsTxLoading(false);
+				onOpenModal();
+			} catch (e) {
+				console.log(e);
+			}
 		}
 	};
 	return (
@@ -205,7 +233,7 @@ export default function GroupOverview() {
 				{isTxLoading
 					? "Joining..."
 					: params.type === "rosca"
-						? "Join Rosca"
+						? "Request to Join"
 						: "Join Group"}
 			</Button>
 			<BottomSheetModal
@@ -222,11 +250,12 @@ export default function GroupOverview() {
 							size={80}
 							strokeWidth={1.5}
 						/>
-						<Text>You have successfully joined</Text>
+						<Text>Your request to join</Text>
 						<Text variant="subHeading1">{params.name}</Text>
+						<Text>has been sent successfully</Text>
 
 						<Spacer flex={1} />
-						<Button
+						{/*<Button
 							size="lg"
 							variant="branded"
 							emphasis="tertiary"
@@ -238,13 +267,14 @@ export default function GroupOverview() {
 							}
 						>
 							View ticket
-						</Button>
+						</Button>*/}
 						<Button
 							size="lg"
 							variant="branded"
 							width="85%"
-							onPress={() =>
-								router.navigate({
+							onPress={
+								() => router.back()
+								/*router.navigate({
 									pathname: "/(spaces)/roscas/[spaceId]",
 									params: {
 										spaceId: txReciept?.spaceId,
@@ -255,7 +285,7 @@ export default function GroupOverview() {
 										memberCount: params.memberCount,
 										interval: params.interval,
 									},
-								})
+								})*/
 							}
 						>
 							Done

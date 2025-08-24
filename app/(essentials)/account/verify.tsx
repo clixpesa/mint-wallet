@@ -72,7 +72,7 @@ export default function VerifyEmailPhone() {
 	const handleResendCode = async () => {
 		setIsLoading(true);
 		if (params.source === "phone") {
-			const confirm = await verifyPhoneNumber(getAuth(), params.entry, 30000);
+			const confirm = await verifyPhoneNumber(getAuth(), params.entry, false);
 			setVerificationId(confirm?.verificationId);
 		} else {
 			const instance = httpsCallable(getFunctions(), "sendEmailOTP");

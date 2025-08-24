@@ -39,7 +39,7 @@ export default function LinkEmailPhone() {
 			}
 		} else {
 			if (phoneNumber) {
-				const confirm = await verifyPhoneNumber(getAuth(), phoneNumber, 30000);
+				const confirm = await verifyPhoneNumber(getAuth(), phoneNumber, false);
 				setIsLoading(false);
 				router.navigate({
 					pathname: "/(essentials)/account/verify",

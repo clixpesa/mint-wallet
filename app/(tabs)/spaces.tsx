@@ -17,7 +17,7 @@ export default function SpacesScreen() {
 }
 
 /*<>
-					<IconSymbol
+  <IconSymbol
 						size={310}
 						color="#d4d4d4"
 						name="chevron.left.forwardslash.chevron.right"

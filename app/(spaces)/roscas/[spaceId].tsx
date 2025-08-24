@@ -25,6 +25,7 @@ import {
 	YStack,
 } from "@/ui";
 import {
+	Bell,
 	Hamburger,
 	Participants,
 	ReceiveAlt,
@@ -39,6 +40,7 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { doc, getDoc, getFirestore } from "@react-native-firebase/firestore";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Progress } from "tamagui";
@@ -53,6 +55,8 @@ export default function SpaceHome() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { symbol, conversionRate } = getRate(currency);
 	const chain = getChainInfo(defaultChainId);
+	const [hasRequests, setHasRequest] = useState<number>(0);
+
 	const [userSlotted, setIsSlotted] = useState<{
 		isSlotted: boolean;
 		freeSlots: number;
@@ -119,8 +123,17 @@ export default function SpaceHome() {
 				chainId: defaultChainId,
 				spaceId: spaceInfo.spaceId,
 			});
+			const roscaDoc = await getDoc(
+				doc(getFirestore(), "SPACES", spaceInfo.spaceId),
+			);
+			if (roscaDoc.exists()) {
+				const spaceData = roscaDoc.data();
+				const requests = spaceData?.requests || [];
+				setHasRequest(requests.length);
+				const txs = spaceData?.txs || [];
+				//set transactions
+			}
 			if (rosca) setSpaceInfo(rosca);
-
 			setSlotsInfo(activeSlots);
 			setIsSlotted(userSlotted);
 			setIsLoading(false);
@@ -162,13 +175,57 @@ export default function SpaceHome() {
 					px="$xl"
 					py="$xl"
 				>
-					<Stack position="absolute" t="$lg" l="$lg">
+					<XStack
+						position="absolute"
+						t="$lg"
+						l="$lg"
+						justify="space-between"
+						width="100%"
+					>
 						<BackButton
 							color="$neutral2"
 							size={28}
 							onPressBack={() => router.replace("/(tabs)/spaces")}
 						/>
-					</Stack>
+						<TouchableArea
+							rounded="$full"
+							onPress={() =>
+								router.navigate({
+									pathname: "/(spaces)/roscas/notifications",
+									params: {
+										spaceId: spaceInfo.spaceId,
+									},
+								})
+							}
+						>
+							<Stack position="relative">
+								{hasRequests > 0 && (
+									<Stack
+										position="absolute"
+										t={-4}
+										r={-4}
+										bg="$accent1"
+										width={18}
+										height={18}
+										rounded="$full"
+										justify="center"
+										items="center"
+										z={1}
+									>
+										<Text
+											color="white"
+											fontSize={10}
+											fontWeight="bold"
+											lineHeight={14}
+										>
+											{hasRequests}
+										</Text>
+									</Stack>
+								)}
+								<Bell color="$neutral2" size={28} />
+							</Stack>
+						</TouchableArea>
+					</XStack>
 					<YStack gap="$xl">
 						<Text variant="subHeading1" fontSize={24}>
 							{spaceInfo.name}

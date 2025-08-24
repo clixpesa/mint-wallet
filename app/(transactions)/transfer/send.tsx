@@ -659,7 +659,14 @@ const SendContent = ({
 	onViewReciept,
 }: SendContentType) => {
 	return (
-		<Stack flex={1} justify="center" items="center" width="100%" minH="100%">
+		<Stack
+			flex={1}
+			mt={isLoading ? "30%" : null}
+			justify="center"
+			items="center"
+			width="100%"
+			minH="100%"
+		>
 			<YStack gap="$md" width="85%" mb="$5xl">
 				{isLoading ? (
 					<Stack self="center" mr="$xl">
@@ -741,28 +748,33 @@ const SendContent = ({
 						</YStack>
 					</YStack>
 				)}
-			</YStack>
-			<YStack b="$3xl" gap="$md" position="absolute" width="85%">
-				{!isLoading && (
+				<YStack
+					mt={isLoading ? "30%" : "$6xl"}
+					mb="$3xl"
+					gap="$md"
+					width="100%"
+				>
+					{!isLoading && (
+						<Button
+							size="lg"
+							variant="branded"
+							emphasis="tertiary"
+							width="100%"
+							onPress={onViewReciept}
+						>
+							View reciept
+						</Button>
+					)}
 					<Button
 						size="lg"
 						variant="branded"
-						emphasis="tertiary"
+						loading={isLoading}
 						width="100%"
-						onPress={onViewReciept}
+						onPress={onPressDone}
 					>
-						View reciept
+						{isLoading ? "Sending..." : "Done"}
 					</Button>
-				)}
-				<Button
-					size="lg"
-					variant="branded"
-					loading={isLoading}
-					width="100%"
-					onPress={onPressDone}
-				>
-					{isLoading ? "Sending..." : "Done"}
-				</Button>
+				</YStack>
 			</YStack>
 		</Stack>
 	);
