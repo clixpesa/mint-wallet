@@ -19,7 +19,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
-import { Button } from "tamagui";
+//import { Button } from "tamagui";
 
 export default function HomeScreen() {
 	const [refreshing, setRefreshing] = useState(false);
@@ -105,9 +105,9 @@ export default function HomeScreen() {
 					<TransactionsCard ref={transactionsRef} />
 					<ProductsCard />
 
-					<Button height="$3xl" onPress={handleTestFns}>
+					{/*<Button height="$3xl" onPress={handleTestFns}>
 						Test func
-					</Button>
+					</Button>*/}
 				</YStack>
 			</ScrollView>
 		</View>
