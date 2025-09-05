@@ -22,6 +22,7 @@ export default function SecurityScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [use4Digits, setUse4Digits] = useState<boolean>(false);
 	const [initialCode, setInitialCode] = useState<string | undefined>(undefined);
+	const [isError, setIsError] = useState<boolean>(false);
 	const { getSignedInUser, storeMnemonic } = useOnboardingContext();
 
 	const handleVerification = async (code: string) => {
@@ -30,13 +31,19 @@ export default function SecurityScreen() {
 				setInitialCode(code);
 				codeInputRef.current?.clear();
 			} else {
-				setIsLoading(true);
-				const user = getSignedInUser();
-				if (user) await storeMnemonic(user?.uid);
-				setTimeout(() => {
-					setIsLoading(false);
-					if (initialCode === code) router.push("/(auth)/username");
-				}, 1000);
+				setIsError(false);
+				if (initialCode === code) {
+					setIsLoading(true);
+					const user = getSignedInUser();
+					if (user) await storeMnemonic(user?.uid);
+					setTimeout(() => {
+						setIsLoading(false);
+						router.push("/(auth)/username");
+					}, 1000);
+				} else {
+					setIsError(true);
+					codeInputRef.current?.clear();
+				}
 			}
 		} catch (e) {
 			console.warn(e);
@@ -76,23 +83,43 @@ export default function SecurityScreen() {
 						onFilled={(code) => handleVerification(code)}
 						secureTextEntry
 					/>
-					<XStack justify="space-between" px="$xs" minW="80%">
-						<Text color="$neutral2">
-							{use4Digits ? "Prefer 6 digit PIN?" : "Prefer 4 digit PIN?"}
-						</Text>
-						<TouchableArea
-							hitSlop={16}
-							onPress={() => {
-								codeInputRef.current?.clear();
-								setInitialCode(undefined);
-								setUse4Digits(!use4Digits);
-							}}
-						>
-							<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
-								{use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
+					{initialCode ? (
+						isError ? (
+							<XStack justify="space-between" px="$xs" minW="80%">
+								<Text color="$statusCritical">Ops! passcode mismatch</Text>
+								<TouchableArea
+									hitSlop={16}
+									onPress={() => {
+										codeInputRef.current?.clear();
+										setInitialCode(undefined);
+										setIsError(false);
+									}}
+								>
+									<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
+										Start over
+									</Text>
+								</TouchableArea>
+							</XStack>
+						) : null
+					) : (
+						<XStack justify="space-between" px="$xs" minW="80%">
+							<Text color="$neutral2">
+								{use4Digits ? "Prefer 6 digit PIN?" : "Prefer 4 digit PIN?"}
 							</Text>
-						</TouchableArea>
-					</XStack>
+							<TouchableArea
+								hitSlop={16}
+								onPress={() => {
+									codeInputRef.current?.clear();
+									setInitialCode(undefined);
+									setUse4Digits(!use4Digits);
+								}}
+							>
+								<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
+									{use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
+								</Text>
+							</TouchableArea>
+						</XStack>
+					)}
 					{isLoading ? <SpinningLoader size={28} /> : null}
 				</YStack>
 			</AnimatedYStack>
