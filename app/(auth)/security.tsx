@@ -12,8 +12,9 @@ import {
 } from "@/ui";
 import { SecurityHeader } from "@/ui/assets";
 import { CodeInput, type CodeInputRef } from "@/ui/components/input/CodeInput";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image } from "react-native";
 
 export default function SecurityScreen() {
@@ -23,7 +24,18 @@ export default function SecurityScreen() {
 	const [use4Digits, setUse4Digits] = useState<boolean>(false);
 	const [initialCode, setInitialCode] = useState<string | undefined>(undefined);
 	const [isError, setIsError] = useState<boolean>(false);
+	const [tag, setTag] = useState<string | null>(null);
 	const { getSignedInUser, storeMnemonic } = useOnboardingContext();
+
+	useEffect(() => {
+		(async () => {
+			const user = getAuth().currentUser;
+			const clixtag = await getIdTokenResult(user, true).then(
+				(tokenResults) => tokenResults.claims.tag,
+			);
+			setTag(clixtag);
+		})();
+	}, []);
 
 	const handleVerification = async (code: string) => {
 		try {
@@ -38,7 +50,11 @@ export default function SecurityScreen() {
 					if (user) await storeMnemonic(user?.uid);
 					setTimeout(() => {
 						setIsLoading(false);
-						router.push("/(auth)/username");
+						if (tag) {
+							router.replace("/");
+						} else {
+							router.push("/(auth)/username");
+						}
 					}, 1000);
 				} else {
 					setIsError(true);
