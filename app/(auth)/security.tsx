@@ -12,8 +12,9 @@ import {
 } from "@/ui";
 import { SecurityHeader } from "@/ui/assets";
 import { CodeInput, type CodeInputRef } from "@/ui/components/input/CodeInput";
+import { getAuth, getIdTokenResult } from "@react-native-firebase/auth";
 import { router } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image } from "react-native";
 
 export default function SecurityScreen() {
@@ -22,7 +23,19 @@ export default function SecurityScreen() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [use4Digits, setUse4Digits] = useState<boolean>(false);
 	const [initialCode, setInitialCode] = useState<string | undefined>(undefined);
+	const [isError, setIsError] = useState<boolean>(false);
+	const [tag, setTag] = useState<string | null>(null);
 	const { getSignedInUser, storeMnemonic } = useOnboardingContext();
+
+	useEffect(() => {
+		(async () => {
+			const user = getAuth().currentUser;
+			const clixtag = await getIdTokenResult(user, true).then(
+				(tokenResults) => tokenResults.claims.tag,
+			);
+			setTag(clixtag);
+		})();
+	}, []);
 
 	const handleVerification = async (code: string) => {
 		try {
@@ -30,13 +43,23 @@ export default function SecurityScreen() {
 				setInitialCode(code);
 				codeInputRef.current?.clear();
 			} else {
-				setIsLoading(true);
-				const user = getSignedInUser();
-				if (user) await storeMnemonic(user?.uid);
-				setTimeout(() => {
-					setIsLoading(false);
-					if (initialCode === code) router.push("/(auth)/username");
-				}, 1000);
+				setIsError(false);
+				if (initialCode === code) {
+					setIsLoading(true);
+					const user = getSignedInUser();
+					if (user) await storeMnemonic(user?.uid);
+					setTimeout(() => {
+						setIsLoading(false);
+						if (tag) {
+							router.replace("/");
+						} else {
+							router.push("/(auth)/username");
+						}
+					}, 1000);
+				} else {
+					setIsError(true);
+					codeInputRef.current?.clear();
+				}
 			}
 		} catch (e) {
 			console.warn(e);
@@ -76,23 +99,43 @@ export default function SecurityScreen() {
 						onFilled={(code) => handleVerification(code)}
 						secureTextEntry
 					/>
-					<XStack justify="space-between" px="$xs" minW="80%">
-						<Text color="$neutral2">
-							{use4Digits ? "Prefer 6 digit PIN?" : "Prefer 4 digit PIN?"}
-						</Text>
-						<TouchableArea
-							hitSlop={16}
-							onPress={() => {
-								codeInputRef.current?.clear();
-								setInitialCode(undefined);
-								setUse4Digits(!use4Digits);
-							}}
-						>
-							<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
-								{use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
+					{initialCode ? (
+						isError ? (
+							<XStack justify="space-between" px="$xs" minW="80%">
+								<Text color="$statusCritical">Ops! passcode mismatch</Text>
+								<TouchableArea
+									hitSlop={16}
+									onPress={() => {
+										codeInputRef.current?.clear();
+										setInitialCode(undefined);
+										setIsError(false);
+									}}
+								>
+									<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
+										Start over
+									</Text>
+								</TouchableArea>
+							</XStack>
+						) : null
+					) : (
+						<XStack justify="space-between" px="$xs" minW="80%">
+							<Text color="$neutral2">
+								{use4Digits ? "Prefer 6 digit PIN?" : "Prefer 4 digit PIN?"}
 							</Text>
-						</TouchableArea>
-					</XStack>
+							<TouchableArea
+								hitSlop={16}
+								onPress={() => {
+									codeInputRef.current?.clear();
+									setInitialCode(undefined);
+									setUse4Digits(!use4Digits);
+								}}
+							>
+								<Text color="$accent1" variant="buttonLabel2" mr="$3xs">
+									{use4Digits ? "Use 6 Digits" : "Use 4 Digits"}
+								</Text>
+							</TouchableArea>
+						</XStack>
+					)}
 					{isLoading ? <SpinningLoader size={28} /> : null}
 				</YStack>
 			</AnimatedYStack>
