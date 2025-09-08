@@ -110,7 +110,12 @@ export default function DepositScreen() {
 
 	const onConfirmSend = async () => {
 		setIsTxLoading(true);
-		if (mainAccount && amount && user.phoneNumber) {
+		if (
+			mainAccount &&
+			amount &&
+			user.phoneNumber &&
+			user.phoneNumber?.includes("+254")
+		) {
 			bottomSheetModalRef.current?.snapToPosition(
 				Dimensions.get("screen").height,
 			);
