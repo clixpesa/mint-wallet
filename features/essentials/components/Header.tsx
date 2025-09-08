@@ -35,7 +35,7 @@ export const HomeHeader = () => {
 			</XStack>
 			<XStack gap="$sm" px="$sm" items="center">
 				<Text color="$neutral2" variant="body3">
-					1USD=128.26
+					1USD=128.38
 				</Text>
 				{/*<TouchableArea rounded="$full">
 					<ScanHome color="$neutral3" size={34} />
