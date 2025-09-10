@@ -518,6 +518,48 @@ export async function joinRosca({
 	}
 }
 
+export async function addMember({
+	chainId,
+	spaceId,
+	account,
+	member,
+}: {
+	chainId: ChainId;
+	spaceId: string;
+	account: any;
+	member: Address;
+}): Promise<{ txHash: Hex }> {
+	const chain = getChainInfo(chainId);
+	const roscaContrant = chain.contracts.roscas;
+	const publicClient = createPublicClient({
+		chain,
+		transport: http(chain.rpcUrls.default.http[0]),
+	});
+	let txHash = "0x" as Hex;
+	try {
+		txHash = await account.writeContract({
+			address: roscaContrant?.address,
+			abi: roscasAbi,
+			functionName: "addMember",
+			args: [spaceId, member],
+		});
+		/*
+			const receipt = await publicClient.getTransactionReceipt({
+				hash: txHash,
+			});
+			const logs = receipt.logs.filter((log) =>
+				isSameAddress(log.address, roscaContrant?.address),
+			);
+			const _spaceId = logs[0].topics[2]?.substring(0, 18);
+		*/
+
+		return { txHash };
+	} catch (error) {
+		console.error("Error joining rosca:", error);
+		return { txHash };
+	}
+}
+
 export async function editRosca({
 	account,
 	chainId,

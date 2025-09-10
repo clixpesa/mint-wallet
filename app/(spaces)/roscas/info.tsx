@@ -15,6 +15,7 @@ import {
 	YStack,
 } from "@/ui";
 import {
+	CopySheets,
 	Edit,
 	Logout,
 	RoscaFill,
@@ -35,9 +36,10 @@ import {
 	query,
 	where,
 } from "@react-native-firebase/firestore";
+import * as Clipboard from "expo-clipboard";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, ToastAndroid } from "react-native";
 import type { Address } from "viem";
 
 export default function GroupInfo() {
@@ -75,6 +77,15 @@ export default function GroupInfo() {
 		setIsLoading(false);
 		getSpace();
 	}, [defaultChainId]);
+
+	const copyToClipboard = async () => {
+		await Clipboard.setStringAsync(params.spaceId as string);
+		ToastAndroid.showWithGravity(
+			"Id copied successfully",
+			2000,
+			ToastAndroid.TOP,
+		);
+	};
 
 	const onCancel = () => {
 		//setDate(new Date(Number(params.deadline)));
@@ -193,7 +204,18 @@ export default function GroupInfo() {
 									onPress={() => {
 										Alert.alert(
 											"Keep Calm!",
-											"Inviting your friends through links is coming soon.",
+											"Inviting your friends through links is coming soon. Please copy and share the group id instead.",
+											[
+												{
+													text: "COPY ID",
+													onPress: () => copyToClipboard(),
+													style: "cancel",
+												},
+												{
+													text: "OK",
+													onPress: () => console.log("OK Pressed"),
+												},
+											],
 										);
 									}}
 								>
@@ -205,9 +227,17 @@ export default function GroupInfo() {
 									</XStack>
 								</TouchableArea>
 							</XStack>
-							<Text color="$neutral2" text="right" variant="body3">
-								{params.spaceId}
-							</Text>
+							<XStack
+								items="center"
+								gap="$2xs"
+								mt="$2xs"
+								onPress={() => copyToClipboard()}
+							>
+								<Text color="$neutral2" text="right" variant="body3">
+									{params.spaceId}
+								</Text>
+								<CopySheets size={22} color="$neutral2" />
+							</XStack>
 						</YStack>
 					</XStack>
 					{edit ? null : (
