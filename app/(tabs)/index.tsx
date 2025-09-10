@@ -1,3 +1,4 @@
+import { addMember } from "@/features/contracts/roscas";
 import {
 	HomeCard,
 	HomeHeader,
@@ -10,12 +11,6 @@ import { usePublicClient, useWalletContext } from "@/features/wallet";
 import { useEnabledChains } from "@/features/wallet/hooks";
 import { useWalletState } from "@/features/wallet/walletState";
 import { LinearGradient, ScrollView, View, YStack } from "@/ui";
-import {
-	arrayUnion,
-	doc,
-	getFirestore,
-	updateDoc,
-} from "@react-native-firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
@@ -59,11 +54,13 @@ export default function HomeScreen() {
 
 	const handleTestFns = async () => {
 		try {
-			const userRef = doc(getFirestore(), "USERS", user.uid);
-			const spaceRef = doc(getFirestore(), "SPACES", "0x9be8649b13044ca7");
-			await updateDoc(spaceRef, {
-				requests: arrayUnion(userRef),
+			const result = await addMember({
+				chainId: defaultChainId,
+				spaceId: "0x5b57060281879327",
+				account: mainAccount,
+				member: "0x0afE217fa650FD5355DB1088c23B06edDD03745F",
 			});
+			console.log(result);
 		} catch (e) {
 			console.log(e);
 		}

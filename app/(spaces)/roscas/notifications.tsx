@@ -1,6 +1,9 @@
 import { AccountIcon } from "@/components/account/AccountIcon";
 import { Screen } from "@/components/layout/Screen";
-import { Button, Stack, Text, XStack, YStack } from "@/ui";
+import { addMember } from "@/features/contracts/roscas";
+import { useWalletContext } from "@/features/wallet";
+import { useEnabledChains } from "@/features/wallet/hooks";
+import { Button, SpinningLoader, Stack, Text, XStack, YStack } from "@/ui";
 import { PapersText } from "@/ui/components/icons";
 import {
 	arrayRemove,
@@ -11,10 +14,14 @@ import {
 } from "@react-native-firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { ToastAndroid } from "react-native";
 
 export default function GroupNotifications() {
 	const params = useLocalSearchParams();
 	const [requests, setRequests] = useState([]);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const { defaultChainId } = useEnabledChains();
+	const { mainAccount } = useWalletContext();
 
 	useEffect(() => {
 		(async () => {
@@ -61,6 +68,36 @@ export default function GroupNotifications() {
 			console.error("Error removing request:", error);
 		}
 	};
+
+	const onPressAccept = async (id: string) => {
+		setIsLoading(true);
+		console.log(id);
+		const spaceRef = doc(getFirestore(), "SPACES", params.spaceId as string);
+		const userRef = doc(getFirestore(), "USERS", id);
+		const user = await getDoc(userRef).then((user) => user.data());
+		const result = await addMember({
+			chainId: defaultChainId,
+			spaceId: params.spaceId as string,
+			account: mainAccount,
+			member: user?.customClaims.evmAddr,
+		});
+		console.log(result);
+		if (result.txHash.length > 3) {
+			await updateDoc(spaceRef, {
+				requests: arrayRemove(userRef),
+			});
+			const indexOfId = requests.findIndex((request) => request.id === id);
+			const nReqs = requests.splice(indexOfId, 1);
+			setRequests(nReqs);
+			ToastAndroid.showWithGravity(
+				user?.displayName ||
+					`@${user?.customClaims.tag}` + "added successfully!",
+				2000,
+				ToastAndroid.TOP,
+			);
+		}
+		setIsLoading(false);
+	};
 	return (
 		<Screen title="Notifications">
 			{requests.length > 0 ? (
@@ -80,19 +117,30 @@ export default function GroupNotifications() {
 									has requested to join the chama
 								</Text>
 							</YStack>
-							<XStack gap="$md">
-								<Button size="sm" variant="branded">
-									Accept
-								</Button>
-								<Button
-									size="sm"
-									variant="branded"
-									emphasis="secondary"
-									onPress={() => onPressReject(request.id)}
-								>
-									Reject
-								</Button>
-							</XStack>
+							{isLoading ? (
+								<XStack gap="$md">
+									<SpinningLoader size={24} />
+									<Text>Adding member to group</Text>
+								</XStack>
+							) : (
+								<XStack gap="$md">
+									<Button
+										size="sm"
+										variant="branded"
+										onPress={() => onPressAccept(request.id)}
+									>
+										Accept
+									</Button>
+									<Button
+										size="sm"
+										variant="branded"
+										emphasis="secondary"
+										onPress={() => onPressReject(request.id)}
+									>
+										Reject
+									</Button>
+								</XStack>
+							)}
 						</YStack>
 					</XStack>
 				))
