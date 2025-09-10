@@ -2,7 +2,6 @@ import { HeaderBackButton } from "@/components/Buttons/HeaderNavButtons";
 import { ResendTimer, useOnboardingContext } from "@/features/essentials";
 import {
 	AnimatedYStack,
-	CodeInput,
 	SpinningLoader,
 	Stack,
 	Text,
@@ -11,6 +10,7 @@ import {
 	YStack,
 } from "@/ui";
 import { RegisterHeader } from "@/ui/assets";
+import { CodeInput, type CodeInputRef } from "@/ui/components/input/CodeInput";
 import { logger } from "@/utilities/logger/logger";
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
@@ -18,15 +18,23 @@ import { Image } from "react-native";
 
 export default function VerifyScreen() {
 	const params = useLocalSearchParams<{ source: string; entry: string }>();
-	const codeInputRef = useRef(null);
+	const codeInputRef = useRef<CodeInputRef>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isError, setIsError] = useState<boolean>(false);
 	const { signInWithOTP, sendEmailOTP, sendPhoneOTP } = useOnboardingContext();
 
 	const handleVerification = async (code: string) => {
 		try {
-			await signInWithOTP(code, params.source);
-			setIsLoading(false);
-			router.push("/(auth)/security");
+			setIsError(false);
+			const userCred = await signInWithOTP(code, params.source);
+			if (userCred) {
+				setIsLoading(false);
+				router.push("/(auth)/security");
+			} else {
+				setIsLoading(false);
+				setIsError(true);
+				codeInputRef.current?.clear();
+			}
 		} catch (error) {
 			logger.error(error, {
 				tags: {
@@ -81,9 +89,12 @@ export default function VerifyScreen() {
 						setIsLoading(true);
 						handleVerification(code);
 					}}
-					blurOnFilled
+					//blurOnFilled={!isError}
 				/>
 				{isLoading ? <SpinningLoader size={28} /> : null}
+				{isError ? (
+					<Text color="$statusCritical">Ops! code mismatch</Text>
+				) : null}
 				<ResendTimer
 					onResend={handleResendCode}
 					isSourcePhone={params.source === "phone"}
