@@ -77,7 +77,7 @@ export default function GroupNotifications() {
 							<YStack>
 								<Text>{request.name ?? `@${request.tag}`}</Text>
 								<Text variant="body3" color="$neutral2">
-									has request to join the chama
+									has requested to join the chama
 								</Text>
 							</YStack>
 							<XStack gap="$md">
