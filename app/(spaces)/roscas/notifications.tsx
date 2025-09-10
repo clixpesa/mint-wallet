@@ -31,7 +31,6 @@ export default function GroupNotifications() {
 			if (roscaDoc.exists()) {
 				const spaceData = roscaDoc.data();
 				const requests = spaceData?.requests || [];
-
 				if (requests.length > 0) {
 					const userPromises = requests.map((ref) => getDoc(ref));
 
@@ -60,9 +59,9 @@ export default function GroupNotifications() {
 			await updateDoc(spaceRef, {
 				requests: arrayRemove(userRef),
 			});
-			const indexOfId = requests.findIndex((request) => request.id === id);
-			const nReqs = requests.splice(indexOfId, 1);
-			setRequests(nReqs);
+			setRequests((prevRequests) =>
+				prevRequests.filter((request) => request.id !== id),
+			);
 			console.log(`User ${id} removed from requests`);
 		} catch (error) {
 			console.error("Error removing request:", error);
@@ -86,18 +85,18 @@ export default function GroupNotifications() {
 			await updateDoc(spaceRef, {
 				requests: arrayRemove(userRef),
 			});
-			const indexOfId = requests.findIndex((request) => request.id === id);
-			const nReqs = requests.splice(indexOfId, 1);
-			setRequests(nReqs);
+			setRequests((prevRequests) =>
+				prevRequests.filter((request) => request.id !== id),
+			);
 			ToastAndroid.showWithGravity(
-				user?.displayName ||
-					`@${user?.customClaims.tag}` + "added successfully!",
+				`${user?.displayName ?? `@${user?.customClaims.tag}`} added successfully!`,
 				2000,
 				ToastAndroid.TOP,
 			);
 		}
 		setIsLoading(false);
 	};
+
 	return (
 		<Screen title="Notifications">
 			{requests.length > 0 ? (
